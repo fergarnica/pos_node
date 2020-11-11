@@ -1,0 +1,47 @@
+{
+  "name": "pos-node",
+  "version": "1.0.0",
+  "description": "POS",
+  "main": "index.js",
+  "scripts": {
+    "desarrollo": "concurrently \"npm run dev \" \"npm run watch \" ",
+    "dev": "nodemon ./server.js",
+    "watch": "webpack --w --mode development",
+    "start": "node ./server.js"
+  },
+  "author": "Fernando Garnica",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "concurrently": "^5.3.0",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.1.0",
+    "express-mysql-session": "^2.1.4",
+    "express-session": "^1.17.1",
+    "express-validator": "^6.6.1",
+    "html-to-text": "^5.1.1",
+    "inputmask": "^5.0.5",
+    "jquery": "^3.5.1",
+    "moment": "^2.27.0",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.4.14",
+    "nodemailer-express-handlebars": "^4.0.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "popper.js": "^1.16.1",
+    "sweetalert2": "^9.17.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "nodemon": "^2.0.4",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ nombrePagina }}</title>
+    <link rel="icon" type="image/x-icon" href="/img/pv_icon.png">
+
+    <!--=====================================
+        PLUGINS DE CSS
+    ======================================-->
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.css">
+    <!-- AdminLTE-->
+    <link rel="stylesheet" href="/assets/dist/css/adminlte.css">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.dataTables.min.css">
+
+</head>
+
+<body class="hold-transition">
+    <div id="content" class="wrapper">
+
+
+        {{> menu}}
+
+        {{> cabecera}}
+
+        {{> message}} 
+
+        {{{ body }}}
+
+        {{> footer}}
+
+        <!--=====================================
+        PLUGINS DE JS
+    ======================================-->
+        <!-- jQuery -->
+        <script src="/assets/plugins/jquery/jquery.js"></script>
+        <!-- AdminLTE App -->
+        <script src="/assets/dist/js/adminlte.js"></script>
+        <!-- JS, Popper.js, and jQuery -->
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+        <!-- DataTable -->
+        <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+        <script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+
+        <!-- APP -->
+        <script src="/dist/bundle.js"></script>
+    </div>
+</body>
+
+</html>

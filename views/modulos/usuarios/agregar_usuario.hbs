@@ -1,0 +1,92 @@
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Agregar usuario</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                        <li class="breadcrumb-item active">Agregar usuario</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="card">
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Información de Usuario
+                    <small>(<small style="color:#FF0000" ;> * </small>Obligatorio )
+
+                    </small>
+                </h3>
+            </div>
+            <div class="card-body">
+                <form id="formNewUser" method="get">
+
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Nombre de Empleado:
+                            <label style="color:#FF0000">*</label>
+                        </label>
+                        <div class="col-sm-10">
+                            <select class="form-control input-lg custom-select" id="userEmpleado" required>
+                                <option value="">Selecionar nombre de empleado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Usuario:
+                            <label style="color:#FF0000">*</label>
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="userAlias" placeholder="Ingresar Usuario" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Contraseña:
+                            <label style="color:#FF0000">*</label>
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="userPass" placeholder="Ingresar contraseña" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Repetir Contraseña:<label style="color:#FF0000">*</label>
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="userPass2"
+                                placeholder="Repite la contraseña" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Perfil:
+                            <label style="color:#FF0000">*</label>
+                        </label>
+                        <div class="col-sm-10">
+                            <select class="form-control input-lg custom-select" id="userPerfil" required>
+                                <option value="">Selecionar perfil</option>
+                            </select>
+                        </div>
+                    </div>
+            </div>
+            <div class="card-footer">
+                <button type="submit" id="btnCrearUser" class="btn btn-primary">Guardar
+                    <i class="fas fa-save"></i>
+                </button>
+                <button type="button" class="btn btn-danger float-right" onclick="location.href='/usuarios'">Regresar
+                    <i class="fas fa-undo-alt"></i>
+                </button>
+            </div>
+            </form>
+        </div>
+    </section>
+</div>

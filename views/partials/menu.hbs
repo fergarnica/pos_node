@@ -1,0 +1,145 @@
+{{#if usuario.usuario}}
+
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+
+  <!-- Brand Logo -->
+  <a href="/" class="brand-link">
+    <img src="/img/pv_icon.png" alt="PV System" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <span class="brand-text font-weight-light">PV System</span>
+  </a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+        <li class="nav-item">
+          <a href="/" class="nav-link">
+            <i class="nav-icon fas fa-home"></i>
+            <p>
+              Inicio
+            </p>
+          </a>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-users-cog"></i>
+            <p>
+              Administración
+              <i class="fas fa-angle-left right"></i>
+              {{!-- <span class="badge badge-info right">3</span> --}}
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="/empleados" class="nav-link">
+                <i class="fas fa-users nav-icon"></i>
+                <p>Empleados</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/usuarios" class="nav-link">
+                <i class="fas fa-user nav-icon"></i>
+                <p>Usuarios</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/perfiles" class="nav-link">
+                <i class="fas fa-id-badge nav-icon"></i>
+                <p>Perfiles</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-warehouse"></i>
+            <p>
+              Almacen
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="/categorias" class="nav-link">
+                <i class="fas fa-th-large nav-icon"></i>
+                <p>Categorias</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/marcas" class="nav-link">
+                <i class="fas fa-tags nav-icon"></i>
+                <p>Marcas</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/usuarios" class="nav-link">
+                <i class="fas fa-cubes nav-icon"></i>
+                <p>Productos/Servicios</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/perfiles" class="nav-link">
+                <i class="fas fa-boxes nav-icon"></i>
+                <p>Inventario</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-shopping-cart"></i>
+            <p>
+              Ventas
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="/empleados" class="nav-link">
+                <i class="fas fa-cash-register nav-icon"></i>
+                <p>Punto de Venta</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/usuarios" class="nav-link">
+                <i class="fas fa-piggy-bank nav-icon"></i>
+                <p>Administrar Ventas</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-cogs"></i>
+            <p>
+              Configuración
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="/empresa" class="nav-link">
+                <i class="fas fa-briefcase nav-icon"></i>
+                <p>Empresa</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>
+
+{{/if}}
