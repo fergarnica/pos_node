@@ -84,5 +84,5 @@ STARTING SERVER
   console.log('Server is in port', app.get('port'));
 }); */
 app.listen(port,host,()=>{
-  console.log('Server is in port', port);
+  console.log('Server is in port ', port);
 })
