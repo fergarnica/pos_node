@@ -1,7 +1,7 @@
 {{#if usuario.usuario}}
 
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside id="menu-lateral" class="main-sidebar sidebar-dark-primary elevation-4">
 
   <!-- Brand Logo -->
   <a href="/" class="brand-link">
@@ -13,25 +13,24 @@
 
     <!-- Sidebar Menu -->
     <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+      <ul class="nav nav-pills nav-sidebar flex-column nav-lateral" data-widget="treeview" role="menu" data-accordion="false">
         <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-        <li class="nav-item">
+        {{!-- <li class="nav-item">
           <a href="/" class="nav-link">
             <i class="nav-icon fas fa-home"></i>
             <p>
               Inicio
             </p>
           </a>
-        </li>
+        </li> --}}
 
-        <li class="nav-item has-treeview">
+        {{!-- <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-users-cog"></i>
             <p>
               Administración
               <i class="fas fa-angle-left right"></i>
-              {{!-- <span class="badge badge-info right">3</span> --}}
             </p>
           </a>
           <ul class="nav nav-treeview">
@@ -54,9 +53,9 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li> --}}
 
-        <li class="nav-item has-treeview">
+        {{!-- <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-warehouse"></i>
             <p>
@@ -78,21 +77,45 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="/usuarios" class="nav-link">
+              <a href="/presentaciones" class="nav-link">
+                <i class="fas fa-boxes nav-icon"></i>
+                <p>Presentaciones</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/productos" class="nav-link">
                 <i class="fas fa-cubes nav-icon"></i>
                 <p>Productos/Servicios</p>
               </a>
             </li>
+          </ul>
+        </li> --}}
+
+        {{!-- <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-user-friends"></i>
+            <p>
+              Terceros
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="/perfiles" class="nav-link">
-                <i class="fas fa-boxes nav-icon"></i>
-                <p>Inventario</p>
+              <a href="/clientes" class="nav-link">
+                <i class="fas fa-id-card nav-icon"></i>
+                <p>Clientes</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/proveedores" class="nav-link">
+                <i class="fas fa-id-card-alt nav-icon"></i>
+                <p>Provedores</p>
               </a>
             </li>
           </ul>
-        </li>
+        </li> --}}
 
-        <li class="nav-item has-treeview">
+        {{!-- <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-shopping-cart"></i>
             <p>
@@ -102,22 +125,22 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="/empleados" class="nav-link">
+              <a href="/not_found" class="nav-link">
                 <i class="fas fa-cash-register nav-icon"></i>
                 <p>Punto de Venta</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="/usuarios" class="nav-link">
+              <a href="/not_found" class="nav-link">
                 <i class="fas fa-piggy-bank nav-icon"></i>
                 <p>Administrar Ventas</p>
               </a>
             </li>
           </ul>
-        </li>
+        </li> --}}
 
 
-        <li class="nav-item has-treeview">
+        {{!-- <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-cogs"></i>
             <p>
@@ -133,7 +156,7 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li> --}}
 
       </ul>
     </nav>

@@ -5,12 +5,16 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Bienvenid@ {{ nombre }} </h1>
+                    <h1> Tablero  
+                        <small>Panel de Control</small>
+                    </h1>
+                    <small>Bienvenid@ {{ nombre }}</small>
+                    
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Perfil</li>
+                        <li class="breadcrumb-item active">Tablero</li>
                     </ol>
                 </div>
             </div>
@@ -19,27 +23,75 @@
 
     <!-- Main content -->
     <section class="content">
-        <!-- Default box -->
-        <div class="card">
-            <!-- Card Header -->
-            <div class="card-header">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>150</h3>
 
-                
+                <p>Productos</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-ios-barcode"></i>
+              </div>
+              <a href="#" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-            <!-- Card Body -->
-            <div class="card-body">
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>53<sup style="font-size: 20px">%</sup></h3>
 
-
-
-
+                <p>Ventas</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="#" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
             </div>
-            <!-- /.card-body -->
-            <!-- <div class="card-footer">
-          Footer
-        </div> -->
-            <!-- /.card-footer-->
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>44</h3>
+
+                <p>Clientes</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person-add"></i>
+              </div>
+              <a href="#" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>65</h3>
+
+                <p>Compras</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="#" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
         </div>
-        <!-- /.card -->
+        <!-- /.row -->
+        <!-- Main row -->
+        
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
 </div>

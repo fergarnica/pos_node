@@ -8,7 +8,7 @@
         </li>
     </ul>
 
-    
+
     <!-- Right navbar links -->
     {{!-- <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
@@ -22,7 +22,7 @@
                 <div class="dropdown-divider"></div>
 
                 <a href="/logout" class="dropdown-item dropdown-footer"> <i class="fas fa-door-open"></i>
-                Cerrar Sesión</a>
+                    Cerrar Sesión</a>
             </div>
             <!-- Message End -->
         </li>
@@ -31,17 +31,16 @@
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
-
-                {{!-- <div class="image">
-                    <img src="" alt="PS" class="img-circle elevation-2" alt="User Image">
-                </div> --}}
-                <i class="fas fa-user-circle" ></i>
+                <i class="fas fa-user-circle"></i>
 
             </a>
-            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right" style="left: inherit; right: 0px;">
 
-                <span class="dropdown-item dropdown-header">{{ usuario.usuario }}</span>
+                <label class="dropdown-item dropdown-header text-center">{{ usuario.usuario }}</label>
                 <!-- Message Start -->
+                <div class="dropdown-divider"></div>
+                <a href="/cambiar_password" class="dropdown-item dropdown-footer"> <i class="fas fa-unlock-alt"></i>
+                    Cambiar Contraseña</a>
                 <div class="dropdown-divider"></div>
                 <a href="/logout" class="dropdown-item dropdown-footer"> <i class="fas fa-door-open"></i>
                     Cerrar Sesión</a>

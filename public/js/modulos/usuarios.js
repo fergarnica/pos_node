@@ -5,6 +5,8 @@ import Inputmask from "inputmask";
 
 const empTel = document.getElementById("empTel");
 const empTelEdit = document.getElementById("empTelEdit");
+const fecCont = document.getElementById("fecCont");
+const fecContEdit = document.getElementById("fecContEdit");
 
 const formNewPerfil = document.getElementById('formNewPerfil');
 const formEditPerfil = document.getElementById('formEditPerfil');
@@ -32,7 +34,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                     var dataSet = respuesta.data;
                     //console.log(dataSet);
 
-                    $('#tbl-perfiles').DataTable({
+                    $(tblPerfiles).DataTable({
                         data: dataSet,
                         deferRender: true,
                         iDisplayLength: 25,
@@ -108,7 +110,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                 var dataSet = respuesta.data;
                 //console.log(dataSet);
                 if (respuesta.data != 'empty') {
-                    $('#tbl-empleados').DataTable({
+                    $(tblEmpleados).DataTable({
                         data: dataSet,
                         deferRender: true,
                         iDisplayLength: 25,
@@ -158,7 +160,10 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                             title: "Telefono"
                         },
                         {
-                            title: "Fecha de Creación"
+                            title: "Fecha de Contratación"
+                        },
+                        {
+                            title: "Fecha Alta en Sistema"
                         },
                         {
                             title: "Estatus"
@@ -191,7 +196,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                 //console.log(dataSet);
 
                 if (respuesta.data != 'empty') {
-                    $('#tbl-usuarios').DataTable({
+                    $(tblUsuarios).DataTable({
                         data: dataSet,
                         deferRender: true,
                         iDisplayLength: 25,
@@ -262,6 +267,29 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                     text: 'Error en la Base de Datos'
                 })
             })
+    }
+
+    if (fecCont) {
+        $('#fecCont').datepicker({
+            format: "dd/mm/yyyy",
+            language: 'es',
+            //startDate: '+5d',
+            endDate: '+0d',
+            weekStart: 0,
+            autoclose: true,
+        });
+    }
+
+    if(fecContEdit){
+        $('#fecContEdit').datepicker({
+            format: "dd/mm/yyyy",
+            language: 'es',
+            //startDate: '+5d',
+            endDate: '+0d',
+            weekStart: 0,
+            autoclose: true,
+        });
+
     }
 
 })();
@@ -684,7 +712,6 @@ if (formNewUser) {
                                                 })
 
                                             } else {
-
                                                 // Alerta
                                                 Swal.fire(
                                                     'Usuario Creado',
@@ -695,11 +722,8 @@ if (formNewUser) {
                                                         window.location = "/usuarios";
                                                     }
                                                 });
-
                                             }
-
                                         }
-
                                     }).catch(errors => {
                                         Swal.fire({
                                             type: 'error',
@@ -866,6 +890,7 @@ if (formNewEmpleado) {
         var empMat = document.getElementById("empMat").value;
         var empEmail = document.getElementById("empEmail").value;
         var empTel = document.getElementById("empTel").value;
+        var fecCont = document.getElementById("fecCont").value;
 
         var payload = {};
 
@@ -874,8 +899,10 @@ if (formNewEmpleado) {
         payload.ap_materno = empMat;
         payload.email = empEmail;
         payload.telefono = empTel;
+        payload.fecha_contratacion = moment(fecCont, 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-        //console.log(payload);
+        console.log(fecCont);
+        console.log(payload);
 
         if (payload.nombre == "") {
             Swal.fire({
@@ -919,56 +946,66 @@ if (formNewEmpleado) {
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Oops...',
-                                    text: 'Es necesario indicar el numero telefonico del Empleado!',
+                                    text: 'Es necesario indicar el número telefónico del Empleado!',
                                 })
                             } else {
 
-                                payload.nombre_completo = empNombre + ' ' + empPat + ' ' + empMat;
-                                payload.fecha_creacion = moment().format('YYYY-MM-DD H:mm:ss');
-                                payload.status_empleado = 1;
+                                if (payload.fecha_contratacion == "") {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Oops...',
+                                        text: 'Es necesario indicar la feha de contratación del Empleado!',
+                                    })
+                                } else {
 
-                                axios.post('/empleados', payload)
-                                    .then(function (respuesta) {
+                                    payload.nombre_completo = empNombre + ' ' + empPat + ' ' + empMat;
+                                    payload.fecha_creacion = moment().format('YYYY-MM-DD H:mm:ss');
+                                    payload.status_empleado = 1;
 
-                                        console.log(respuesta);
-                                        if (respuesta.status === 200) {
+                                    axios.post('/empleados', payload)
+                                        .then(function (respuesta) {
 
-                                            if (respuesta.data == 'Repetido') {
-                                                // Alerta
-                                                Swal.fire(
-                                                    'El empleado ya existe',
-                                                    'El empleado capturado ya existe en la base de datos',
-                                                    'warning'
-                                                )
-                                            } else {
-                                                if (respuesta.data == 'CorreoRep') {
+                                            console.log(respuesta);
+                                            if (respuesta.status === 200) {
+
+                                                if (respuesta.data == 'Repetido') {
+                                                    // Alerta
                                                     Swal.fire(
-                                                        'El correo ya existe',
-                                                        'El correo electrónico capturado ya esta asociado a otro empleado!',
+                                                        'El empleado ya existe',
+                                                        'El empleado capturado ya existe en la base de datos',
                                                         'warning'
                                                     )
                                                 } else {
-                                                    // Alerta
-                                                    Swal.fire(
-                                                        'Empleado Creado',
-                                                        respuesta.data,
-                                                        'success'
-                                                    ).then(function (result) {
-                                                        if (result.value) {
-                                                            window.location = "/empleados";
-                                                        }
-                                                    });
+                                                    if (respuesta.data == 'CorreoRep') {
+                                                        Swal.fire(
+                                                            'El correo ya existe',
+                                                            'El correo electrónico capturado ya esta asociado a otro empleado!',
+                                                            'warning'
+                                                        )
+                                                    } else {
+                                                        // Alerta
+                                                        Swal.fire(
+                                                            'Empleado Creado',
+                                                            respuesta.data,
+                                                            'success'
+                                                        ).then(function (result) {
+                                                            if (result.value) {
+                                                                window.location = "/empleados";
+                                                            }
+                                                        });
+                                                    }
                                                 }
                                             }
-                                        }
-                                    })
-                                    .catch(() => {
-                                        Swal.fire({
-                                            type: 'error',
-                                            title: 'Hubo un error',
-                                            text: 'No se pudo crear el Empleado'
                                         })
-                                    })
+                                        .catch(() => {
+                                            Swal.fire({
+                                                type: 'error',
+                                                title: 'Hubo un error',
+                                                text: 'No se pudo crear el Empleado'
+                                            })
+                                        })
+
+                                }
                             }
                         }
                     }
@@ -1057,13 +1094,15 @@ if (formEditEmpleado) {
             var ap_materno = respuesta.data[0].ap_materno;
             var email = respuesta.data[0].email;
             var telefono = respuesta.data[0].telefono;
-
+            var fecha_contratacion = moment(respuesta.data[0].fecha_contratacion).format('DD/MM/YYYY');;
+            
             $("#idEmpleado").val(idEmpleado);
             $("#empNombreEdit").val(nombre);
             $("#empPatEdit").val(ap_paterno);
             $("#empMatEdit").val(ap_materno);
             $("#empEmailEdit").val(email);
             $("#empTelEdit").val(telefono);
+            $("#fecContEdit").val(fecha_contratacion);
 
         }).catch(() => {
             Swal.fire({
@@ -1086,6 +1125,7 @@ if (formEditEmpleado) {
         var ap_materno = document.getElementById("empMatEdit").value;
         var email = document.getElementById("empEmailEdit").value;
         var telefono = document.getElementById("empTelEdit").value;
+        var fecContEdit = document.getElementById("fecContEdit").value;
 
         var payload = {};
 
@@ -1095,6 +1135,7 @@ if (formEditEmpleado) {
         payload.email = email;
         payload.telefono = telefono;
         payload.nombre_completo = nombre + ' ' + ap_paterno + ' ' + ap_materno;
+        payload.fecha_contratacion = moment(fecContEdit, 'DD/MM/YYYY').format('YYYY-MM-DD');
 
         var route = '/empleados/' + idEmpleado;
 

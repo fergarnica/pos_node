@@ -1,0 +1,151 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Agregar proveedor</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Agregar proveedor</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Información Básica de Proveedor
+                    <small>(Los campos con </small><small style="color:#C20F30">*</small><small> son necesarios)</small>
+                </h3>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <form id="formNewProv" method="get">
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Empresa:</label><label style="color:#C20F30">*</label>
+                                <input type="text" class="form-control" id="empProv" placeholder="Ingresar Nombre de Empresa"
+                                required autofocus>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nombre Completo de Contacto:</label><label style="color:#C20F30">*</label>
+                                <input type="text" class="form-control" id="nomProv" placeholder="Ingresar Nombre Completo"
+                                required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>RFC:</label>
+                                <input type="text" class="form-control" id="rfcProv" placeholder="Ingresar RFC">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Razón Social:</label>
+                                <input type="text" class="form-control" id="rsProv" placeholder="Ingresar Razón Social">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>E-mail:</label><label style="color:#C20F30">*</label>
+                                <input type="email" name="email" class="form-control" id="provEmail"
+                                placeholder="Ingresar Correo Electronico" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Telefono:</label><label style="color:#C20F30">*</label>
+                                <input type="text" id="provTel" class="form-control" placeholder="Ingresar Número Telefonico" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <hr>
+
+                    <div class="form-group row">
+                        <label for="recipient-name" class="col-sm-2 col-form-label">Dirección
+                        </label>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Calle:</label>
+                                <input type="text" class="form-control" id="nameCalleProveedor" placeholder="Ingresar Nombre de Calle">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Número:</label>
+                                <input type="number" class="form-control" id="numCalleProv" placeholder="Ingresar Número de Calle">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Colonia:</label>
+                                <input type="text" class="form-control" id="colProv" placeholder="Ingresar Colonia">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Municipio:</label>
+                                <input type="text" class="form-control" id="munProv" placeholder="Ingresar Municipio">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Estado:</label>
+                                <input type="text" class="form-control" id="estadoProv" placeholder="Ingresar Estado de la República">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>C.P.:</label>
+                                <input type="number" class="form-control" maxlength="5" oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" id="cpProv" placeholder="Ingresar Codigo Postal">
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+            <div class="card-footer">
+                <button type="submit" id="btnCrearProv" class="btn btn-primary">Guardar 
+                    <i class="fas fa-save"></i>
+                </button>
+                <button type="button" class="btn btn-danger float-right" onclick="location.href='/proveedores'">Regresar 
+                    <i class="fas fa-undo-alt"></i>
+                </button>
+            </div>
+            </form>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>

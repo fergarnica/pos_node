@@ -7,6 +7,7 @@ const expressValidator = require('express-validator');
 const MySQLStore = require('express-mysql-session')(session);
 const bodyParser = require('body-parser');
 const flash = require('connect-flash');
+var createError = require('http-errors');
 
 const { database } = require('./config/keys');
 const passport = require('./config/passport');
@@ -38,9 +39,11 @@ app.use(express.static('public'));
 /*=============================================
 MIDDLEWARES
 =============================================*/
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+// validación de campos
+app.use(expressValidator());
 
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.use(session({
     secret: 'shhhhhhhhh',
@@ -53,12 +56,12 @@ app.use(passport.session());
 app.use(flash());
 
 
+
 /*=============================================
 VARIABLES LOCALES
 =============================================*/
 app.use((req, res, next) => {
   res.locals.usuario = {...req.user} || null;
-  //res.locals.mensajes = req.flash();
   app.locals.error = req.flash('error');
   app.locals.success = req.flash('success');
   app.locals.warning = req.flash('warning');
@@ -74,6 +77,25 @@ ROUTES
 =============================================*/
 app.use('/', routes() );
 
+//404 pagina no existente
+app.use((req,res,next) => {
+  next(createError(404,'No Encontrado'))
+
+});
+/*=============================================
+ADMINISTRACION DE LOS ERRORES
+=============================================*/
+app.use((error, req, res, next)=>{
+
+  if(error.status === 404 ){
+    res.render('modulos/not_found');
+  }
+
+})
+
+/*=============================================
+CONFIGURACIONES
+=============================================*/
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 4000;
 
@@ -85,4 +107,4 @@ STARTING SERVER
 }); */
 app.listen(port,host,()=>{
   console.log('Server is in port ', port);
-})
+});

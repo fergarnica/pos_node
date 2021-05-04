@@ -15,12 +15,21 @@
     <link rel="stylesheet" href="/assets/plugins/fontawesome-free/css/all.css">
     <!-- AdminLTE-->
     <link rel="stylesheet" href="/assets/dist/css/adminlte.css">
-    <!-- CSS only -->
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- DataTable -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css"
         href="https://cdn.datatables.net/responsive/2.2.5/css/responsive.dataTables.min.css">
+    <!-- Daterange picker -->
+    {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/> --}}
+    <link rel="stylesheet" type="text/css" href="/assets/plugins/daterangepicker/daterangepicker.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+
+
 
 </head>
 
@@ -31,28 +40,35 @@
         {{> menu}}
 
         {{> cabecera}}
-
-        {{> message}} 
+        
+        {{> message}}
 
         {{{ body }}}
 
         {{> footer}}
 
-        <!--=====================================
-        PLUGINS DE JS
+    <!--=====================================
+    PLUGINS DE JS
     ======================================-->
         <!-- jQuery -->
         <script src="/assets/plugins/jquery/jquery.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
         <!-- AdminLTE App -->
         <script src="/assets/dist/js/adminlte.js"></script>
-        <!-- JS, Popper.js, and jQuery -->
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-            crossorigin="anonymous"></script>
+        <!-- Bootstrap -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <!-- DataTable -->
         <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
         <script src="https://cdn.datatables.net/responsive/2.2.5/js/dataTables.responsive.min.js"></script>
+        <!-- Daterange picker -->
+        {{!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.es.min.js" charset="UTF-8"></script> --}}
+        <script type="text/javascript" src="/assets/plugins/daterangepicker/moment.min.js"></script>
+        <script type="text/javascript" src="/assets/plugins/daterangepicker/daterangepicker.js"></script>
+        <!-- XLSX -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
 
         <!-- APP -->
         <script src="/dist/bundle.js"></script>

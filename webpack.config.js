@@ -12,7 +12,8 @@ module.exports = {
             {
                 test: /\.m?js$/,
                 use : {
-                    loader: 'babel-loader', 
+                    loader: 'babel-loader',
+                    /* query: {compact: false}, */
                     options: {
                         presets: ['@babel/preset-env']
                     }

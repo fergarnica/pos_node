@@ -1,0 +1,223 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Agregar producto/servicio</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                        <li class="breadcrumb-item active">Agregar producto</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card card-primary card-outline card-outline-tabs">
+            <!-- Card Header -->
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Información Básica de Productos
+                    <small>(Los campos con </small><small style="color:#C20F30">*</small><small> son necesarios)</small>
+                </h3>
+            </div>
+            <!-- Card Body -->
+            <form id="formNewProducto">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Producto Descripción:</label><label style="color:#C20F30">*</label>
+                                <input class="form-control" id="nameProduct" name="producto" type="text" autofocus required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Codigo de Barras:</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                    </div>
+                                    <input type="text" id="barcodeProduct" name="bar_code" class="form-control"
+                                        placeholder="0DA85808DS08">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Categoria:</label><label style="color:#C20F30">*</label>
+                                <select class="form-control input-lg custom-select" id="catProd" name="idcategoria" required>
+                                    <option value="">Selecionar categoria</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Presentación:</label><label style="color:#C20F30">*</label>
+                                <select class="form-control input-lg custom-select" id="preProd" name="idpresentacion" required>
+                                    <option value="">Selecionar presentación</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Marca:</label><label style="color:#C20F30">*</label>
+                                <select class="form-control input-lg custom-select" id="marcaProd" name="idmarca" required>
+                                    <option value="">Selecionar marca de producto</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Proveedor:</label>
+                                <select class="form-control input-lg custom-select" id="provProd" name="idproveedor">
+                                    <option value="">Selecionar proveedor</option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="switchProd" checked>
+                            <label class="custom-control-label" for="switchProd">INVENTARIABLE</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Stock Total:</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-box"></i></span>
+                                    </div>
+                                    <input id="stockProd" name="stock" type="number" class="form-control"
+                                        placeholder="0">
+                                </div>
+
+                            </div>
+                        </div>
+                        {{!-- <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Stock para Venta:</label>
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-box-open"></i></span>
+                                    </div>
+                                    <input type="number" class="form-control" placeholder="0" required>
+                                </div>
+
+                            </div>
+                        </div> --}}
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Precio Costo: <small>(sin impuestos)</small></label><label style="color:#C20F30">*</label>
+                                <input class="form-control" id="preCosto" name="pre_costo" type="number" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Precio Costo Neto:</label><label style="color:#C20F30">*</label>
+                                <input class="form-control" id="preCostoNeto" name="pre_costo_neto" type="number" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Precio Mayoreo:</label><label style="color:#C20F30">*</label>
+                                <input class="form-control" id="preMayoreo" name="pre_mayoreo" type="number" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Precio Menudeo:</label><label style="color:#C20F30">*</label>
+                                <input class="form-control" id="preMenudeo" name="pre_menudeo" type="number" required>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <small>Utilizar Porcentaje Incremento P. Mayoreo</small>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <input type="checkbox" id="checkPorcenMay" checked>
+                                    </span>
+                                </div>
+                                <input type="number" id="porcenPreMay" class="form-control" value="25">
+                                <div class="input-group-append">
+                                    <div class="input-group-text"><i class="fas fa-percent"></i></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-6">
+                            <small>Utilizar Porcentaje Incremento P. Menudeo</small>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <input type="checkbox" id="checkPorcenMen" checked>
+                                    </span>
+                                </div>
+                                <input type="number" id="porcenPreMen" class="form-control" value="40">
+                                <div class="input-group-append">
+                                    <div class="input-group-text"><i class="fas fa-percent"></i></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    {{!-- <div class="mb-3">
+                        <label for="formFile" class="form-label">Imagen del producto:</label>
+                        <input class="form-control" type="file" id="imgProducto" name="imagen"
+                            placeholder="Select file">
+                        <p>
+                            <small>Peso máximo de la imagen 2MB</small>
+                        </p>
+                        <img src="/uploads/productos/default/anonymous.png" class="img-thumbnail" id="previsualizar"
+                            width="100px">
+                    </div> --}}
+                </div>
+
+                <!-- /.card -->
+                <div class="card-footer">
+                    <button type="submit" id="btnCrearEmpleado" class="btn btn-primary">Guardar
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger float-right"
+                        onclick="location.href='/productos'">Regresar
+                        <i class="fas fa-undo-alt"></i>
+                    </button>
+                </div>
+
+            </form>
+    </section>
+    <!-- /.content -->
+</div>

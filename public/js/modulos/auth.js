@@ -1,24 +1,28 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-
-
 const pagLogin = document.getElementById("login");
 const pagReset = document.getElementById("reset");
 const pagnewPass = document.getElementById("new-password");
 const divContent = document.getElementById("content");
+const divError = document.getElementById("error-notfound");
 const body = document.body;
 
+const formChangePass = document.getElementById('formChangePass');
 
-if(pagLogin){
-    body.classList.add("register-page");
+
+if (pagLogin) {
+    body.classList.add("login-page");
     divContent.classList.remove("wrapper");
+    divContent.classList.add("login-box");
 }
 
 
-if(pagReset){
-    body.classList.add("register-page");
+if (pagReset) {
+    body.classList.add("login-page");
     divContent.classList.remove("wrapper");
+    divContent.classList.add("login-box");
+
 
     pagReset.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -28,24 +32,24 @@ if(pagReset){
 
         payload.emailUser = emailUser;
 
-        if(payload.emailUser == ""){
+        if (payload.emailUser == "") {
             Swal.fire({
                 icon: 'warning',
                 title: 'Oops...',
                 text: 'Es necesario ingresar su correo electronico!',
             })
-        }else{
+        } else {
 
             axios.post('/restablecer', payload)
                 .then(function (respuesta) {
 
-                    if(respuesta.data == 'Inexistente'){
+                    if (respuesta.data == 'Inexistente') {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Oops...',
                             text: 'El correo electronico no pertenece a ningún usuario!',
                         })
-                    }else{
+                    } else {
 
                         Swal.fire(
                             'Correo Enviado',
@@ -59,15 +63,22 @@ if(pagReset){
 
 
                     }
+                }).catch(() => {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la base de datos'
+                    })
                 })
         }
 
     });
 }
 
-if(pagnewPass){
-    body.classList.add("register-page");
+if (pagnewPass) {
+    body.classList.add("login-page");
     divContent.classList.remove("wrapper");
+    divContent.classList.add("login-box");
 
     pagnewPass.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -82,18 +93,18 @@ if(pagnewPass){
 
         payload.newPassword = newPassword;
 
-        if(payload.newPassword == ""){
+        if (payload.newPassword == "") {
             Swal.fire({
                 icon: 'warning',
                 title: 'Oops...',
                 text: 'Es necesario ingresar la nueva contraseña!',
             })
-        }else{
+        } else {
 
             axios.post(route, payload)
                 .then(function (respuesta) {
 
-                    if(respuesta.data == 'Expiro'){
+                    if (respuesta.data == 'Expiro') {
 
                         Swal.fire({
                             icon: 'warning',
@@ -102,7 +113,7 @@ if(pagnewPass){
                         })
 
 
-                    }else{
+                    } else {
 
                         Swal.fire(
                             respuesta.data,
@@ -116,9 +127,114 @@ if(pagnewPass){
 
 
                     }
+                }).catch(() => {
+                    Swal.fire({
+                        type: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la base de datos'
+                    })
                 })
         }
     })
+}
 
+if (formChangePass) {
 
+    formChangePass.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var nickUser = document.getElementById("usuarioName").value;
+        var passUser = document.getElementById("passActual").value;
+        var newPass = document.getElementById("nuevoPass").value;
+        var newPass2 = document.getElementById("nuevoPass2").value;
+
+        payload.nickUser = nickUser;
+        payload.passUser = passUser;
+        payload.newPass = newPass;
+        payload.newPass2 = newPass2;
+
+        if (payload.passUser == "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Es necesario ingresar la contraseña actual!',
+            })
+        } else {
+            if (payload.newPass == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Es necesario ingresar la nueva contraseña!',
+                })
+            } else {
+                if (payload.newPass2 == "") {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'Es necesario repetir la nueva contraseña!',
+                    })
+                } else {
+                    if (payload.newPass != payload.newPass2) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Las contraseñas no coinciden!',
+                        })
+
+                    } else {
+
+                        axios.put('/cambiar_password', payload)
+                            .then(function (respuesta) {
+
+                                if (respuesta.data == "Inexistente") {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'El usuario no existe',
+                                    })
+                                } else {
+                                    if (respuesta.data == "Incorrecta") {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Oops...',
+                                            text: 'La contraseña actual es incorrecta!',
+                                        })
+                                    }else{
+                                        if(respuesta.data == "Igual"){
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: 'La contraseña nueva debe ser diferente a la actual!',
+                                            })
+                                        }else{
+                                            Swal.fire(
+                                                respuesta.data,
+                                                'La contraseña se ha actualizado correctamente!',
+                                                'success'
+                                            ).then(function (result) {
+                                                if (result.value) {
+                                                    window.location = "/";
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }).catch(() => {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Hubo un error',
+                                    text: 'Error en la base de datos'
+                                })
+                            })
+                    }
+                }
+            }
+        }
+    })
+}
+
+if(divError){
+    body.classList.add("sidebar-collapse");
 }

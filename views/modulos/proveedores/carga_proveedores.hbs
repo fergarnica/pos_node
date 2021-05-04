@@ -1,0 +1,68 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Carga masiva de proveedores</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Carga masiva de proveedores</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header">
+
+                <h3 class="card-title">
+                    <i class="fas fa-upload"></i>
+                    Importar datos masivos de Excel
+                </h3>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+
+                <p>Descarga y llena el archivo siguiente con la información de los proveedores.</p>
+                <small>(Los campos en rojo serán obligatorios)</small>
+                <br>
+
+                <button id="btn-layout-prov" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i>
+                    Plantilla</button>
+
+                <hr>
+
+                <p>Carga el archivo excel a continuación y posteriormente da clic en el botón Importar.</p>
+                <form id="formCargaProv">
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="inputFileProv" required>
+                            <label class="custom-file-label" for="inputGroupFile02"
+                                aria-describedby="inputGroupFileAddon02">Seleccione el archivo...</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnCargaProv" class="btn btn-primary btn-sm">Importar
+                        <i class="fas fa-upload"></i>
+                    </button>
+
+                </form>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-danger float-right" onclick="location.href='/proveedores'">Regresar
+                <i class="fas fa-undo-alt"></i>
+            </button>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>

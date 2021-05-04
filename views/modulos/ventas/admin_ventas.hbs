@@ -1,0 +1,120 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Administrar ventas</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Administrar ventas</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <!-- Default box -->
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header ui-sortable-handle">
+
+                <div>
+                    <form id="searchVentas">
+                        <div class="row">
+                            <div class="col-12 col-sm-3">
+                                <div class="form-group">
+                                    <label>Rango de consulta:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="far fa-calendar-alt"></i>
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control float-right" id="reservation">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-3">
+                                <div class="form-group">
+                                    <label>Estatus:</label>
+                                    <select class="form-control input-lg custom-select" id="statusVtas">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="1">Vigente</option>
+                                        <option value="2">Anuladas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-3">
+                                <div class="form-group">
+                                    <label for=""></label>
+                                    <div class="input-group">
+                                        <button type="submit" id="btnSearchVtas" class="btn btn-primary">Consultar
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {{!-- <div class="card-tools">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success dropdown-toggle btn-sm" data-toggle="dropdown"
+                            data-display="static" aria-haspopup="true" aria-expanded="false">
+                            Opciones
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left">
+                            <button id="btn-export-prov" class="dropdown-item"><i class="fas fa-file-excel"></i>
+                                Exportar</button>
+                            <button id="btn-print-prov" class="dropdown-item"><i class="fas fa-print"></i>
+                                Imprimir</button>
+                        </div>
+                    </div>
+                </div> --}}
+
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body" id="bodyVtas">
+            </div>
+            <!-- /.card-body -->
+            <!-- <div class="card-footer">
+          Footer
+        </div> -->
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<!--=====================================
+MODAL DETALLE DE VENTA
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalDetVta" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Detalle de venta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="bodyDetalle">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+            </div>
+
+        </div>
+    </div>
+</div>

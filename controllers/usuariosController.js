@@ -198,10 +198,7 @@ exports.mostrarPerfil = async (req, res) => {
 
     const dataPerfil = await pool.query('SELECT * FROM perfiles WHERE idperfil = ?', idPerfil);
 
-    console.log(dataPerfil.length);
-
     res.status(200).send(dataPerfil);
-
 
 }
 
@@ -230,7 +227,7 @@ exports.agregarEmpleado = async (req, res) => {
 
     //console.log(req.body);
 
-    const { nombre, ap_paterno, ap_materno, email, telefono, nombre_completo, status_empleado, fecha_creacion } = req.body;
+    const { nombre, ap_paterno, ap_materno, email, telefono, nombre_completo, status_empleado, fecha_creacion, fecha_contratacion } = req.body;
 
     const newLink = {
         nombre,
@@ -240,7 +237,8 @@ exports.agregarEmpleado = async (req, res) => {
         telefono,
         nombre_completo,
         status_empleado,
-        fecha_creacion
+        fecha_creacion,
+        fecha_contratacion
     };
 
     //console.log(newLink);
@@ -301,7 +299,8 @@ exports.mostrarEmpleados = async (req, res) => {
                 var status = "<button type='button' id='btn-estatus-empleado' class='btn btn-success btn-sm' estadoEmpleado='0' idEmpleado=" + "'" + arrayEmpleados.idempleado + "'" + ">Activado</button>";
             }
 
-            var fechaCreacion = moment(arrayEmpleados.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
+            var fechaCreacion = moment(arrayEmpleados.fecha_creacion).format('DD/MM/YYYY hh:mm:ss a');
+            var fechaContratacion = moment(arrayEmpleados.fecha_contratacion).format('DD/MM/YYYY');
 
             const obj = [
                 conteo,
@@ -309,6 +308,7 @@ exports.mostrarEmpleados = async (req, res) => {
                 arrayEmpleados.nombre_completo,
                 arrayEmpleados.email,
                 arrayEmpleados.telefono,
+                fechaContratacion,
                 fechaCreacion,
                 status,
                 botones
@@ -347,7 +347,7 @@ exports.mostrarEmpleado = async (req, res) => {
 exports.editarEmpleado = async (req, res) => {
 
     var idEmpleado = req.params.id;
-    const { nombre, ap_paterno, ap_materno, email, telefono, nombre_completo } = req.body;
+    const { nombre, ap_paterno, ap_materno, email, telefono, nombre_completo, fecha_contratacion } = req.body;
     var conteo = 0;
 
     const dataBase = await pool.query('SELECT * FROM empleados WHERE idempleado = ?', idEmpleado);
@@ -359,6 +359,7 @@ exports.editarEmpleado = async (req, res) => {
         var materno_base = arrayEmpleado.ap_materno
         var email_base = arrayEmpleado.email;
         var telefono_base = arrayEmpleado.telefono;
+        var fec_cont_base = moment(arrayEmpleado.fecha_contratacion).format('YYYY-MM-DD');
     }
 
     const validMail = await pool.query('SELECT * FROM empleados WHERE email = ? AND idempleado != ?', [email,idEmpleado]);
@@ -394,6 +395,11 @@ exports.editarEmpleado = async (req, res) => {
     
         if (telefono !== telefono_base) {
             await pool.query('UPDATE empleados SET telefono = ? WHERE idempleado = ?', [telefono, idEmpleado]);
+            var conteo = conteo + 1;
+        }
+
+        if (fecha_contratacion !== fec_cont_base) {
+            await pool.query('UPDATE empleados SET fecha_contratacion = ? WHERE idempleado = ?', [fecha_contratacion, idEmpleado]);
             var conteo = conteo + 1;
         }
     
@@ -507,7 +513,7 @@ exports.agregarUsuario = async (req, res) => {
 
 exports.mostrarUsuarios = async (req, res) => {
 
-    const usuariosValues = await pool.query('SELECT  a.idusuario, a.usuario, b.nombre_completo, a.status_usuario, c.perfil, a.fecha_creacion, a.fecha_ultimologin FROM usuarios a INNER JOIN empleados b on a.idempleado=b.idempleado INNER JOIN perfiles c on a.idperfil=c.idperfil order by 1');
+    const usuariosValues = await pool.query('SELECT a.idusuario, a.usuario, b.nombre_completo, a.status_usuario, c.perfil, a.fecha_creacion, a.fecha_ultimologin FROM usuarios a INNER JOIN empleados b on a.idempleado=b.idempleado INNER JOIN perfiles c on a.idperfil=c.idperfil order by 1');
 
     var valuesTotal = usuariosValues.length;
 
@@ -643,8 +649,7 @@ exports.mostrarUsuario = async (req, res) => {
     const dataUsuario = await pool.query('SELECT  a.idusuario, a.usuario, b.nombre_completo, a.status_usuario, c.perfil, c.idperfil, a.fecha_creacion, a.fecha_ultimologin FROM usuarios a INNER JOIN empleados b on a.idempleado=b.idempleado INNER JOIN perfiles c on a.idperfil=c.idperfil WHERE a.idusuario= ?', idUsuario);
 
     res.status(200).send(dataUsuario);
-
-
+    
 }
 
 

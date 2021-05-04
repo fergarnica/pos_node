@@ -21,8 +21,13 @@ const formEmpresa = document.getElementById('form-empresa');
                     $("#webSite").val(webSite);
 
                 }
-            }
-            )
+            }).catch(errors => {
+                Swal.fire({
+                    type: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
     }
 
 })();
@@ -95,6 +100,12 @@ if (formEmpresa) {
                                 })
                             }
                         }
+                    }).catch(errors => {
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Hubo un error',
+                            text: 'Error en la Base de Datos'
+                        })
                     })
             }
         }

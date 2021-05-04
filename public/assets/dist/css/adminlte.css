@@ -67,7 +67,7 @@ body {
   color: #212529;
   text-align: left;
   background-color: #ffffff;
-  /* background-image: url("/.."); */
+  /* background-image: url("../../../img/fondo/fondo_app.jpeg"); */
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {

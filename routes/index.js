@@ -6,11 +6,10 @@ const usuariosController = require('../controllers/usuariosController');
 const authController = require('../controllers/authController');
 const configController = require('../controllers/configController');
 const productosController = require('../controllers/productosController');
-
+const tercerosController = require('../controllers/tercerosController');
+const ventasController = require('../controllers/ventasController');
 
 const { isLoggedIn, isNotLogeedIn } = require('../config/auth');
-
-
 
 module.exports = function () {
 
@@ -70,7 +69,7 @@ module.exports = function () {
         isLoggedIn,
         usuariosController.eliminarEmpleado
     );
-    
+
     //Perfiles
     router.get('/perfiles/all',
         isLoggedIn,
@@ -100,7 +99,7 @@ module.exports = function () {
         isLoggedIn,
         usuariosController.eliminarPerfil
     );
-    
+
     //Usuarios
     router.post('/usuarios',
         isLoggedIn,
@@ -134,7 +133,7 @@ module.exports = function () {
         isLoggedIn,
         usuariosController.eliminarUsuario
     );
-    
+
     //Iniciar Sesión
     router.get('/signin',
         isNotLogeedIn,
@@ -144,7 +143,17 @@ module.exports = function () {
         isNotLogeedIn,
         authController.autenticarUsuario
     );
-    
+
+    //Cambiar contraseña
+    router.get('/cambiar_password',
+        isLoggedIn,
+        authController.formChangePassword
+    );
+    router.put('/cambiar_password',
+        isLoggedIn,
+        authController.cambiarPassword
+    );
+
     //Restablecer Contraseña
     router.get('/restablecer',
         isNotLogeedIn,
@@ -192,6 +201,10 @@ module.exports = function () {
         isLoggedIn,
         productosController.mostrarCategorias
     );
+    router.get('/categorias/activas',
+        isLoggedIn,
+        productosController.getCategoriasActivas
+    );
     router.post('/categorias',
         isLoggedIn,
         productosController.agregarCategoria
@@ -223,7 +236,249 @@ module.exports = function () {
     );
     router.get('/marcas/all',
         isLoggedIn,
-        productosController.agregarMarca
+        productosController.mostrarMarcas
+    );
+    router.get('/marcas/activas',
+        isLoggedIn,
+        productosController.getMarcasActivas
+    );
+    router.put('/marcas',
+        isLoggedIn,
+        productosController.activarMarca
+    );
+    router.get('/marcas/:id',
+        isLoggedIn,
+        productosController.mostrarMarca
+    );
+    router.put('/marcas/:id',
+        isLoggedIn,
+        productosController.editarMarca
+    );
+    router.delete('/marcas/:id',
+        isLoggedIn,
+        productosController.eliminarMarca
+    );
+
+    //Proveedores
+    router.get('/proveedores',
+        isLoggedIn,
+        tercerosController.proveedores
+    );
+    router.get('/agregar_proveedor',
+        isLoggedIn,
+        tercerosController.agregarProvForm
+    );
+    router.get('/carga_masiva_proveedores',
+        isLoggedIn,
+        tercerosController.cargaProvForm
+    );
+    router.post('/proveedores',
+        isLoggedIn,
+        tercerosController.agregarProv
+    );
+    router.get('/proveedores/all',
+        isLoggedIn,
+        tercerosController.mostrarProveedores
+    );
+    router.get('/proveedores/activos',
+        isLoggedIn,
+        tercerosController.getProvActivos
+    );
+    router.get('/editar_proveedor/:id',
+        isLoggedIn,
+        tercerosController.editarProvForm
+    );
+    router.put('/proveedores',
+        isLoggedIn,
+        tercerosController.activarProveedor
+    );
+    router.delete('/proveedores/:id',
+        isLoggedIn,
+        tercerosController.eliminarProveedor
+    );
+    router.get('/proveedores/:id',
+        isLoggedIn,
+        tercerosController.mostrarProveedor
+    );
+    router.put('/proveedores/:id',
+        isLoggedIn,
+        tercerosController.editarProveedor
+    );
+    router.get('/print_proveedores',
+        isLoggedIn,
+        tercerosController.printProveedores
+    );
+    router.get('/export_proveedores',
+        isLoggedIn,
+        tercerosController.exportProveedores
+    );
+    /* router.get('/layout_proveedores',
+        isLoggedIn,
+        tercerosController.layoutProveedores
+    );
+    router.post('/import_proveedores',
+        isLoggedIn,
+        tercerosController.importProveedores
+    );
+    router.post('/carga_proveedores',
+        isLoggedIn,
+        tercerosController.cargaProveedores
+    ); */
+
+    //Clientes
+    router.get('/clientes',
+        isLoggedIn,
+        tercerosController.clientes
+    );
+    router.get('/agregar_cliente',
+        isLoggedIn,
+        tercerosController.agregarClientesForm
+    );
+    router.post('/clientes',
+        isLoggedIn,
+        tercerosController.agregarCliente
+    );
+    router.get('/clientes/all',
+        isLoggedIn,
+        tercerosController.mostrarClientes
+    );
+    router.put('/clientes',
+        isLoggedIn,
+        tercerosController.activarCliente
+    );
+    router.delete('/clientes/:id',
+        isLoggedIn,
+        tercerosController.eliminarCliente
+    );
+    router.get('/editar_cliente/:id',
+        isLoggedIn,
+        tercerosController.editarCliForm
+    );
+    router.get('/clientes/:id',
+        isLoggedIn,
+        tercerosController.mostrarCliente
+    );
+    router.put('/clientes/:id',
+        isLoggedIn,
+        tercerosController.editarCliente
+    );
+    router.get('/clientes_activos',
+        isLoggedIn,
+        tercerosController.clientesActivos
+    );
+
+    //Productos
+    router.get('/productos',
+        isLoggedIn,
+        productosController.productos
+    );
+    router.get('/agregar_producto',
+        isLoggedIn,
+        productosController.agregarProdForm
+    );
+    router.post('/productos',
+        isLoggedIn,
+        /* productosController.subirImgProductos, */
+        productosController.agregarProducto
+    );
+    router.get('/productos/all',
+        isLoggedIn,
+        productosController.mostrarProductos
+    );
+    router.get('/productos/imagen/:id',
+        isLoggedIn,
+        productosController.mostrarImgProducto
+    );
+    router.post('/productos/uploadImg',
+        isLoggedIn,
+        productosController.subirImgProductos,
+        productosController.agregarImgProducto
+    );
+    router.put('/productos',
+        isLoggedIn,
+        productosController.activarProducto
+    );
+    router.get('/editar_producto/:id',
+        isLoggedIn,
+        productosController.editarProdForm
+    );
+    router.get('/productos/:id',
+        isLoggedIn,
+        productosController.mostrarProducto
+    );
+    router.get('/precio_productos/:id',
+        isLoggedIn,
+        productosController.precioProducto
+    );
+
+
+    //Presentaciones
+    router.get('/presentaciones',
+        isLoggedIn,
+        productosController.presentaciones
+    );
+    router.post('/presentaciones',
+        isLoggedIn,
+        productosController.agregarPresentacion
+    );
+    router.get('/presentaciones/all',
+        isLoggedIn,
+        productosController.mostrarPresentaciones
+    );
+    router.get('/presentaciones/activas',
+        isLoggedIn,
+        productosController.getPresentacionActivas
+    );
+    router.put('/presentaciones',
+        isLoggedIn,
+        productosController.activarPresentacion
+    );
+    router.get('/presentaciones/:id',
+        isLoggedIn,
+        productosController.mostrarPresentacion
+    );
+    router.put('/presentaciones/:id',
+        isLoggedIn,
+        productosController.editarPresentacion
+    );
+    router.delete('/presentaciones/:id',
+        isLoggedIn,
+        productosController.eliminarPresentacion
+    );
+
+    router.get('/punto_venta',
+        isLoggedIn,
+        ventasController.puntoVenta
+    );
+    router.post('/crear_venta',
+        isLoggedIn,
+        ventasController.crearVenta
+    );
+    router.get('/admin_ventas',
+        isLoggedIn,
+        ventasController.adminVentas
+    );
+    router.post('/consultar_ventas',
+        isLoggedIn,
+        ventasController.consultarVentas
+    );
+    router.get('/det_ventas/:id',
+        isLoggedIn,
+        ventasController.detVentas
+    );
+    
+    router.get('/menus_activos',
+        isLoggedIn,
+        homeController.menusActivos
+    );
+    router.get('/submenus_activos',
+        isLoggedIn,
+        homeController.submenusActivos
+    );
+
+    router.get('/not_found',
+        isLoggedIn,
+        authController.notFound
     );
 
 

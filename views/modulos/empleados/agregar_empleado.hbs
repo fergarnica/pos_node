@@ -26,69 +26,72 @@
                 <h3 class="card-title">
                     <i class="fas fa-pencil-alt"></i>
                     Información Básica de Empleados
-                    <small>(<small style="color:#FF0000"> * </small>Obligatorio )
-                        
-                    </small>
+                    <small>(Los campos con </small><small style="color:#C20F30">*</small><small> son necesarios)</small>
                 </h3>
             </div>
             <!-- Card Body -->
             <div class="card-body">
                 <form id="formNewEmpleado" method="get">
 
-                    <div class="form-group row">
-                        <label for="recipient-name" class="col-sm-2 col-form-label">Nombre:
-                            <label style="color:#FF0000">*</label>
-                        </label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="empNombre" placeholder="Ingresar Nombre"
-                                required>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nombre:</label><label style="color:#C20F30">*</label>
+                                <input type="text" class="form-control" id="empNombre" placeholder="Ingresar Nombre"
+                                    required autofocus>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="recipient-name" class="col-sm-2 col-form-label">Apellido Paterno:
-                            <label style="color:#FF0000">*</label>
-                        </label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="empPat" placeholder="Ingresar Apellido Paterno"
-                                required>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Apellido Materno:</label><label style="color:#C20F30">*</label>
+                                <input type="text" class="form-control" id="empPat"
+                                    placeholder="Ingresar Apellido Paterno" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Apellido Paterno:</label><label style="color:#C20F30">*</label>
+                                <input type="text" class="form-control" id="empMat"
+                                    placeholder="Ingresar Apellido Materno" required>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="recipient-name" class="col-sm-2 col-form-label">Apellido Materno:
-                            <label style="color:#FF0000">*</label>
-                        </label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="empMat" placeholder="Ingresar Apellido Materno" required>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>E-mail:</label><label style="color:#C20F30">*</label>
+                                <input type="email" name="email" class="form-control" id="empEmail"
+                                    placeholder="Ingresar Correo Electronico" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Telefono:</label><label style="color:#C20F30">*</label>
+                                <input type="text" id="empTel" class="form-control"
+                                    placeholder="Ingresar Número Telefonico">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="recipient-name" class="col-sm-2 col-form-label">E-mail:
-                            <label style="color:#FF0000">*</label>
-                        </label>
-                        <div class="col-sm-10">
-                            <input type="email" name="email" class="form-control" id="empEmail"
-                                placeholder="Ingresar Correo Electronico" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="recipient-name" class="col-sm-2 col-form-label">Telefono:
-                            <label style="color:#FF0000">*</label>
-                        </label>
-                        <div class="col-sm-10">
-                            <input type="text" id="empTel" class="form-control"
-                                placeholder="Ingresar Número Telefonico">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Fecha de Contratación:</label><label style="color:#C20F30">*</label>
+                                <input class="form-control" id="fecCont" name="date" placeholder="DD/MM/YYYY"
+                                    type="text" required>
+                            </div>
                         </div>
                     </div>
             </div>
             <div class="card-footer">
-                <button type="submit" id="btnCrearEmpleado" class="btn btn-primary">Guardar 
+                <button type="submit" id="btnCrearEmpleado" class="btn btn-primary">Guardar
                     <i class="fas fa-save"></i>
                 </button>
-                <button type="button" class="btn btn-danger float-right" onclick="location.href='/empleados'">Regresar 
+                <button type="button" class="btn btn-danger float-right" onclick="location.href='/empleados'">Regresar
                     <i class="fas fa-undo-alt"></i>
                 </button>
             </div>

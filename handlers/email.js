@@ -13,7 +13,6 @@ let transport = nodemailer.createTransport({
 });
 
 
-
 // Utilizar templates de Handlebars
 transport.use('compile', hbs({
     viewEngine : {
