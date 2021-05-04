@@ -33,7 +33,7 @@ exports.crearVenta = async (req, res) => {
     var objProd = req.body.listaProductos;
     var idusuario = res.locals.usuario.idusuario;
 
-    const valFolio = await pool.query('SELECT IFNULL(MAX(idnota),100)+1 AS numVenta FROM pos_node.ventas');
+    const valFolio = await pool.query('SELECT IFNULL(MAX(idnota),100)+1 AS numVenta FROM ventas');
 
     for(var x = 0; x < valFolio.length; x++){
         var idnota = valFolio[x].numVenta;
@@ -96,7 +96,7 @@ exports.consultarVentas = async (req, res) => {
         statusVtas=0;
     }
 
-    const values = await pool.query('call pos_node.get_ventasxfecha(?,?,?)', [inicial, final, statusVtas]);
+    const values = await pool.query('call get_ventasxfecha(?,?,?)', [inicial, final, statusVtas]);
 
     const results = values[0];
     const totalitems= results.length;
@@ -142,7 +142,7 @@ exports.detVentas = async (req, res) => {
 
     let idNota = req.params.id;
 
-    const results = await pool.query('call pos_node.get_detalleventa(?)',[idNota]);
+    const results = await pool.query('call get_detalleventa(?)',[idNota]);
 
     const dataVenta = results[0];
 

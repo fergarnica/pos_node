@@ -20,7 +20,7 @@ exports.menusActivos = async (req, res) => {
     var idusuario = res.locals.usuario.idusuario;
 
     //var menus = await pool.query('call get_menus_activos');
-    var menus = await pool.query('call pos_node.get_menus_activos_x_user(?)',idusuario);
+    var menus = await pool.query('call get_menus_activos_x_user(?)',idusuario);
 
     const dataMenus = [];
 
@@ -38,7 +38,6 @@ exports.menusActivos = async (req, res) => {
         res.send(dataMenus);
 
     }
-
 }
 
 exports.submenusActivos = async (req, res) => {
@@ -46,7 +45,7 @@ exports.submenusActivos = async (req, res) => {
     var idusuario = res.locals.usuario.idusuario;
 
     //var submenus = await pool.query('call get_submenus_activos');
-    var submenus = await pool.query('call pos_node.get_submenus_activos_x_user(?)',idusuario);
+    var submenus = await pool.query('call get_submenus_activos_x_user(?)',idusuario);
 
     const datasubMenus = [];
 

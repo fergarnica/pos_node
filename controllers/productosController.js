@@ -442,7 +442,7 @@ exports.agregarProducto = async (req, res) => {
 
 exports.mostrarProductos = async (req, res) => {
 
-    const values = await pool.query('SELECT a.idproducto,a.producto,a.bar_code,b.categoria,c.abreviatura,d.marca,e.proveedor,a.inventariable,a.stock_total,a.pre_costo,a.pre_costo_neto,a.pre_mayoreo,a.pre_menudeo,a.imagen,a.status,a.fecha_creacion FROM pos_node.productos a LEFT JOIN pos_node.categorias b ON a.idcategoria=b.idcategoria LEFT JOIN pos_node.presentaciones c ON a.idpresentacion=c.idpresentacion LEFT JOIN pos_node.marcas d ON a.idmarca=d.idmarca LEFT JOIN pos_node.proveedores e ON a.idproveedor=e.idproveedor');
+    const values = await pool.query('SELECT a.idproducto,a.producto,a.bar_code,b.categoria,c.abreviatura,d.marca,e.proveedor,a.inventariable,a.stock_total,a.pre_costo,a.pre_costo_neto,a.pre_mayoreo,a.pre_menudeo,a.imagen,a.status,a.fecha_creacion FROM productos a LEFT JOIN categorias b ON a.idcategoria=b.idcategoria LEFT JOIN presentaciones c ON a.idpresentacion=c.idpresentacion LEFT JOIN marcas d ON a.idmarca=d.idmarca LEFT JOIN proveedores e ON a.idproveedor=e.idproveedor');
 
     var valuesTotal = values.length;
 
@@ -578,7 +578,7 @@ exports.mostrarProducto = async (req, res) => {
 
     let idProducto = req.params.id;
 
-    const dataProducto = await pool.query('SELECT a.idproducto,a.producto,a.bar_code,a.idcategoria,b.categoria,a.idpresentacion,c.abreviatura,a.idmarca,d.marca,a.idproveedor,e.proveedor,a.inventariable,a.stock_total,a.pre_costo,a.pre_costo_neto,a.pre_mayoreo,a.pre_menudeo,a.imagen,a.status,a.fecha_creacion FROM pos_node.productos a LEFT JOIN pos_node.categorias b ON a.idcategoria=b.idcategoria LEFT JOIN pos_node.presentaciones c ON a.idpresentacion=c.idpresentacion LEFT JOIN pos_node.marcas d ON a.idmarca=d.idmarca LEFT JOIN pos_node.proveedores e ON a.idproveedor=e.idproveedor WHERE a.idproducto= ?', idProducto);
+    const dataProducto = await pool.query('SELECT a.idproducto,a.producto,a.bar_code,a.idcategoria,b.categoria,a.idpresentacion,c.abreviatura,a.idmarca,d.marca,a.idproveedor,e.proveedor,a.inventariable,a.stock_total,a.pre_costo,a.pre_costo_neto,a.pre_mayoreo,a.pre_menudeo,a.imagen,a.status,a.fecha_creacion FROM productos a LEFT JOIN categorias b ON a.idcategoria=b.idcategoria LEFT JOIN presentaciones c ON a.idpresentacion=c.idpresentacion LEFT JOIN marcas d ON a.idmarca=d.idmarca LEFT JOIN proveedores e ON a.idproveedor=e.idproveedor WHERE a.idproducto= ?', idProducto);
 
     res.status(200).send(dataProducto);
     
@@ -588,10 +588,10 @@ exports.precioProducto = async (req, res) => {
 
     let idProducto = req.params.id;
 
-    const precioProdId = await pool.query('SELECT idproducto, producto, bar_code, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo FROM pos_node.productos WHERE status=1 AND idproducto= ?', idProducto);
+    const precioProdId = await pool.query('SELECT idproducto, producto, bar_code, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo FROM productos WHERE status=1 AND idproducto= ?', idProducto);
 
     if(precioProdId.length === 0){
-        const precioProdCod = await pool.query('SELECT idproducto, producto, bar_code, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo FROM pos_node.productos WHERE status=1 AND bar_code= ?', idProducto);
+        const precioProdCod = await pool.query('SELECT idproducto, producto, bar_code, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo FROM productos WHERE status=1 AND bar_code= ?', idProducto);
         
         if(precioProdCod.length === 0){
             res.send('Empty');

@@ -60,7 +60,7 @@ exports.enviarToken = async (req, res) => {
         const expiraTime =  moment().add(12, 'h');
         const expiraToken = moment(expiraTime).format('YYYY-MM-DD hh:mm:ss a');
         
-        const userName = await pool.query('SELECT a.*, b.* FROM pos_node.empleados a INNER JOIN pos_node.usuarios b ON a.idempleado=b.idempleado WHERE a.email=?',emailUser);
+        const userName = await pool.query('SELECT a.*, b.* FROM empleados a INNER JOIN usuarios b ON a.idempleado=b.idempleado WHERE a.email=?',emailUser);
 
         const arrayUsuario = [];
 
