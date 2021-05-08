@@ -92,7 +92,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -177,7 +177,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -262,7 +262,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -355,7 +355,7 @@ if (formNewPerfil) {
                 })
                 .catch(() => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'No se pudo crear el Perfil'
                     })
@@ -397,7 +397,7 @@ $(document).on("click", "#btn-estatus-perfil", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -439,7 +439,7 @@ $(document).on("click", "#btn-editar-perfil", function () {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -510,7 +510,7 @@ if (formEditPerfil) {
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -560,7 +560,7 @@ $(document).on("click", "#btn-eliminar-perfil", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -616,7 +616,7 @@ if (formNewUser) {
 
     }).catch(errors => {
         Swal.fire({
-            type: 'error',
+            icon: 'error',
             title: 'Hubo un error',
             text: 'Error en la Base de Datos'
         })
@@ -726,7 +726,7 @@ if (formNewUser) {
                                         }
                                     }).catch(errors => {
                                         Swal.fire({
-                                            type: 'error',
+                                            icon: 'error',
                                             title: 'Hubo un error',
                                             text: 'Error en la Base de Datos'
                                         })
@@ -797,7 +797,7 @@ if (formEditUser) {
 
     })).catch(errors => {
         Swal.fire({
-            type: 'error',
+            icon: 'error',
             title: 'Hubo un error',
             text: 'Error en la Base de Datos'
         })
@@ -858,7 +858,7 @@ if (formEditUser) {
 
             }).catch(() => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'No se pudo editar el Usuario'
                 })
@@ -999,7 +999,7 @@ if (formNewEmpleado) {
                                         })
                                         .catch(() => {
                                             Swal.fire({
-                                                type: 'error',
+                                                icon: 'error',
                                                 title: 'Hubo un error',
                                                 text: 'No se pudo crear el Empleado'
                                             })
@@ -1048,7 +1048,7 @@ $(document).on("click", "#btn-estatus-empleado", function () {
             }
         }).catch(() => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'No se pudo actualizar el Empleado'
             })
@@ -1106,7 +1106,7 @@ if (formEditEmpleado) {
 
         }).catch(() => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'No se pudo recuperar la información del Empleado'
             }).then(function (result) {
@@ -1177,7 +1177,7 @@ if (formEditEmpleado) {
 
             }).catch(() => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'No se pudo actualizar la información del Empleado'
                 }).then(function (result) {
@@ -1227,7 +1227,7 @@ $(document).on("click", "#btn-eliminar-empleado", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -1321,7 +1321,7 @@ $(document).on("click", "#btn-estatus-usuario", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -1382,7 +1382,7 @@ $(document).on("click", "#btn-eliminar-usuario", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })

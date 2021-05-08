@@ -129,7 +129,7 @@ const tblClientes = document.querySelector('#tbl-clientes');
 
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -212,7 +212,7 @@ const tblClientes = document.querySelector('#tbl-clientes');
 
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -308,7 +308,7 @@ if (formNewProv) {
 
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -345,7 +345,7 @@ $(document).on("click", "#btn-estatus-prov", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -403,7 +403,7 @@ $(document).on("click", "#btn-eliminar-prov", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -455,7 +455,7 @@ if (formEditProv) {
 
         }).catch(() => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la base de datos!'
             }).then(function (result) {
@@ -538,7 +538,7 @@ if (formEditProv) {
                 }
             }).catch(() => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'No se pudo recuperar la información del Proveedor'
                 }).then(function (result) {
@@ -591,7 +591,7 @@ $(document).on("click", "#btn-print-prov", function () {
 
         }).catch(() => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la base de datos!'
             }).then(function (result) {
@@ -660,7 +660,7 @@ $(document).on("click", "#btn-export-prov", function () {
 
         }).catch(() => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la base de datos!'
             }).then(function (result) {
@@ -721,7 +721,7 @@ if (formNewClien) {
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -759,7 +759,7 @@ $(document).on("click", "#btn-estatus-cli", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -830,7 +830,7 @@ $(document).on("click", "#btn-eliminar-cli", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -867,7 +867,7 @@ if (formEditClien) {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })

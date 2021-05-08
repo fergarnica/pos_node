@@ -652,4 +652,40 @@ exports.mostrarUsuario = async (req, res) => {
     
 }
 
+exports.mostrarUsuariosActivos = async (req, res) => {
 
+    const { status } = req.body;
+
+    const values = await pool.query('SELECT * FROM usuarios WHERE status_usuario= ?', status);
+
+    var valuesTotal = values.length;
+
+    if (valuesTotal === 0) {
+
+        res.send('empty');
+
+    } else {
+
+        const dataUsuarios = [];
+
+        for (var x = 0; x < valuesTotal; x++) {
+
+            conteo = x + 1;
+            const arrayUsuarios = values[x];
+
+            var fecha = moment(arrayUsuarios.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
+
+            const obj = [
+                conteo,
+                arrayUsuarios.idusuario,
+                arrayUsuarios.usuario,
+                fecha,
+                arrayUsuarios.status_usuario
+            ];
+
+            dataUsuarios.push(obj);
+        }
+
+        res.send(dataUsuarios);
+    }
+}

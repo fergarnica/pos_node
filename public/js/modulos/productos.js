@@ -86,7 +86,7 @@ const tblProd = document.querySelector('#tbl-productos');
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -162,7 +162,7 @@ const tblProd = document.querySelector('#tbl-productos');
                 }
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -242,7 +242,7 @@ const tblProd = document.querySelector('#tbl-productos');
 
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -429,7 +429,7 @@ if (formCategoria) {
                     }
                 }).catch(() => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'No se pudo crear la Categoria'
                     })
@@ -464,7 +464,7 @@ $(document).on("click", "#btn-editar-categoria", function () {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -576,7 +576,7 @@ $(document).on("click", "#btn-estatus-categoria", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -636,7 +636,7 @@ $(document).on("click", "#btn-eliminar-categoria", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -705,7 +705,7 @@ if (formNewMarca) {
                     }
                 }).catch(() => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'No se pudo crear la Marca'
                     })
@@ -748,7 +748,7 @@ $(document).on("click", "#btn-estatus-marca", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -791,7 +791,7 @@ $(document).on("click", "#btn-editar-marca", function () {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -908,7 +908,7 @@ $(document).on("click", "#btn-eliminar-marca", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -1011,7 +1011,7 @@ if (formNewPres) {
 
                     }).catch(errors => {
                         Swal.fire({
-                            type: 'error',
+                            icon: 'error',
                             title: 'Hubo un error',
                             text: 'Error en la Base de Datos'
                         })
@@ -1056,7 +1056,7 @@ $(document).on("click", "#btn-estatus-pres", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -1100,7 +1100,7 @@ $(document).on("click", "#btn-editar-pres", function () {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -1193,7 +1193,7 @@ if (formEditPres) {
 
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -1242,7 +1242,7 @@ $(document).on("click", "#btn-eliminar-pres", function () {
 
                 }).catch(errors => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la Base de Datos'
                     })
@@ -1443,7 +1443,7 @@ if (formNewProducto) {
 
                                                     }).catch(errors => {
                                                         Swal.fire({
-                                                            type: 'error',
+                                                            icon: 'error',
                                                             title: 'Hubo un error',
                                                             text: 'Error en la Base de Datos'
                                                         })
@@ -1650,7 +1650,7 @@ $(document).on("click", "#btn-imagen-producto", function () {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })
@@ -1686,7 +1686,7 @@ $(document).on("click", "#btn-estatus-producto", function () {
             }
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })

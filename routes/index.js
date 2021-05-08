@@ -117,6 +117,10 @@ module.exports = function () {
         isLoggedIn,
         usuariosController.mostrarUsuarios
     );
+    router.post('/usuarios/all',
+        isLoggedIn,
+        usuariosController.mostrarUsuariosActivos
+    );
     router.get('/usuarios/:id',
         isLoggedIn,
         usuariosController.mostrarUsuario
@@ -467,6 +471,10 @@ module.exports = function () {
         ventasController.detVentas
     );
     
+    router.get('/menus',
+        isLoggedIn,
+        homeController.menus
+    );
     router.get('/menus_activos',
         isLoggedIn,
         homeController.menusActivos
@@ -474,6 +482,63 @@ module.exports = function () {
     router.get('/submenus_activos',
         isLoggedIn,
         homeController.submenusActivos
+    );
+    router.get('/menus/all',
+        isLoggedIn,
+        homeController.mostrarMenus
+    );
+    router.put('/menus',
+        isLoggedIn,
+        homeController.activarMenus
+    );
+    router.get('/agregar_menu',
+        isLoggedIn,
+        homeController.formAgregarMenu
+    );
+    router.post('/menus',
+        isLoggedIn,
+        homeController.agregarMenu
+    );
+    router.get('/agregar_submenu/:id',
+        isLoggedIn,
+        homeController.formAgregarSubmenu
+    );
+    router.post('/submenus',
+        isLoggedIn,
+        homeController.agregarSubMenu
+    );
+    router.get('/editar_menu/:id',
+        isLoggedIn,
+        homeController.formEditarMenu
+    );
+    router.put('/menus/:id',
+        isLoggedIn,
+        homeController.editarMenu
+    );
+
+    router.get('/permisos_por_perfil',
+        isLoggedIn,
+        configController.permisos
+    );
+    router.get('/permiso_x_perfil/:id',
+        isLoggedIn,
+        configController.permisosxPerfil
+    );
+    router.put('/permiso_x_perfil',
+        isLoggedIn,
+        configController.activarPermxPerfil
+    );
+    router.get('/permisos_por_usuario',
+        isLoggedIn,
+        configController.permisosxUsuario
+    );
+    router.get('/permiso_x_usuario/:id',
+        isLoggedIn,
+        configController.getpermisosxUsuario
+    );
+    router.put('/permiso_x_usuario',
+        isLoggedIn,
+        configController.activarPermxUser
     );
 
     router.get('/not_found',

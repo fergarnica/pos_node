@@ -35,6 +35,12 @@ if (barCode) {
                         .html(nameCli)
                         .appendTo(selectClientes);
                 })
+            }).catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la base de datos'
+                })
             })
     }
 
@@ -135,6 +141,12 @@ function buscar() {
                     agregarImpuesto();
 
                 }
+            }).catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la base de datos'
+                })
             })
     }
 }
@@ -738,7 +750,7 @@ if (formularioVenta) {
 
             }).catch(errors => {
                 Swal.fire({
-                    type: 'error',
+                    icon: 'error',
                     title: 'Hubo un error',
                     text: 'Error en la Base de Datos'
                 })
@@ -976,6 +988,12 @@ if (formSearchVtas) {
                     });
                 }
 
+            }).catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la base de datos'
+                })
             })
 
     })
@@ -1066,7 +1084,7 @@ $(document).on("click", "#btn-detalle-vta", function () {
 
         }).catch(errors => {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Hubo un error',
                 text: 'Error en la Base de Datos'
             })

@@ -1,3 +1,4 @@
+const { IgnorePlugin } = require('webpack');
 const pool = require('../config/db');
 
 
@@ -92,3 +93,144 @@ exports.guardarEmpresa = async (req, res) => {
 
 }
 
+exports.permisos = async (req, res) => {
+    res.render('modulos/menu/permisos_xperfil', {
+        nombrePagina: 'Permisos'
+    });
+}
+
+exports.permisosxPerfil = async (req, res) => {
+
+    let idPerfil = req.params.id;
+
+    var dataPermisos = await pool.query('call get_permisos_xperfil(?)',idPerfil);
+
+    const results = dataPermisos[0];
+
+    const dataset = [];
+
+    for (var x = 0; x < results.length; x++) {
+
+        const array = results[x];
+
+        if(array.acceso === 1){
+            var checkBox = "<input type='checkbox' class='checkAcceso' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "c 'checked" + ">";
+        }else{
+            var checkBox = "<input type='checkbox' class='checkAcceso' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "c' " + ">";
+        }
+
+        const obj = [
+            array.new_orden,
+            array.idmenu,
+            array.menu,
+            checkBox,
+            array.id_padre
+        ];
+
+         dataset.push(obj);
+    }
+
+    res.send(dataset) 
+
+}
+
+exports.activarPermxPerfil = async (req, res) => {
+
+    var { idmenu, idperfil, acceso } = req.body;
+
+    const newPermiso = {
+        idmenu,
+        idperfil,
+        acceso
+    };
+
+    var countExist = await pool.query('SELECT COUNT(*) AS cuenta FROM permisos_xperfil WHERE idmenu=? and idperfil=?',[idmenu,idperfil]);
+
+    var exist = countExist[0].cuenta;
+
+    if(exist === 0){
+        
+        await pool.query('INSERT INTO permisos_xperfil SET ?', [newPermiso]);
+
+        res.send('Insertado');
+
+    }else{
+
+        await pool.query('UPDATE permisos_xperfil SET acceso = ? WHERE idmenu = ? AND idperfil=?', [newPermiso.acceso, newPermiso.idmenu, newPermiso.idperfil]);
+
+        res.send('Actualizado');
+
+    }
+
+}
+
+exports.permisosxUsuario = async (req, res) => {
+    res.render('modulos/menu/permisos_xusuario', {
+        nombrePagina: 'Permisos'
+    });
+}
+
+exports.getpermisosxUsuario = async (req, res) => {
+
+    let idUser = req.params.id;
+
+    var dataPermisos = await pool.query('call get_permisos_xusuario(?)',idUser);
+
+    const results = dataPermisos[0];
+
+    const dataset = [];
+
+    for (var x = 0; x < results.length; x++) {
+
+        const array = results[x];
+
+        if(array.acceso === 1){
+            var checkBox = "<input type='checkbox' class='checkAccesoUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "u 'checked" + ">";
+        }else{
+            var checkBox = "<input type='checkbox' class='checkAccesoUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "u' " + ">";
+        }
+
+        const obj = [
+            array.new_orden,
+            array.idmenu,
+            array.menu,
+            checkBox,
+            array.id_padre
+        ];
+
+         dataset.push(obj);
+    }
+
+    res.send(dataset) 
+
+}
+
+exports.activarPermxUser = async (req, res) => {
+
+    var { idmenu, idusuario, acceso } = req.body;
+
+    const newPermiso = {
+        idmenu,
+        idusuario,
+        acceso
+    };
+
+    var countExist = await pool.query('SELECT COUNT(*) AS cuenta FROM permisos_xusuario WHERE idmenu=? and idusuario=?',[idmenu,idusuario]);
+
+    var exist = countExist[0].cuenta;
+
+    if(exist === 0){
+        
+        await pool.query('INSERT INTO permisos_xusuario SET ?', [newPermiso]);
+
+        res.send('Insertado');
+
+    }else{
+
+        await pool.query('UPDATE permisos_xusuario SET acceso = ? WHERE idmenu = ? AND idusuario=?', [newPermiso.acceso, newPermiso.idmenu, newPermiso.idusuario]);
+
+        res.send('Actualizado');
+
+    }
+
+}

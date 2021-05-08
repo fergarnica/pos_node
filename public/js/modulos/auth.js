@@ -65,7 +65,7 @@ if (pagReset) {
                     }
                 }).catch(() => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la base de datos'
                     })
@@ -129,7 +129,7 @@ if (pagnewPass) {
                     }
                 }).catch(() => {
                     Swal.fire({
-                        type: 'error',
+                        icon: 'error',
                         title: 'Hubo un error',
                         text: 'Error en la base de datos'
                     })
@@ -223,7 +223,7 @@ if (formChangePass) {
                                 }
                             }).catch(() => {
                                 Swal.fire({
-                                    type: 'error',
+                                    icon: 'error',
                                     title: 'Hubo un error',
                                     text: 'Error en la base de datos'
                                 })
