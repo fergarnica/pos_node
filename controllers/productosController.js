@@ -644,6 +644,7 @@ exports.agregarPresentacion = async (req, res) => {
     }
 }
 
+
 exports.mostrarPresentaciones = async (req, res) => {
 
     const values = await pool.query('SELECT * FROM presentaciones');

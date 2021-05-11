@@ -511,6 +511,7 @@ exports.agregarUsuario = async (req, res) => {
     }
 }
 
+
 exports.mostrarUsuarios = async (req, res) => {
 
     const usuariosValues = await pool.query('SELECT a.idusuario, a.usuario, b.nombre_completo, a.status_usuario, c.perfil, a.fecha_creacion, a.fecha_ultimologin FROM usuarios a INNER JOIN empleados b on a.idempleado=b.idempleado INNER JOIN perfiles c on a.idperfil=c.idperfil order by 1');

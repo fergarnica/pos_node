@@ -247,6 +247,7 @@ exports.formEditarMenu = async (req, res) => {
     });
 }
 
+
 exports.editarMenu = async (req, res) => {
 
     var { idmenu, nombre_menu, url, icono } = req.body;

@@ -205,6 +205,7 @@ exports.getpermisosxUsuario = async (req, res) => {
 
 }
 
+
 exports.activarPermxUser = async (req, res) => {
 
     var { idmenu, idusuario, acceso } = req.body;

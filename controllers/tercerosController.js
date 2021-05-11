@@ -1069,6 +1069,7 @@ exports.editarCliente = async (req, res) => {
     }
 }
 
+
 exports.getProvActivos = async (req, res) => {
 
     const proveedores = await pool.query('SELECT * FROM proveedores WHERE status= 1');
