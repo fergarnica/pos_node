@@ -1090,8 +1090,6 @@ $(document).on("click", "#btn-detalle-vta", function () {
             })
         })
 });
-
-
 $("#reservation").change(function () {
 
     $('#tbl-admin-ventas').DataTable().destroy();

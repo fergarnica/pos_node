@@ -235,6 +235,7 @@ if (formChangePass) {
     })
 }
 
+
 if(divError){
     body.classList.add("sidebar-collapse");
 }
