@@ -6,6 +6,7 @@ const pagReset = document.getElementById("reset");
 const pagnewPass = document.getElementById("new-password");
 const divContent = document.getElementById("content");
 const divError = document.getElementById("error-notfound");
+const divErrorUn = document.getElementById("error-unauthorized");
 const body = document.body;
 
 const formChangePass = document.getElementById('formChangePass');
@@ -236,5 +237,9 @@ if (formChangePass) {
 }
 
 if(divError){
+    body.classList.add("sidebar-collapse");
+}
+
+if(divErrorUn){
     body.classList.add("sidebar-collapse");
 }

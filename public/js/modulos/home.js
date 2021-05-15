@@ -412,3 +412,113 @@ if(formEditMenu){
             })
     })
 }
+
+/*=============================================
+DETALLE DE VENTA
+=============================================*/
+$(document).on("click", "#btn-eliminar-menu", function () {
+
+    var idPadre = $(this).attr("idPadre");
+
+    console.log(idPadre);
+
+    if(idPadre == 0){
+
+        Swal.fire({
+            title: '¿Está seguro de eliminar el menú?',
+            text: "¡Se eliminarán tambien los submenús relacionados!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Si, eliminar!'
+        }).then((result) => {
+    
+            /* if (result.value) {
+    
+                var payload = {};
+    
+                var idNota = $(this).attr("idNota");
+                var idCaja = $(this).attr("idCaja");
+    
+                payload.idNota = idNota;
+                payload.idCaja = idCaja;
+    
+                axios.put('/anular_venta', payload)
+                    .then(function (respuesta) {
+    
+                        if (respuesta.data == 'Ok') {
+                            Swal.fire(
+                                'Venta Anulada!',
+                                'La venta fue anulada correctamente',
+                                'success'
+                            ).then(function (result) {
+                                if (result.value) {
+                                    window.location = "/admin_ventas";
+                                }
+                            });
+    
+                        }
+                    }).catch(errors => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error',
+                            text: 'Error en la Base de Datos'
+                        })
+                    })
+            } */
+        })
+
+    }else{
+
+        Swal.fire({
+            title: '¿Está seguro de eliminar el Submenú?',
+            text: "¡Si no lo está puede cancelar la acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Si, eliminar!'
+        }).then((result) => {
+    
+            /* if (result.value) {
+    
+                var payload = {};
+    
+                var idNota = $(this).attr("idNota");
+                var idCaja = $(this).attr("idCaja");
+    
+                payload.idNota = idNota;
+                payload.idCaja = idCaja;
+    
+                axios.put('/anular_venta', payload)
+                    .then(function (respuesta) {
+    
+                        if (respuesta.data == 'Ok') {
+                            Swal.fire(
+                                'Venta Anulada!',
+                                'La venta fue anulada correctamente',
+                                'success'
+                            ).then(function (result) {
+                                if (result.value) {
+                                    window.location = "/admin_ventas";
+                                }
+                            });
+    
+                        }
+                    }).catch(errors => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error',
+                            text: 'Error en la Base de Datos'
+                        })
+                    })
+            } */
+        })
+
+    }
+
+    
+})

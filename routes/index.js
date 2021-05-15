@@ -466,9 +466,21 @@ module.exports = function () {
         isLoggedIn,
         ventasController.consultarVentas
     );
-    router.get('/det_ventas/:id',
+    router.post('/det_ventas',
         isLoggedIn,
         ventasController.detVentas
+    );
+    router.post('/exportar_ventas',
+        isLoggedIn,
+        ventasController.exportVentas
+    );
+    router.post('/imprimir_ventas',
+        isLoggedIn,
+        ventasController.imprimirVentas
+    );
+    router.put('/anular_venta',
+        isLoggedIn,
+        ventasController.anularVenta
     );
     
     router.get('/menus',

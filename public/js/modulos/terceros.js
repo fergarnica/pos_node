@@ -4,7 +4,6 @@ import moment from 'moment';
 import pdfMake from 'pdfMake';
 import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import FileSaver from 'file-saver';
-//import http from 'http';
 
 pdfMake.vfs = vfsFonts.pdfMake.vfs;
 
@@ -13,10 +12,6 @@ const formNewProv = document.getElementById('formNewProv');
 const formEditProv = document.getElementById('formEditProv');
 const formNewClien = document.getElementById('formNewClien');
 const formEditClien = document.getElementById('formEditClien');
-
-//const formCargaProv = document.getElementById('formCargaProv');
-
-//const cargaProv = document.getElementById('inputFileProv');
 
 const provTel = document.getElementById("provTel");
 const editProvTel = document.getElementById("editProvTel");
@@ -36,7 +31,6 @@ const tblClientes = document.querySelector('#tbl-clientes');
                 if (respuesta.data != 'empty') {
 
                     var dataSet = respuesta.data;
-                    //console.log(dataSet);
 
                     $(tblProv).DataTable({
                         data: dataSet,

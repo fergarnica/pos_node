@@ -43,7 +43,7 @@ exports.formRestablecer = async (req, res) => {
 }
 
 exports.notFound = async (req, res) => {
-    res.render('modulos/not_found', {
+    res.render('modulos/error/404', {
         nombrePagina: '404 Error Page'
     });
 }

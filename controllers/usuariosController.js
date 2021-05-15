@@ -4,22 +4,72 @@ const helpers = require('../config/helpers');
 const moment = require('moment');
 
 exports.usuarios = async (req, res) => {
-    // console.log(res.locals.usuario);
-    res.render('modulos/usuarios/usuarios', {
-        nombrePagina: 'Usuarios'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/usuarios/usuarios', {
+            nombrePagina: 'Usuarios'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
 }
 
 exports.perfiles = async (req, res) => {
-    res.render('modulos/usuarios/perfiles', {
-        nombrePagina: 'Perfiles'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/usuarios/perfiles', {
+            nombrePagina: 'Perfiles'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
 }
 
 exports.empleados = async (req, res) => {
-    res.render('modulos/empleados/empleados', {
-        nombrePagina: 'Empleados'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/empleados/empleados', {
+            nombrePagina: 'Empleados'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+ 
 }
 
 exports.agregarEmpleadoForm = async (req, res) => {
@@ -51,9 +101,6 @@ exports.mostrarPerfiles = async (req, res) => {
     const values = await pool.query('SELECT * FROM perfiles');
 
     var valuesTotal = values.length;
-
-    //console.log(valuesTotal);
-    //console.log(values);
 
     if (valuesTotal === 0) {
 
@@ -101,9 +148,6 @@ exports.mostrarPerfilesActivos = async (req, res) => {
 
     var valuesTotal = values.length;
 
-    //console.log(valuesTotal);
-    //console.log(values);
-
     if (valuesTotal === 0) {
 
         res.send('empty');
@@ -136,8 +180,6 @@ exports.mostrarPerfilesActivos = async (req, res) => {
 
 exports.agregarPerfil = async (req, res) => {
 
-    //console.log(req.body);
-
     const { perfil, fecha_creacion, status } = req.body;
 
     const newLink = {
@@ -166,8 +208,6 @@ exports.agregarPerfil = async (req, res) => {
 
 exports.activarPerfil = async (req, res) => {
 
-    //console.log(req.body);
-
     const { idPerfil, estadoPerfil } = req.body;
 
     await pool.query('UPDATE perfiles SET status = ? WHERE idperfil = ?', [estadoPerfil, idPerfil]);
@@ -179,8 +219,6 @@ exports.activarPerfil = async (req, res) => {
 exports.eliminarPerfil = async (req, res) => {
 
     let idPerfil = req.params.id;
-
-    //console.log(idPerfil);
 
     var eliminarPerfil = await pool.query('DELETE FROM perfiles WHERE idperfil = ?', idPerfil);
 
@@ -225,8 +263,6 @@ exports.editarPerfil = async (req, res) => {
 
 exports.agregarEmpleado = async (req, res) => {
 
-    //console.log(req.body);
-
     const { nombre, ap_paterno, ap_materno, email, telefono, nombre_completo, status_empleado, fecha_creacion, fecha_contratacion } = req.body;
 
     const newLink = {
@@ -240,8 +276,6 @@ exports.agregarEmpleado = async (req, res) => {
         fecha_creacion,
         fecha_contratacion
     };
-
-    //console.log(newLink);
 
     const existEmpleado = await pool.query('SELECT * FROM empleados WHERE nombre_completo = ?', newLink.nombre_completo);
 
@@ -274,9 +308,6 @@ exports.mostrarEmpleados = async (req, res) => {
     const values = await pool.query('SELECT * FROM empleados');
 
     var valuesTotal = values.length;
-
-    //console.log(valuesTotal);
-    //console.log(values);
 
     if (valuesTotal === 0) {
 
@@ -322,8 +353,6 @@ exports.mostrarEmpleados = async (req, res) => {
 }
 
 exports.activarEmpleado = async (req, res) => {
-
-    //console.log(req.body);
 
     const { idEmpleado, estadoEmpleado } = req.body;
 
@@ -436,9 +465,6 @@ exports.mostrarEmpleadosActivos = async (req, res) => {
 
     var valuesTotal = values.length;
 
-    //console.log(valuesTotal);
-    //console.log(values);
-
     if (valuesTotal === 0) {
 
         res.send('empty');
@@ -518,9 +544,6 @@ exports.mostrarUsuarios = async (req, res) => {
 
     var valuesTotal = usuariosValues.length;
 
-    //console.log(valuesTotal);
-    //console.log(usuariosValues);
-
     if (valuesTotal === 0) {
 
         res.send('empty');
@@ -568,8 +591,6 @@ exports.mostrarUsuarios = async (req, res) => {
 }
 
 exports.activarUsuario = async (req, res) => {
-
-    //console.log(req.body);
 
     const { idUsuario, estadoUsuario } = req.body;
 
@@ -627,7 +648,6 @@ exports.editarUsuario = async (req, res) => {
     } 
 
 }
-
 
 exports.eliminarUsuario = async (req, res) => {
 
@@ -689,4 +709,23 @@ exports.mostrarUsuariosActivos = async (req, res) => {
 
         res.send(dataUsuarios);
     }
+}
+
+async function validAccess(idUsuario, url){
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',url);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1',[idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1',[idMenu,idPerfil]);
+    
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso
+
 }

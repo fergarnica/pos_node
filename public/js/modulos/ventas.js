@@ -1,6 +1,12 @@
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import moment from 'moment';
+import pdfMake from 'pdfMake';
+import vfsFonts from 'pdfmake/build/vfs_fonts.js';
+import FileSaver from 'file-saver';
+//import http from 'http';
+
+pdfMake.vfs = vfsFonts.pdfMake.vfs;
 
 const barCode = document.getElementById("barcodeVenta");
 const body = document.body;
@@ -618,9 +624,6 @@ $("#formularioVenta").on("click", "button.quitarProducto", function () {
 
     localStorage.setItem("quitarProducto", JSON.stringify(idQuitarProducto));
 
-    /* var divProductos = document.getElementById('nuevoProducto');
-     console.log(divProductos);
-     console.log(divProductos.length);*/
     var prodItem = $(".nuevaDescripcionProducto");
     var formaPago = document.getElementById('formaPago').value;
     var cliActual = document.getElementById('clienteVenta').value;
@@ -720,8 +723,6 @@ if (formularioVenta) {
         payload.status = 1;
         payload.fecha = moment().format('YYYY-MM-DD H:mm:ss');
         payload.listaProductos = listaProductos;
-
-        //console.log(payload);
 
         axios.post('/crear_venta', payload)
             .then(function (respuesta) {
@@ -844,7 +845,7 @@ if (formSearchVtas) {
 
                     Swal.fire(
                         '¡Sin registros!',
-                        '¡No existen registros en el rango seleccionado!',
+                        '¡No existen registros con los filtros seleccionados!',
                         'error'
                     );
 
@@ -856,7 +857,7 @@ if (formSearchVtas) {
                     $("#bodyVtas").append(
                         '<div id="btnOpciones" class="d-flex">' +
                         '<div class="btn-group ml-auto">' +
-                        '<button type="button" class="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown"data-display="static" aria-haspopup="true" aria-expanded="false">Opciones</button>' +
+                        '<button type="button" id="btn-opciones-ventas" class="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown"data-display="static" aria-haspopup="true" aria-expanded="false">Opciones</button>' +
                         '<div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left">' +
                         '<button id="btn-export-venta" class="dropdown-item"><i class="fas fa-file-excel"></i> Exportar</button>' +
                         '<button id="btn-print-venta" class="dropdown-item"><i class="fas fa-print"></i> Imprimir</button>' +
@@ -1011,13 +1012,15 @@ $(document).on("click", "#btn-detalle-vta", function () {
         '<table id="table_detvtas" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
     );
 
+    var payload = {};
+
     var idNota = $(this).attr("idNota");
+    var idCaja = $(this).attr("idCaja");
 
-    console.log(idNota);
+    payload.idNota = idNota;
+    payload.idCaja = idCaja;
 
-    var route = '/det_ventas/' + idNota;
-
-    axios.get(route)
+    axios.post('/det_ventas',payload)
         .then(function (respuesta) {
 
             const tblDetVtas = document.querySelector('#table_detvtas');
@@ -1095,5 +1098,209 @@ $("#reservation").change(function () {
     $('#tbl-admin-ventas').DataTable().destroy();
     $("#tbl-admin-ventas").remove();
     $("#btnOpciones").remove();
-    
+
 });
+
+/*=============================================
+Exportar Venta
+=============================================*/
+$(document).on("click", "#btn-export-venta", function () {
+
+    $('#btn-opciones-ventas').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Exportando...').addClass('disabled');
+
+    var payload = {};
+    var periodoVtas = document.getElementById("reservation").value;
+    var statusVtas = document.getElementById("statusVtas").value;
+
+    if (statusVtas == "") {
+        statusVtas = null;
+    }
+
+    var fecInicial = periodoVtas.split('-')[0];
+    var fecFinal = periodoVtas.split('-')[1];
+
+    payload.fecInicial = fecInicial;
+    payload.fecFinal = fecFinal;
+    payload.statusVtas = statusVtas;
+
+    axios.post('/exportar_ventas', payload, {
+        responseType: 'blob'
+    }).then(function (respuesta) {
+
+        var data = respuesta.data;
+
+        $('#btn-opciones-ventas').html('Opciones').removeClass('disabled');
+
+        if (data) {
+
+            var blob = new Blob([data], { type: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
+            FileSaver.saveAs(blob, 'reporte_ventas.xlsx');
+
+        } else {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'No existen registros!',
+            })
+
+        }
+
+    }).catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hubo un error',
+            text: 'Error en la base de datos!'
+        }).then(function (result) {
+            if (result.value) {
+                window.location = "/admin_ventas";
+            }
+        });
+    });
+
+});
+
+/*=============================================
+Imprimir Venta
+=============================================*/
+$(document).on("click", "#btn-print-venta", function () {
+
+    $('#btn-opciones-ventas').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Imprimiendo...').addClass('disabled');
+
+    var payload = {};
+    var periodoVtas = document.getElementById("reservation").value;
+    var statusVtas = document.getElementById("statusVtas").value;
+
+    if (statusVtas == "") {
+        statusVtas = null;
+    }
+
+    var fecInicial = periodoVtas.split('-')[0];
+    var fecFinal = periodoVtas.split('-')[1];
+
+    payload.fecInicial = fecInicial;
+    payload.fecFinal = fecFinal;
+    payload.statusVtas = statusVtas;
+
+
+    axios.post('/imprimir_ventas', payload)
+        .then(function (respuesta) {
+
+            $('#btn-opciones-ventas').html('Opciones').removeClass('disabled');
+
+            var data = respuesta.data;
+
+            if (data.length > 0) {
+
+                var type = 'application/pdf';
+                const blobURL = URL.createObjectURL(pdfBlobConversion(data, type));
+                const theWindow = window.open(blobURL);
+                const theDoc = theWindow.document;
+                const theScript = document.createElement('script');
+                function injectThis() {
+                    window.print();
+                }
+                theScript.innerHTML = 'window.onload = ${injectThis.toString()};';
+                theDoc.body.appendChild(theScript);
+
+            } else {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'No existen registros!',
+                })
+
+            }
+
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hubo un error',
+                text: 'Error en la base de datos!'
+            }).then(function (result) {
+                if (result.value) {
+                    window.location = "/admin_ventas";
+                }
+            });
+        });
+
+})
+
+//converts base64 to blob type for windows
+function pdfBlobConversion(b64Data, contentType) {
+    contentType = contentType || '';
+    var sliceSize = 512;
+    b64Data = b64Data.replace(/^[^,]+,/, '');
+    b64Data = b64Data.replace(/\s/g, '');
+    var byteCharacters = window.atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset = offset + sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, { type: contentType });
+    return blob;
+}
+/*=============================================
+Eliminar/Cancelar Venta
+=============================================*/
+$(document).on("click", "#btn-anular-venta", function () {
+
+    Swal.fire({
+        title: '¿Está seguro de anular la venta?',
+        text: "¡Si no lo está puede cancelar la acción!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Si, anular!'
+    }).then((result) => {
+
+        if (result.value) {
+
+            var payload = {};
+
+            var idNota = $(this).attr("idNota");
+            var idCaja = $(this).attr("idCaja");
+
+            payload.idNota = idNota;
+            payload.idCaja = idCaja;
+
+            axios.put('/anular_venta', payload)
+                .then(function (respuesta) {
+
+                    if (respuesta.data == 'Ok') {
+                        Swal.fire(
+                            'Venta Anulada!',
+                            'La venta fue anulada correctamente',
+                            'success'
+                        ).then(function (result) {
+                            if (result.value) {
+                                window.location = "/admin_ventas";
+                            }
+                        });
+
+                    }
+                }).catch(errors => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la Base de Datos'
+                    })
+                })
+        }
+    })
+
+})

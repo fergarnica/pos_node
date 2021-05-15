@@ -50,9 +50,25 @@ const upload = multer(configuracionMulter).single('imagen');
 
 exports.categorias = async (req, res) => {
 
-    res.render('modulos/productos/categorias', {
-        nombrePagina: 'Categorias'
-    });
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/productos/categorias', {
+            nombrePagina: 'Categorias'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
 }
 
 exports.agregarCategoria = async (req, res) => {
@@ -83,9 +99,6 @@ exports.mostrarCategorias = async (req, res) => {
     const values = await pool.query('SELECT * FROM categorias');
 
     var valuesTotal = values.length;
-
-    //console.log(valuesTotal);
-    //console.log(values);
 
     if (valuesTotal === 0) {
 
@@ -160,8 +173,6 @@ exports.editarCategoria = async (req, res) => {
 
 exports.activarCategoria = async (req, res) => {
 
-    //console.log(req.body);
-
     const { idCategoria, estadoCategoria } = req.body;
 
     await pool.query('UPDATE categorias SET status = ? WHERE idcategoria = ?', [estadoCategoria, idCategoria]);
@@ -222,9 +233,25 @@ exports.eliminarCategoria = async (req, res) => {
 }
 
 exports.marcas = async (req, res) => {
-    res.render('modulos/productos/marcas', {
-        nombrePagina: 'Marcas'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/productos/marcas', {
+            nombrePagina: 'Marcas'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
 
 }
 
@@ -256,9 +283,6 @@ exports.mostrarMarcas = async (req, res) => {
     const values = await pool.query('SELECT * FROM marcas');
 
     var valuesTotal = values.length;
-
-    //console.log(valuesTotal);
-    //console.log(values);
 
     if (valuesTotal === 0) {
 
@@ -299,8 +323,6 @@ exports.mostrarMarcas = async (req, res) => {
 }
 
 exports.activarMarca = async (req, res) => {
-
-    //console.log(req.body);
 
     const { idMarca, estadoMarca } = req.body;
 
@@ -394,9 +416,24 @@ exports.eliminarMarca = async (req, res) => {
 
 exports.productos = async (req, res) => {
 
-    res.render('modulos/productos/productos', {
-        nombrePagina: 'Productos'
-    });
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/productos/productos', {
+            nombrePagina: 'Productos'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
 
 }
 
@@ -513,7 +550,6 @@ exports.mostrarImgProducto = async (req, res) => {
 
 exports.agregarImgProducto = async (req, res) => {
 
-    /* req.checkBody('producto', 'El nombre del producto no puede ir vacio').notEmpty(); */
     const { idproducto } = req.body;
     
     if(req.file) {
@@ -606,9 +642,24 @@ exports.precioProducto = async (req, res) => {
 
 exports.presentaciones = async (req, res) => {
 
-    res.render('modulos/productos/presentacion', {
-        nombrePagina: 'Presentaciones'
-    });
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/productos/presentacion', {
+            nombrePagina: 'Presentaciones'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
 
 }
 
@@ -825,7 +876,25 @@ exports.getPresentacionActivas = async (req, res) => {
 
 }
 
-
 function currencyFormat(value) {
 	return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
  }
+
+ async function validAccess(idUsuario, url){
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',url);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1',[idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1',[idMenu,idPerfil]);
+    
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso
+
+}

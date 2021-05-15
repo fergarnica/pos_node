@@ -11,10 +11,26 @@ const walk = require('walk');
 var Roboto = require('../public/fonts/Roboto');
 
 exports.proveedores = async (req, res) => {
-    // console.log(res.locals.usuario);
-    res.render('modulos/proveedores/proveedores', {
-        nombrePagina: 'Proveedores'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/proveedores/proveedores', {
+            nombrePagina: 'Proveedores'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+    
 }
 
 exports.agregarProvForm = async (req, res) => {
@@ -36,10 +52,26 @@ exports.editarProvForm = async (req, res) => {
 }
 
 exports.clientes = async (req, res) => {
-    // console.log(res.locals.usuario);
-    res.render('modulos/clientes/clientes', {
-        nombrePagina: 'Clientes'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/clientes/clientes', {
+            nombrePagina: 'Clientes'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+        
+    }
+    
 }
 
 exports.agregarClientesForm = async (req, res) => {
@@ -1069,7 +1101,6 @@ exports.editarCliente = async (req, res) => {
     }
 }
 
-
 exports.getProvActivos = async (req, res) => {
 
     const proveedores = await pool.query('SELECT * FROM proveedores WHERE status= 1');
@@ -1258,3 +1289,21 @@ exports.getProvActivos = async (req, res) => {
     res.send('ok');
 } */
 
+async function validAccess(idUsuario, url){
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',url);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1',[idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1',[idMenu,idPerfil]);
+    
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso
+
+}

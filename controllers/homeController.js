@@ -67,9 +67,26 @@ exports.submenusActivos = async (req, res) => {
 }
 
 exports.menus = async (req, res) => {
-    res.render('modulos/menu/menus', {
-        nombrePagina: 'Menús'
-    });
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/menu/menus', {
+            nombrePagina: 'Menús'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
 }
 
 exports.mostrarMenus = async (req, res) => {
@@ -94,9 +111,9 @@ exports.mostrarMenus = async (req, res) => {
             const arrayMenus = results[x];
 
             if (arrayMenus.id_padre === 0) {
-                var botones = "<div class='btn-group'><a id='btn-agregar-submenu' class='btn btn-info' href=" + "'/agregar_submenu/" + arrayMenus.idmenu + "'" + " idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fa fa-plus'></i></a><a type='button' id='btn-editar-menu' class='btn btn-warning' href=" + "'/editar_menu/" + arrayMenus.idmenu + "'" + " idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-menu' class='btn btn-danger' idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fa fa-times'></i></button></div>";
+                var botones = "<div class='btn-group'><a id='btn-agregar-submenu' class='btn btn-info' href=" + "'/agregar_submenu/" + arrayMenus.idmenu + "'" + " idMenu=" + "'" + arrayMenus.idmenu + "'" + "'" + "><i class='fa fa-plus'></i></a><a type='button' id='btn-editar-menu' class='btn btn-warning' href=" + "'/editar_menu/" + arrayMenus.idmenu + "'" + " idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-menu' class='btn btn-danger' idMenu=" + "'" + arrayMenus.idmenu + "'" + " idPadre=" + "'" + arrayMenus.id_padre + "'" +"><i class='fa fa-times'></i></button></div>";
             } else {
-                var botones = "<div class='btn-group'><a type='button' id='btn-editar-menu' class='btn btn-warning' href=" + "'/editar_menu/" + arrayMenus.idmenu + "'" + " idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-menu' class='btn btn-danger' idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fa fa-times'></i></button></div>";
+                var botones = "<div class='btn-group'><a type='button' id='btn-editar-menu' class='btn btn-warning' href=" + "'/editar_menu/" + arrayMenus.idmenu + "'" + " idMenu=" + "'" + arrayMenus.idmenu + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-menu' class='btn btn-danger' idMenu=" + "'" + arrayMenus.idmenu + "'" + " idPadre=" + "'" + arrayMenus.id_padre + "'" + "><i class='fa fa-times'></i></button></div>";
             }
 
             if (arrayMenus.status === 0) {
@@ -247,7 +264,6 @@ exports.formEditarMenu = async (req, res) => {
     });
 }
 
-
 exports.editarMenu = async (req, res) => {
 
     var { idmenu, nombre_menu, url, icono } = req.body;
@@ -292,4 +308,23 @@ exports.editarMenu = async (req, res) => {
             res.send('Nulos');
         }
     }
+}
+
+async function validAccess(idUsuario, url){
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',url);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1',[idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1',[idMenu,idPerfil]);
+    
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso
+
 }
