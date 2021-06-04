@@ -182,7 +182,14 @@ exports.agregarPerfil = async (req, res) => {
 
     const { perfil, fecha_creacion, status } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idperfil),100)+1 AS idper FROM perfiles');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idperfil = valFolio[x].idper;
+    }
+
     const newLink = {
+        idperfil,
         perfil,
         fecha_creacion,
         status
@@ -265,7 +272,14 @@ exports.agregarEmpleado = async (req, res) => {
 
     const { nombre, ap_paterno, ap_materno, email, telefono, nombre_completo, status_empleado, fecha_creacion, fecha_contratacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idempleado),100)+1 AS idemp FROM empleados');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idempleado = valFolio[x].idemp;
+    }
+
     const newLink = {
+        idempleado,
         nombre,
         ap_paterno,
         ap_materno,
@@ -504,9 +518,16 @@ exports.agregarUsuario = async (req, res) => {
 
     const { idempleado, usuario, passUser, idperfil, status_usuario, fecha_creacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idusuario),100)+1 AS idusr FROM usuarios');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idusuario = valFolio[x].idusr;
+    }
+
     var pass_usuario = await helpers.encryptPassword(passUser);
 
     const newLink = {
+        idusuario,
         idempleado,
         usuario,
         pass_usuario,

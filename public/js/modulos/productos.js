@@ -10,11 +10,21 @@ const formNewPres = document.getElementById('formNewPres');
 const formEditPres = document.getElementById('formEditPres');
 const formNewProducto = document.getElementById('formNewProducto');
 const formEditProducto = document.getElementById('formEditProducto');
+const formMovsProd = document.getElementById('formMovsProd');
+const formEntradaProd = document.getElementById('formEntradaProd');
+const formSalidaProd = document.getElementById('formSalidaProd');
 
 const tblCategorias = document.querySelector('#tbl-categorias');
 const tblMarcas = document.querySelector('#tbl-marcas');
 const tblPres = document.querySelector('#tbl-presentaciones');
 const tblProd = document.querySelector('#tbl-productos');
+
+const mesInv = document.getElementById("mesInv");
+const selProd = document.getElementById("selProd");
+const motEntrada = document.getElementById("motEntrada");
+const motSalida = document.getElementById("motSalida");
+const idProdMov = document.getElementById("idProdMov");
+
 
 (function () {
     /*=============================================
@@ -300,8 +310,8 @@ const tblProd = document.querySelector('#tbl-productos');
                                 $(row).find('td:eq(9)').css('background-color', '#FFEAEA');
                             } else if (stock > 10 && stock <= 15) {
                                 $(row).find('td:eq(9)').css('background-color', '#FFFBDF');
-                            } else{
-                                if(stock != null){
+                            } else {
+                                if (stock != null) {
                                     $(row).find('td:eq(9)').css('background-color', '#E7F3F1');
                                 }
                             }
@@ -362,6 +372,122 @@ const tblProd = document.querySelector('#tbl-productos');
 
                 }
 
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+    }
+
+    /*=============================================
+    RANGO DE CONSULTA - MES DE INVENTARIO
+    =============================================*/
+    if (mesInv) {
+
+        $(mesInv).each(function () {
+            $(this).datepicker({
+                autoclose: true,
+                format: "yyyy-mm",
+                viewMode: "months",
+                minViewMode: "months",
+                language: 'es'
+            });
+            $(this).datepicker('clearDates');
+        });
+
+    }
+
+    /*=============================================
+    SELECT 2
+    =============================================*/
+    if (selProd) {
+        //$(selProd).select2();
+
+        axios.get('/productos/all')
+            .then(function (respuesta) {
+
+                var dataProductos = respuesta.data;
+
+                dataProductos.forEach(function (valor, indice, array) {
+
+                    var idProd = valor[2];
+                    var descProd = valor[3];
+
+                    $("<option />")
+                        .attr("value", idProd)
+                        .html(descProd)
+                        .appendTo(selProd);
+
+                })
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+    }
+
+
+    /*=============================================
+    SELECT MOTIVOS
+    =============================================*/
+    if (motEntrada) {
+
+        axios.get('/motivos_entrada_inv')
+            .then(function (respuesta) {
+
+                var dataMotivos = respuesta.data;
+
+                dataMotivos.forEach(function (valor, indice, array) {
+
+                    var idMot = valor[0];
+                    var motivo = valor[1];
+
+                    $("<option />")
+                        .attr("value", idMot)
+                        .html(motivo)
+                        .appendTo(motEntrada);
+
+                })
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+    }
+
+    if (motSalida) {
+
+        axios.get('/motivos_salida_inv')
+            .then(function (respuesta) {
+
+                var dataMotivos = respuesta.data;
+
+                dataMotivos.forEach(function (valor, indice, array) {
+
+                    var idMot = valor[0];
+                    var motivo = valor[1];
+
+                    $("<option />")
+                        .attr("value", idMot)
+                        .html(motivo)
+                        .appendTo(motSalida);
+
+                })
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
             })
 
     }
@@ -1473,7 +1599,7 @@ $("#preCostoNeto").change(function () {
         $("#preMayoreo").prop("readonly", true);
 
         $("#editPreMayoreo").val(porcentaje);
-        $("#editPreMayoreo").prop("readonly",true);
+        $("#editPreMayoreo").prop("readonly", true);
     }
 
     if ($("#checkPorcenMen").prop("checked")) {
@@ -1485,7 +1611,7 @@ $("#preCostoNeto").change(function () {
         $("#preMenudeo").prop("readonly", true);
 
         $("#editPreMenudeo").val(porcentaje);
-        $("#editPreMenudeo").prop("readonly",true);
+        $("#editPreMenudeo").prop("readonly", true);
     }
 
 })
@@ -1503,7 +1629,7 @@ $("#porcenPreMay").change(function () {
         $("#preMayoreo").prop("readonly", true);
 
         $("#editPreMayoreo").val(porcentaje);
-        $("#editPreMayoreo").prop("readonly",true);
+        $("#editPreMayoreo").prop("readonly", true);
     }
 })
 
@@ -1516,7 +1642,7 @@ $("#checkPorcenMay").on('change', function (e) {
         $("#preMayoreo").prop("readonly", true);
 
         $("#editPreMayoreo").val(porcentaje);
-        $("#editPreMayoreo").prop("readonly",true);
+        $("#editPreMayoreo").prop("readonly", true);
 
     } else {
         $("#preMayoreo").prop("readonly", false);
@@ -1537,7 +1663,7 @@ $("#porcenPreMen").change(function () {
         $("#preMenudeo").prop("readonly", true);
 
         $("#editPreMenudeo").val(porcentaje);
-        $("#editPreMenudeo").prop("readonly",true);
+        $("#editPreMenudeo").prop("readonly", true);
     }
 })
 
@@ -1550,7 +1676,7 @@ $("#checkPorcenMen").on('change', function (e) {
         $("#preMenudeo").prop("readonly", true);
 
         $("#editPreMenudeo").val(porcentaje);
-        $("#editPreMenudeo").prop("readonly",true);
+        $("#editPreMenudeo").prop("readonly", true);
 
     } else {
         $("#preMenudeo").prop("readonly", false);
@@ -1739,7 +1865,7 @@ if (formEditProducto) {
         var idpresentacion = responseFive.data[0].idpresentacion;
         var bar_code = responseFive.data[0].bar_code;
         var categoria = responseFive.data[0].categoria;
-        var idcatedoria = responseFive.data[0].idcatedoria;
+        var idcategoria = responseFive.data[0].idcategoria;
         var marca = responseFive.data[0].marca;
         var idmarca = responseFive.data[0].idmarca;
         var proveedor = responseFive.data[0].proveedor;
@@ -1761,13 +1887,13 @@ if (formEditProducto) {
         $("#editNameProduct").val(producto);
         $("#editBarcode").val(bar_code);
         $("#editStockProd").val(stock);
-        $("#preCosto").val(pre_costo);
-        $("#preCostoNeto").val(pre_costo_neto);
+        $("#editPreCosto").val(pre_costo);
+        $("#editPreCostoNeto").val(pre_costo_neto);
         $("#editPreMayoreo").val(pre_mayoreo);
         $("#editPreMenudeo").val(pre_menudeo);
 
         $("<option />")
-            .attr("value", idcatedoria)
+            .attr("value", idcategoria)
             .html(categoria)
             .appendTo("#editCatProd");
 
@@ -1786,7 +1912,7 @@ if (formEditProducto) {
                 .attr("value", idproveedor)
                 .html(proveedor)
                 .appendTo("#editProvProd");
-        }else{
+        } else {
             $("<option />")
                 .attr("value", '0')
                 .html('Seleccione el proveedor')
@@ -1838,6 +1964,346 @@ if (formEditProducto) {
         })
 
 
-    }))
+    }));
 
+    formEditProducto.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var idproducto = document.getElementById("idProducto").value;
+        var nameProduct = document.getElementById("editNameProduct").value;
+        var barcodeProduct = document.getElementById("editBarcode").value;
+        var catProd = document.getElementById("editCatProd").value;
+        var preProd = document.getElementById("editPreProd").value;
+        var marcaProd = document.getElementById("editMarcaProd").value;
+        var provProd = document.getElementById("editProvProd").value;
+        var preCosto = document.getElementById("editPreCosto").value;
+        var preCostoNeto = document.getElementById("editPreCostoNeto").value;
+
+        payload.producto = nameProduct;
+        payload.bar_code = barcodeProduct;
+        payload.idcategoria = catProd;
+        payload.idpresentacion = preProd;
+        payload.idmarca = marcaProd;
+        payload.idproveedor = provProd;
+        payload.pre_costo = preCosto;
+        payload.pre_costo_neto = preCostoNeto;
+
+        var route = '/productos/' + idproducto;
+
+        axios.put(route, payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Nulos') {
+
+                    Swal.fire(
+                        'Oops...',
+                        'No se detectan cambios!',
+                        'warning'
+                    )
+
+                } else {
+
+                    Swal.fire(
+                        'Producto Actualizado',
+                        respuesta.data,
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/productos";
+                        }
+                    });
+
+                }
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+    })
+
+};
+
+/*=============================================
+Movimientos de Productos
+=============================================*/
+if (formMovsProd) {
+
+    formMovsProd.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        $('#btnMovsProd').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Buscando...').addClass('disabled');
+
+        $('#tbl-movs-prod').DataTable().destroy();
+        $("#tbl-movs-prod").remove();
+
+        var payload = {};
+
+        var idProduct = document.getElementById('idProduct');
+
+        var idProd = idProduct.value;
+        var mesPeri = document.getElementById('mesInv').value;
+
+        var mesSel = paddy((parseInt(mesPeri.split('-')[1]) + 1), 2, 0);
+
+        if (mesSel == 13) {
+            var mesSel = paddy((1), 2, 0);
+            var anio = parseInt(mesPeri.split('-')[0]) + 1;
+        } else {
+            var anio = mesPeri.split('-')[0];
+        }
+
+        var mesIni = mesPeri + '-01';
+        var mesFin = anio + '-' + mesSel + '-01';
+
+        payload.idProd = idProd
+        payload.mesIni = mesIni;
+        payload.mesFin = mesFin;
+
+        axios.post('movs_productos', payload)
+            .then(function (respuesta) {
+
+                $('#btnMovsProd').html('<i class="fa fa-search"></i> Consultar').removeClass('disabled');
+
+                if (respuesta.data == 'empty') {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '¡No se encontraron movimientos!',
+                        text: 'Sin movimientos para el articulo en el mes seleccionado.',
+                    })
+
+                } else {
+
+                    var dataMovs = respuesta.data;
+
+                    $("#bodyMovs").append(
+                        '<table id="tbl-movs-prod" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+                    );
+
+                    var tablaMovs = $("#tbl-movs-prod").DataTable({
+
+                        data: dataMovs,
+                        deferRender: true,
+                        iDisplayLength: 25,
+                        retrieve: true,
+                        processing: true,
+                        fixedHeader: true,
+                        responsive: true,
+                        language: {
+
+                            "sProcessing": "Procesando...",
+                            "sLengthMenu": "Mostrar _MENU_ registros",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "sEmptyTable": "Ningún dato disponible en esta tabla",
+                            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix": "",
+                            "sSearch": "Buscar:",
+                            "sUrl": "",
+                            "sInfoThousands": ",",
+                            "sLoadingRecords": "Cargando...",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            }
+
+                        },
+                        columns: [{
+                            title: "#"
+                        },
+                        {
+                            title: "ID Producto"
+                        },
+                        {
+                            title: "Producto"
+                        },
+                        {
+                            title: "Movimiento"
+                        },
+                        {
+                            title: "Cantidad"
+                        },
+                        {
+                            title: "Stock"
+                        },
+                        {
+                            title: "Fecha"
+                        },
+                        {
+                            title: "Usuario"
+                        }
+                        ],
+                    })
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+
+    })
+
+
+}
+
+if (formEntradaProd) {
+
+    formEntradaProd.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var idProduct = document.getElementById('idProduct');
+
+        var idProd = idProduct.value;
+        var motivo = motEntrada.value;
+        var stockEntrada = document.getElementById('stockEntrada').value;
+
+        payload.idproducto = idProd;
+        payload.tipo_mov = 4
+        payload.cantidad = stockEntrada;
+        payload.idmot_mov = motivo;
+
+        axios.put('/reg_movimiento_inv', payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Ok') {
+                    Swal.fire(
+                        'Éxito!',
+                        'Movimiento registrado correctamente.',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/movimientos_productos";
+                        }
+                    });
+
+                }
+
+            })
+
+    })
+
+}
+
+if (formSalidaProd) {
+
+    formSalidaProd.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var idProduct = document.getElementById('idProduct');
+
+        var idProd = idProduct.value;
+        var motivo = motSalida.value;
+        var stockSalida = document.getElementById('stockSalida').value;
+
+        payload.idproducto = idProd;
+        payload.tipo_mov = 5
+        payload.cantidad = stockSalida;
+        payload.idmot_mov = motivo;
+
+        axios.put('/reg_movimiento_inv', payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Ok') {
+                    Swal.fire(
+                        'Éxito!',
+                        'Movimiento registrado correctamente.',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/movimientos_productos";
+                        }
+                    });
+
+                }
+
+            })
+
+    })
+}
+
+$(idProdMov).change(function () {
+
+    var descProd = document.getElementById('descProd');
+
+    descProd.value = "";
+
+    var idProd = idProdMov.value;
+
+
+    if (idProd == '') {
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: 'Ingrese código de producto!',
+        })
+
+    } else {
+
+        var route = '/precio_productos/' + idProd;
+
+        axios.get(route)
+            .then(function (respuesta) {
+                var dataSet = respuesta.data;
+
+                if (dataSet == 'Empty') {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'El producto no existe o esta inactivo!',
+                    }).then(function (result) {
+                        if (result.value) {
+                            idProdMov.value = "";
+                            idProdMov.focus();
+                        }
+                    });
+
+                } else {
+
+                    var idProdBase = dataSet[0].idproducto;
+                    var descripcion = dataSet[0].producto;
+
+                    var idProducto = document.getElementById('idProduct');
+
+                    idProducto.value = idProdBase;
+                    descProd.value = descripcion;
+
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+    }
+
+});
+
+function paddy(num, padlen, padchar) {
+    var pad_char = typeof padchar !== 'undefined' ? padchar : '0';
+    var pad = new Array(1 + padlen).join(pad_char);
+    return (pad + num).slice(-pad.length);
 }

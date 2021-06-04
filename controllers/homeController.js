@@ -154,9 +154,9 @@ exports.activarMenus = async (req, res) => {
 
 exports.formAgregarMenu = async (req, res) => {
 
-    var newIdMenu = await pool.query('SELECT MAX(idmenu)+1 as idmenu FROM menu');
+    var newIdMenu = await pool.query('SELECT IFNULL(MAX(idmenu),0)+1 as idmenu FROM menu');
 
-    var newOrden = await pool.query('SELECT MAX(orden)+1 as orden FROM menu WHERE id_padre=0');
+    var newOrden = await pool.query('SELECT IFNULL(MAX(orden),0)+1 as orden FROM menu WHERE id_padre=0');
 
     var idmenu = newIdMenu[0].idmenu;
     var orden = newOrden[0].orden;
@@ -198,7 +198,7 @@ exports.formAgregarSubmenu = async (req, res) => {
     var idMenuPadre = req.params.id;
 
     var nombreMenuPadre = await pool.query('SELECT menu_nombre FROM menu WHERE idmenu=?', idMenuPadre);
-    var newOrdenSub = await pool.query('SELECT IFNULL((MAX(orden)),0) +1 AS orden FROM menu WHERE id_padre=?', idMenuPadre);
+    var newOrdenSub = await pool.query('SELECT IFNULL(MAX(orden),0) +1 AS orden FROM menu WHERE id_padre=?', idMenuPadre);
     var newIdMenu = await pool.query('SELECT MAX(idmenu)+1 as idmenu FROM menu');
 
     var menuPadre = nombreMenuPadre[0].menu_nombre;
@@ -309,6 +309,36 @@ exports.editarMenu = async (req, res) => {
         }
     }
 }
+
+exports.eliminarMenu = async (req, res) => {
+
+    var idMenu = req.params.id;
+
+    var eliminarMenu = await pool.query('DELETE FROM menu WHERE idmenu = ?', idMenu);
+
+    if (eliminarMenu.affectedRows === 1) {
+        await pool.query('DELETE FROM menu WHERE id_padre = ?', idMenu);
+        res.status(200).send('El menú ha sido eliminado.');
+    } else {
+        res.send('Inexistente');
+    }
+    
+}
+
+exports.eliminarSubmenu = async (req, res) => {
+
+    var idMenu = req.params.id;
+
+    var eliminarSubmenu = await pool.query('DELETE FROM menu WHERE idmenu = ?', idMenu);
+
+    if (eliminarSubmenu.affectedRows === 1) {
+        res.status(200).send('El submenú ha sido eliminado.');
+    } else {
+        res.send('Inexistente');
+    }
+ 
+}
+
 
 async function validAccess(idUsuario, url){
 

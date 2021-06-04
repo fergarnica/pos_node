@@ -30,6 +30,8 @@ const tblClientes = document.querySelector('#tbl-clientes');
 
                 if (respuesta.data != 'empty') {
 
+                    document.getElementById('btn-opciones-prov').disabled = false;
+
                     var dataSet = respuesta.data;
 
                     $(tblProv).DataTable({

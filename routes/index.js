@@ -8,6 +8,7 @@ const configController = require('../controllers/configController');
 const productosController = require('../controllers/productosController');
 const tercerosController = require('../controllers/tercerosController');
 const ventasController = require('../controllers/ventasController');
+const comprasController = require('../controllers/comprasController');
 
 const { isLoggedIn, isNotLogeedIn } = require('../config/auth');
 
@@ -316,6 +317,10 @@ module.exports = function () {
         isLoggedIn,
         tercerosController.exportProveedores
     );
+    router.get('/proveedores_activos',
+        isLoggedIn,
+        tercerosController.proveedoresActivos
+    );
     /* router.get('/layout_proveedores',
         isLoggedIn,
         tercerosController.layoutProveedores
@@ -410,9 +415,45 @@ module.exports = function () {
         isLoggedIn,
         productosController.mostrarProducto
     );
+    router.put('/productos/:id',
+        isLoggedIn,
+        productosController.editarProducto
+    );
     router.get('/precio_productos/:id',
         isLoggedIn,
         productosController.precioProducto
+    );
+    router.get('/movimientos_productos',
+    isLoggedIn,
+    productosController.movimientosProductos
+    );
+    router.post('/movs_productos',
+        isLoggedIn,
+        productosController.movsProductos
+    );
+    router.get('/entrada_productos',
+    isLoggedIn,
+    productosController.entradaProductosForm
+    );
+    router.get('/salida_productos',
+    isLoggedIn,
+    productosController.salidaProductosForm
+    );
+    router.get('/motivos_entrada_inv',
+    isLoggedIn,
+    productosController.motivosEntradaInv
+    );
+    router.get('/motivos_salida_inv',
+    isLoggedIn,
+    productosController.motivosSalidaInv
+    );
+    router.put('/reg_movimiento_inv',
+    isLoggedIn,
+    productosController.regMovInv
+    );
+    router.get('/productos_only/:id',
+        isLoggedIn,
+        productosController.productosOnly
     );
 
 
@@ -526,6 +567,24 @@ module.exports = function () {
     router.put('/menus/:id',
         isLoggedIn,
         homeController.editarMenu
+    );
+    router.delete('/menus/:id',
+        isLoggedIn,
+        homeController.eliminarMenu
+    );
+    router.delete('/submenus/:id',
+        isLoggedIn,
+        homeController.eliminarSubmenu
+    );
+
+
+    router.get('/registrar_compra',
+        isLoggedIn,
+        comprasController.regCompra
+    );
+    router.post('/crear_compra',
+        isLoggedIn,
+        comprasController.crearCompra
     );
 
     router.get('/permisos_por_perfil',

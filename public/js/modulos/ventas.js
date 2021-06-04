@@ -24,6 +24,9 @@ if (barCode) {
 
 (function () {
 
+    /* =============================================
+    SELECT CLIENTES ACTIVOS
+    =============================================*/
     if (selectClientes) {
 
         axios.get('/clientes_activos')
@@ -50,10 +53,10 @@ if (barCode) {
             })
     }
 
-})();
-
-$(document).ready(function () {
-    $("#barcodeVenta").keypress(function (e) {
+    /* =============================================
+    EVENTO ENTER AGREGAR PRODUCTOS VENTA
+    =============================================*/
+    $(barCode).keypress(function (e) {
         //no recuerdo la fuente pero lo recomiendan para
         //mayor compatibilidad entre navegadores.
         var code = (e.keyCode ? e.keyCode : e.which);
@@ -61,13 +64,14 @@ $(document).ready(function () {
             buscar();
         }
     });
-});
+
+})();
 /* =============================================
 AGREGAR PRODUCTOS A VENDER
 =============================================*/
 function buscar() {
 
-    var codigo = document.getElementById("barcodeVenta").value;
+    var codigo = barCode.value;
 
     if (codigo == '') {
 
@@ -644,6 +648,10 @@ $("#formularioVenta").on("click", "button.quitarProducto", function () {
             if (document.getElementById('clienteVenta').disabled == false) {
                 document.getElementById('clienteVenta').disabled = true;
             }
+        } else {
+            if (document.getElementById('clienteVenta').disabled == false) {
+                document.getElementById('clienteVenta').disabled = true;
+            }
         }
 
         if (formaPago > 0) {
@@ -712,7 +720,7 @@ if (formularioVenta) {
         var subtotalVenta = document.getElementById('subtotalVenta').value;
         var totalVenta = document.getElementById('totalVenta').value;
 
-        payload.idcaja = 1;
+        payload.idcaja = 2;
         payload.idcliente = clienteVenta;
         payload.subtotal = subtotalVenta;
         payload.impuesto = impuesto;
@@ -970,23 +978,35 @@ if (formSearchVtas) {
                                     return intVal(a) + intVal(b);
                                 }, 0);
 
-                            $('#footerVenta').remove();
-                            $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>');
-
                             //Formato de moneda
                             var totalGlobal = currencyFormat(total);
                             var totalxPagina = currencyFormat(pageTotal);
 
-                            $('#footerVenta').find('th').eq(0).html("Total:");
-                            $('#footerVenta').find('th').eq(6).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
-                        }
+                            $('#footerVenta').remove();
 
+
+
+                            if (window.matchMedia("(max-width:767px)").matches) {
+
+                                $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th></tr></tfoot>');
+
+
+                                $('#footerVenta').find('th').eq(0).html("Total:");
+                                $('#footerVenta').find('th').eq(1).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
+
+                            } else {
+
+                                $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>');
+
+                                $('#footerVenta').find('th').eq(0).html("Total:");
+                                $('#footerVenta').find('th').eq(6).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
+
+                            }
+                        }
 
                     })
 
-                    tablaVentas.on('responsive-resize', function (e, datatable, columns) {
-                        $('#footerVenta').remove();
-                    });
+                    //$('#footerVenta').remove();
                 }
 
             }).catch(() => {
@@ -1020,7 +1040,7 @@ $(document).on("click", "#btn-detalle-vta", function () {
     payload.idNota = idNota;
     payload.idCaja = idCaja;
 
-    axios.post('/det_ventas',payload)
+    axios.post('/det_ventas', payload)
         .then(function (respuesta) {
 
             const tblDetVtas = document.querySelector('#table_detvtas');
@@ -1261,6 +1281,22 @@ $(document).on("click", "#btn-anular-venta", function () {
         title: '¿Está seguro de anular la venta?',
         text: "¡Si no lo está puede cancelar la acción!",
         icon: 'warning',
+        input: 'select',
+        inputPlaceholder: 'Seleccione el motivo',
+        inputOptions: {
+            1: 'Devolución',
+            2: 'Reclamación',
+            3: 'Error cajero'
+        },
+        inputValidator: (value) => {
+            return new Promise((resolve) => {
+                if (value === '') {
+                    resolve('Debes seleccionar un motivo de anulación')
+                } else {
+                    resolve()
+                }
+            })
+        },
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
@@ -1277,6 +1313,7 @@ $(document).on("click", "#btn-anular-venta", function () {
 
             payload.idNota = idNota;
             payload.idCaja = idCaja;
+            payload.idMotivo = result.value;
 
             axios.put('/anular_venta', payload)
                 .then(function (respuesta) {

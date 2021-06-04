@@ -3,6 +3,8 @@ const moment = require('moment');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const fs = require("fs");
+const { Console } = require('console');
+const { cssNumber } = require('jquery');
 
 exports.subirImgProductos = (req, res, next) => {
     upload(req, res, function (error) {
@@ -75,7 +77,14 @@ exports.agregarCategoria = async (req, res) => {
 
     const { categoria, status, fecha_creacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idcategoria),0)+1 AS idcat FROM categorias');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idcategoria = valFolio[x].idcat;
+    }
+
     const newCategoria = {
+        idcategoria,
         categoria,
         status,
         fecha_creacion
@@ -259,7 +268,14 @@ exports.agregarMarca = async (req, res) => {
 
     const { marca, status, fecha_creacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idmarca),0)+1 AS idmar FROM marcas');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idmarca = valFolio[x].idmar;
+    }
+
     const newMarca = {
+        idmarca,
         marca,
         status,
         fecha_creacion
@@ -437,7 +453,34 @@ exports.productos = async (req, res) => {
 
 }
 
+exports.movimientosProductos = async (req, res) => {
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if(permiso>0){
+
+        res.render('modulos/productos/movimientos_productos', {
+            nombrePagina: 'Movimientos de Productos'
+        });
+
+    }else{
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
+}
+
 exports.agregarProducto = async (req, res) => {
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var tipoMov = 1;
+    var idMotivo = 0;
 
     var { producto, bar_code, idcategoria, idpresentacion, idmarca, idproveedor, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo, inventariable, status, fecha_creacion } = req.body;
 
@@ -455,7 +498,12 @@ exports.agregarProducto = async (req, res) => {
         var stock_total = null;
     }
 
+    var newIdProd = await pool.query('SELECT IFNULL(MAX(idproducto),100)+1 as idproducto FROM productos');
+
+    var idproducto = newIdProd[0].idproducto;
+
     const newProd = {
+        idproducto,
         producto,
         bar_code,
         idcategoria, 
@@ -473,6 +521,8 @@ exports.agregarProducto = async (req, res) => {
     };
 
     await pool.query('INSERT INTO productos SET ?', [newProd]);
+
+    await pool.query('call sp_reg_mov_prod(?,?,?,?,?)',[newProd.idproducto, tipoMov, newProd.stock_total, idMotivo, idUsuario]);
 
     res.status(200).send('Producto Creado Correctamente!');
 }
@@ -639,6 +689,24 @@ exports.precioProducto = async (req, res) => {
     }
 }
 
+exports.productosOnly = async (req, res) => {
+
+    let idProducto = req.params.id;
+
+    const precioProdId = await pool.query('SELECT idproducto, producto, bar_code, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo FROM productos WHERE inventariable=1 AND status=1 AND idproducto= ?', idProducto);
+
+    if(precioProdId.length === 0){
+        const precioProdCod = await pool.query('SELECT idproducto, producto, bar_code, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo FROM productos WHERE inventariable=1 AND status=1 AND bar_code= ?', idProducto);
+        
+        if(precioProdCod.length === 0){
+            res.send('Empty');
+        }else{
+            res.status(200).send(precioProdCod);
+        }
+    }else{
+        res.status(200).send(precioProdId);
+    }
+}
 
 exports.presentaciones = async (req, res) => {
 
@@ -667,7 +735,14 @@ exports.agregarPresentacion = async (req, res) => {
 
     const { presentacion, abreviatura, status, fecha_creacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idpresentacion),0)+1 AS idpres FROM presentaciones');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idpresentacion = valFolio[x].idpres;
+    }
+
     const newPres = {
+        idpresentacion,
         presentacion,
         abreviatura,
         status,
@@ -875,6 +950,223 @@ exports.getPresentacionActivas = async (req, res) => {
     }
 
 }
+
+exports.editarProducto = async (req, res) => {
+
+    let idProducto = req.params.id;
+
+    var { producto, bar_code, idcategoria, idpresentacion, idmarca, idproveedor, pre_costo, pre_costo_neto } = req.body;
+
+    var conteo = 0;
+
+    const dataBase = await pool.query('SELECT * FROM productos WHERE idproducto = ?', idProducto);
+
+    for (var x = 0; x < dataBase.length; x++) {
+        const arrayProd = dataBase[x];
+        var producto_bd = arrayProd.producto;
+        var bar_code_bd = arrayProd.bar_code;
+        var idcategoria_bd = arrayProd.idcategoria;
+        var idpresentacion_bd = arrayProd.idpresentacion;
+        var idmarca_bd = arrayProd.idmarca;
+        var idproveedor_bd = arrayProd.idproveedor;
+        var pre_costo_bd = arrayProd.pre_costo;
+        var pre_costo_neto_bd = arrayProd.pre_costo_neto;
+    }
+
+
+    if (producto != producto_bd) {
+
+        await pool.query('UPDATE productos SET producto = ? WHERE idproducto = ?', [producto, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (bar_code != bar_code_bd) {
+
+        await pool.query('UPDATE productos SET bar_code = ? WHERE idproducto = ?', [bar_code, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (idcategoria != idcategoria_bd) {
+
+        await pool.query('UPDATE productos SET idcategoria = ? WHERE idproducto = ?', [idcategoria, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (idpresentacion != idpresentacion_bd) {
+
+        await pool.query('UPDATE productos SET idpresentacion = ? WHERE idproducto = ?', [idpresentacion, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (idmarca != idmarca_bd) {
+
+        await pool.query('UPDATE productos SET idmarca = ? WHERE idproducto = ?', [idmarca, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (idproveedor != idproveedor_bd) {
+
+        await pool.query('UPDATE productos SET idproveedor = ? WHERE idproducto = ?', [idproveedor, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (pre_costo != pre_costo_bd) {
+
+        await pool.query('UPDATE productos SET pre_costo = ? WHERE idproducto = ?', [pre_costo, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (pre_costo_neto != pre_costo_neto_bd) {
+
+        await pool.query('UPDATE productos SET pre_costo_neto = ? WHERE idproducto = ?', [pre_costo_neto, idProducto]);
+        var conteo = conteo + 1;
+    }
+
+    if (conteo > 0) {
+        res.send('Producto Actualizado Correctamente!');
+    } else {
+        res.send('Nulos');
+    }
+
+}
+
+exports.movsProductos = async (req, res) => {
+
+    const { idProd, mesIni, mesFin } = req.body;
+
+    var conteo = 0;
+
+    var q = await pool.query('call get_det_movsprod(?,?,?)',[idProd, mesIni, mesFin]);
+
+    const values = q[0];
+
+    if(values.length === 0){
+        res.send('empty');
+    }else{
+
+        const dataMovs = [];
+
+        for (var x = 0; x < values.length; x++) {
+
+            conteo = x + 1;
+            const arrayMovs = values[x];
+
+            var fecha = moment(arrayMovs.fecha).format('YYYY-MM-DD hh:mm:ss a');
+
+            const obj = [
+                conteo,
+                arrayMovs.idproducto,
+                arrayMovs.producto,
+                arrayMovs.mov_descripcion,
+                arrayMovs.cantidad,
+                arrayMovs.stock_total,
+                fecha,
+                arrayMovs.usuario
+            ];
+
+            dataMovs.push(obj);
+        }
+
+        res.send(dataMovs);
+
+    }
+    
+}
+
+exports.entradaProductosForm = async (req, res) => {
+
+    res.render('modulos/productos/entrada_producto', {
+        nombrePagina: 'Entrada de Productos'
+    });
+
+}
+
+exports.motivosEntradaInv = async (req, res) => {
+
+    const motivosEntrada = await pool.query('SELECT * FROM motivo_movs_inv WHERE tip_mov_inv IN(1,3) AND status=1');
+
+    var motivosEntradaTotal = motivosEntrada.length;
+
+    if (motivosEntradaTotal === 0) {
+
+        res.send('empty');
+
+    } else {
+
+        const dataMotivos = [];
+
+        for (var x = 0; x < motivosEntradaTotal; x++) {
+
+            const arrayMotivos = motivosEntrada[x];
+
+            const obj = [
+                arrayMotivos.idmot_mov,
+                arrayMotivos.motivo           
+            ];
+
+            dataMotivos.push(obj);
+        }
+
+        res.send(dataMotivos);
+    }
+
+}
+
+exports.salidaProductosForm = async (req, res) => {
+
+    res.render('modulos/productos/salida_producto', {
+        nombrePagina: 'Salida de Productos'
+    });
+
+}
+
+exports.motivosSalidaInv = async (req, res) => {
+
+    const motivosEntrada = await pool.query('SELECT * FROM motivo_movs_inv WHERE tip_mov_inv IN(2,3) AND status=1');
+
+    var motivosEntradaTotal = motivosEntrada.length;
+
+    if (motivosEntradaTotal === 0) {
+
+        res.send('empty');
+
+    } else {
+
+        const dataMotivos = [];
+
+        for (var x = 0; x < motivosEntradaTotal; x++) {
+
+            const arrayMotivos = motivosEntrada[x];
+
+            const obj = [
+                arrayMotivos.idmot_mov,
+                arrayMotivos.motivo           
+            ];
+
+            dataMotivos.push(obj);
+        }
+
+        res.send(dataMotivos);
+    }
+
+}
+
+exports.regMovInv = async (req, res) => {
+
+    var idusuario = res.locals.usuario.idusuario;
+
+    var { idproducto, tipo_mov, cantidad, idmot_mov } = req.body;
+
+    var q = await pool.query('call sp_ajuste_inv(?,?,?,?,?)',[idproducto,idmot_mov,cantidad,tipo_mov,idusuario]);
+
+    var rowsAff = q.affectedRows;
+
+    if(rowsAff>0){
+        res.send('Ok');
+    }
+
+}
+
 
 function currencyFormat(value) {
 	return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');

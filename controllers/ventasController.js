@@ -60,8 +60,10 @@ exports.crearVenta = async (req, res) => {
 
     var objProd = req.body.listaProductos;
     var idusuario = res.locals.usuario.idusuario;
+    var tipoMov = 2;
+    var idMotivo = 0;
 
-    const valFolio = await pool.query('SELECT IFNULL(MAX(idnota),100)+1 AS numVenta FROM ventas');
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idnota),100)+1 AS numVenta FROM ventas WHERE idcaja=?',idcaja);
 
     for (var x = 0; x < valFolio.length; x++) {
         var idnota = valFolio[x].numVenta;
@@ -106,8 +108,8 @@ exports.crearVenta = async (req, res) => {
         };
 
         await pool.query('INSERT INTO det_vtas SET ?', [newDetVenta]);
-
-        await pool.query('call sp_desc_inv(?,?)', [newDetVenta.idproducto, newDetVenta.cantidad]);
+        
+        await pool.query('call sp_ajuste_inv(?,?,?,?,?)',[newDetVenta.idproducto,idMotivo,cantidad,tipoMov,idusuario]);
 
     }
 
@@ -205,9 +207,11 @@ exports.detVentas = async (req, res) => {
 
 exports.anularVenta = async (req, res) => {
 
-    var { idNota, idCaja } = req.body;
+    var { idNota, idCaja, idMotivo } = req.body;
 
-    var q = await pool.query('call sp_anula_venta(?,?)',[idNota, idCaja]);
+    var idUsuario = res.locals.usuario.idusuario;
+
+    var q = await pool.query('call sp_anula_venta(?,?,?,?)',[idNota, idCaja, idMotivo, idUsuario]);
     
     var rowsAff = q.affectedRows;
 

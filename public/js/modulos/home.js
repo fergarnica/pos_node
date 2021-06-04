@@ -47,7 +47,7 @@ const formEditMenu = document.getElementById('formEditMenu');
                     $(tblMenus).DataTable({
                         data: dataSet,
                         deferRender: true,
-                        iDisplayLength: 25,
+                        iDisplayLength: 50,
                         retrieve: true,
                         processing: true,
                         fixedHeader: true,
@@ -414,13 +414,11 @@ if(formEditMenu){
 }
 
 /*=============================================
-DETALLE DE VENTA
+ELIMINAR MENU/SUBMENU
 =============================================*/
 $(document).on("click", "#btn-eliminar-menu", function () {
 
     var idPadre = $(this).attr("idPadre");
-
-    console.log(idPadre);
 
     if(idPadre == 0){
 
@@ -435,31 +433,28 @@ $(document).on("click", "#btn-eliminar-menu", function () {
             confirmButtonText: 'Si, eliminar!'
         }).then((result) => {
     
-            /* if (result.value) {
+            if (result.value) {
     
-                var payload = {};
+                var idMenu = $(this).attr("idMenu");
+
+                var route = '/menus/' + idMenu;
     
-                var idNota = $(this).attr("idNota");
-                var idCaja = $(this).attr("idCaja");
-    
-                payload.idNota = idNota;
-                payload.idCaja = idCaja;
-    
-                axios.put('/anular_venta', payload)
+                axios.delete(route)
                     .then(function (respuesta) {
-    
-                        if (respuesta.data == 'Ok') {
+
+                        if (respuesta.data != 'Inexistente') {
                             Swal.fire(
-                                'Venta Anulada!',
-                                'La venta fue anulada correctamente',
+                                'Menú eliminado!',
+                                respuesta.data,
                                 'success'
                             ).then(function (result) {
                                 if (result.value) {
-                                    window.location = "/admin_ventas";
+                                    window.location = "/menus";
                                 }
                             });
     
                         }
+
                     }).catch(errors => {
                         Swal.fire({
                             icon: 'error',
@@ -467,7 +462,7 @@ $(document).on("click", "#btn-eliminar-menu", function () {
                             text: 'Error en la Base de Datos'
                         })
                     })
-            } */
+            }
         })
 
     }else{
@@ -483,31 +478,28 @@ $(document).on("click", "#btn-eliminar-menu", function () {
             confirmButtonText: 'Si, eliminar!'
         }).then((result) => {
     
-            /* if (result.value) {
+            if (result.value) {
+        
+                var idMenu = $(this).attr("idMenu");
+
+                var route = '/submenus/' + idMenu;
     
-                var payload = {};
-    
-                var idNota = $(this).attr("idNota");
-                var idCaja = $(this).attr("idCaja");
-    
-                payload.idNota = idNota;
-                payload.idCaja = idCaja;
-    
-                axios.put('/anular_venta', payload)
+                axios.delete(route)
                     .then(function (respuesta) {
     
-                        if (respuesta.data == 'Ok') {
+                        if (respuesta.data != 'Inexistente') {
                             Swal.fire(
-                                'Venta Anulada!',
-                                'La venta fue anulada correctamente',
+                                'Submenú eliminado!',
+                                respuesta.data,
                                 'success'
                             ).then(function (result) {
                                 if (result.value) {
-                                    window.location = "/admin_ventas";
+                                    window.location = "/menus";
                                 }
                             });
     
                         }
+
                     }).catch(errors => {
                         Swal.fire({
                             icon: 'error',
@@ -515,10 +507,8 @@ $(document).on("click", "#btn-eliminar-menu", function () {
                             text: 'Error en la Base de Datos'
                         })
                     })
-            } */
+            }
         })
-
     }
-
     
 })

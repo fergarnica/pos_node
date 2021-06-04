@@ -138,13 +138,13 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Precio Costo: <small>(sin impuestos)</small></label><label style="color:#C20F30">*</label>
-                                <input class="form-control" id="preCosto" name="pre_costo" type="number" required>
+                                <input class="form-control" id="editPreCosto" name="pre_costo" type="number" required>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Precio Costo Neto:</label><label style="color:#C20F30">*</label>
-                                <input class="form-control" id="preCostoNeto" name="pre_costo_neto" type="number" required>
+                                <input class="form-control" id="editPreCostoNeto" name="pre_costo_neto" type="number" required>
                             </div>
                         </div>
                     </div>
@@ -153,49 +153,14 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Precio Mayoreo:</label><label style="color:#C20F30">*</label>
-                                <input class="form-control" id="editPreMayoreo" name="pre_mayoreo" type="number" required>
+                                <input class="form-control" id="editPreMayoreo" name="pre_mayoreo" type="number" required disabled>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Precio Menudeo:</label><label style="color:#C20F30">*</label>
-                                <input class="form-control" id="editPreMenudeo" name="pre_menudeo" type="number" required>
+                                <input class="form-control" id="editPreMenudeo" name="pre_menudeo" type="number" required disabled>
                             </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <small>Utilizar Porcentaje Incremento P. Mayoreo</small>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <input type="checkbox" id="checkPorcenMay">
-                                    </span>
-                                </div>
-                                <input type="number" id="porcenPreMay" class="form-control" value="25">
-                                <div class="input-group-append">
-                                    <div class="input-group-text"><i class="fas fa-percent"></i></div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="col-sm-6">
-                            <small>Utilizar Porcentaje Incremento P. Menudeo</small>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <input type="checkbox" id="checkPorcenMen">
-                                    </span>
-                                </div>
-                                <input type="number" id="porcenPreMen" class="form-control" value="40">
-                                <div class="input-group-append">
-                                    <div class="input-group-text"><i class="fas fa-percent"></i></div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                     {{!-- <div class="mb-3">

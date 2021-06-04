@@ -91,6 +91,12 @@ exports.agregarProv = async (req, res) => {
 
     var { proveedor, nombre_proveedor, rfc, razon_social, email, telefono, calle, numero, colonia, municipio, estado, cp, status, fecha_creacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idproveedor),100)+1 AS idprov FROM proveedores');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idproveedor = valFolio[x].idprov;
+    }
+
     if (!rfc) {
         var rfc = null;
     }
@@ -124,6 +130,7 @@ exports.agregarProv = async (req, res) => {
     }
 
     const newProv = {
+        idproveedor,
         proveedor,
         nombre_proveedor,
         rfc,
@@ -160,9 +167,6 @@ exports.mostrarProveedores = async (req, res) => {
     const values = await pool.query('SELECT * FROM proveedores');
 
     var valuesTotal = values.length;
-
-    //console.log(valuesTotal);
-    //console.log(values);
 
     if (valuesTotal === 0) {
 
@@ -396,6 +400,43 @@ exports.editarProveedor = async (req, res) => {
         }
 
     }
+}
+
+exports.proveedoresActivos =  async (req, res) => {
+
+    const proveedores = await pool.query('SELECT * FROM proveedores  WHERE status = 1');
+
+    var provTotal = proveedores.length;
+
+    if (provTotal === 0) {
+
+        res.send('empty');
+
+    } else {
+
+        const dataProv = [];
+
+        for (var x = 0; x < provTotal; x++) {
+
+            conteo = x + 1;
+            const arrayProv = proveedores[x];
+
+            var fecha = moment(arrayProv.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
+
+            const obj = [
+                conteo,
+                arrayProv.idproveedor,
+                arrayProv.proveedor,
+                arrayProv.status,
+                fecha
+            ];
+
+            dataProv.push(obj);
+        }
+
+        res.send(dataProv);
+    }
+
 }
 
 exports.printProveedores = async (req, res) => {
@@ -869,6 +910,12 @@ exports.agregarCliente = async (req, res) => {
 
     var { cliente, rfc, email, telefono, status, fecha_creacion } = req.body;
 
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idcliente),100)+1 AS idcli FROM clientes');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idcliente = valFolio[x].idcli;
+    }
+
     if (!rfc) {
         var rfc = null;
     }
@@ -882,6 +929,7 @@ exports.agregarCliente = async (req, res) => {
     }
 
     const newCliente = {
+        idcliente,
         cliente,
         rfc,
         email,

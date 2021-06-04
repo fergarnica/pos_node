@@ -267,7 +267,14 @@ $(document).on("change", ".checkAcceso", function () {
     axios.put('/permiso_x_perfil', payload)
         .then(function (respuesta) {
 
-            //console.log(respuesta);
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Cambios guardados!',
+                showConfirmButton: false,
+                timer: 1000
+              })
+
         })
 
 });
