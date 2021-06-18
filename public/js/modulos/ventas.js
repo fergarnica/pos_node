@@ -82,7 +82,7 @@ function buscar() {
         })
 
     } else {
-        var route = '/precio_productos/' + codigo;
+        var route = '/precio_producto_venta/' + codigo;
         axios.get(route)
             .then(function (respuesta) {
                 var dataSet = respuesta.data;
@@ -100,7 +100,7 @@ function buscar() {
                     var idProducto = dataSet[0].idproducto;
                     var descripcion = dataSet[0].producto;
                     var stock = dataSet[0].stock_total;
-                    var precio = dataSet[0].pre_mayoreo;
+                    var precio = dataSet[0].precio;
 
                     var prodItem = $(".nuevaDescripcionProducto");
 
@@ -720,7 +720,7 @@ if (formularioVenta) {
         var subtotalVenta = document.getElementById('subtotalVenta').value;
         var totalVenta = document.getElementById('totalVenta').value;
 
-        payload.idcaja = 2;
+        payload.idcaja = 1;
         payload.idcliente = clienteVenta;
         payload.subtotal = subtotalVenta;
         payload.impuesto = impuesto;
@@ -826,7 +826,7 @@ if (formSearchVtas) {
         $('#tbl-admin-ventas').DataTable().destroy();
         $("#tbl-admin-ventas").remove();
         $("#btnOpciones").remove();
-
+        $("#bodyVtas").remove();
 
         var payload = {};
 
@@ -859,8 +859,12 @@ if (formSearchVtas) {
 
                 } else {
 
-
                     var dataVtas = respuesta.data;
+
+                    $("#cardVentas").append(
+                        '<div class="card-body" id="bodyVtas">' +
+                        '</div>'
+                    );
 
                     $("#bodyVtas").append(
                         '<div id="btnOpciones" class="d-flex">' +
@@ -1020,7 +1024,6 @@ if (formSearchVtas) {
     })
 
 }
-
 /*=============================================
 DETALLE DE VENTA
 =============================================*/

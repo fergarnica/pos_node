@@ -434,12 +434,17 @@ $(document).on("change", ".checkAccesoUser", function () {
     payload.idusuario = idUser;
     payload.acceso = acceso;
 
-    console.log(payload);
-
     axios.put('/permiso_x_usuario', payload)
         .then(function (respuesta) {
 
-            //console.log(respuesta);
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Cambios guardados!',
+                showConfirmButton: false,
+                timer: 1000
+              });
+
         }).catch(errors => {
             Swal.fire({
                 icon: 'error',

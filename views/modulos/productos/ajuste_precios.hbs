@@ -1,0 +1,90 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Ajuste de precios</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Ajuste de precios</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Información Básica de Precios
+                    <small>(Los campos con </small><small style="color:#C20F30">*</small><small> son necesarios)</small>
+                </h3>
+            </div>
+            <!-- Card Body -->
+            <form id="formAjustePrecio">
+                <div class="card-body" id="bodyAjuste">
+                    <input type="hidden" id="idProducto">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Tipo Precio:</label><label style="color:#C20F30">*</label>
+                                <select class="form-control input-lg custom-select" id="tipPrecio" required autofocus>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">Costo</option>
+                                    <option value="2">Costo Neto</option>
+                                    <option value="3">Mayoreo</option>
+                                    <option value="4">Menudeo</option>
+                                    <option value="5">Oferta</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>ID Producto/Codigo de Barras:</label><label style="color:#C20F30">*</label>
+                                <input type="text" id="codProducto" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Producto:</label>
+                                <input type="text" id="nomProducto" class="form-control" disabled required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Precio Actual:</label>
+                                <input type="number" id="oldPrecio" step="any" class="form-control" disabled required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nuevo Precio:</label><label style="color:#C20F30">*</label>
+                                <input type="number" id="newPrecio" step="any" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="card-footer">
+                    <button type="submit" id="btnAjusteProd" class="btn btn-primary">Guardar
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>

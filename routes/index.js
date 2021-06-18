@@ -419,9 +419,13 @@ module.exports = function () {
         isLoggedIn,
         productosController.editarProducto
     );
-    router.get('/precio_productos/:id',
+    router.get('/precio_producto_venta/:id',
         isLoggedIn,
         productosController.precioProducto
+    );
+    router.get('/precio_producto_compra/:id',
+        isLoggedIn,
+        productosController.precioProductoCompra
     );
     router.get('/movimientos_productos',
     isLoggedIn,
@@ -451,11 +455,26 @@ module.exports = function () {
     isLoggedIn,
     productosController.regMovInv
     );
-    router.get('/productos_only/:id',
-        isLoggedIn,
-        productosController.productosOnly
+    router.get('/historico_precios',
+    isLoggedIn,
+    productosController.historicoPrecios
     );
-
+    router.post('/historico_precios',
+    isLoggedIn,
+    productosController.getHistPrecios
+    );
+    router.get('/ajuste_precios',
+    isLoggedIn,
+    productosController.ajustePrecios
+    );
+    router.post('/precio_ajuste_producto',
+    isLoggedIn,
+    productosController.getPrecioAjuste
+    );
+    router.post('/ajusta_precio',
+    isLoggedIn,
+    productosController.ajustaPrecio
+    );
 
     //Presentaciones
     router.get('/presentaciones',
@@ -577,7 +596,6 @@ module.exports = function () {
         homeController.eliminarSubmenu
     );
 
-
     router.get('/registrar_compra',
         isLoggedIn,
         comprasController.regCompra
@@ -586,6 +604,31 @@ module.exports = function () {
         isLoggedIn,
         comprasController.crearCompra
     );
+    router.get('/admin_compras',
+        isLoggedIn,
+        comprasController.adminCompras
+    );
+    router.post('/consultar_compras',
+        isLoggedIn,
+        comprasController.consultarCompras
+    );
+    router.post('/det_compras',
+        isLoggedIn,
+        comprasController.detCompras
+    );
+    router.put('/anular_compra',
+        isLoggedIn,
+        comprasController.anularCompra
+    );
+    router.post('/exportar_compras',
+        isLoggedIn,
+        comprasController.exportCompras
+    );
+    router.post('/imprimir_compras',
+        isLoggedIn,
+        comprasController.imprimirCompras
+    );
+    
 
     router.get('/permisos_por_perfil',
         isLoggedIn,

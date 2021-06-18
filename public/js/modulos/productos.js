@@ -13,6 +13,8 @@ const formEditProducto = document.getElementById('formEditProducto');
 const formMovsProd = document.getElementById('formMovsProd');
 const formEntradaProd = document.getElementById('formEntradaProd');
 const formSalidaProd = document.getElementById('formSalidaProd');
+const formHistPrec = document.getElementById('formHistPrec');
+const formAjustePrecio = document.getElementById('formAjustePrecio');
 
 const tblCategorias = document.querySelector('#tbl-categorias');
 const tblMarcas = document.querySelector('#tbl-marcas');
@@ -24,7 +26,8 @@ const selProd = document.getElementById("selProd");
 const motEntrada = document.getElementById("motEntrada");
 const motSalida = document.getElementById("motSalida");
 const idProdMov = document.getElementById("idProdMov");
-
+const codProducto = document.getElementById("codProducto");
+const tipPrecio = document.getElementById("tipPrecio");
 
 (function () {
     /*=============================================
@@ -610,9 +613,6 @@ if (formEditCategoria) {
         payload.newCategoria = updCategoria;
 
         var route = '/categorias/' + idCategoria;
-
-        console.log(route);
-        console.log(payload);
 
         axios.put(route, payload)
             .then(function (respuesta) {
@@ -2259,7 +2259,7 @@ $(idProdMov).change(function () {
 
     } else {
 
-        var route = '/precio_productos/' + idProd;
+        var route = '/precio_producto_venta/' + idProd;
 
         axios.get(route)
             .then(function (respuesta) {
@@ -2301,6 +2301,281 @@ $(idProdMov).change(function () {
     }
 
 });
+
+/*=============================================
+Historico de Precios
+=============================================*/
+if (formHistPrec) {
+
+    formHistPrec.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        $('#btnHistProd').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Buscando...').addClass('disabled');
+
+        $('#tbl-hist-prec').DataTable().destroy();
+        $("#tbl-hist-prec").remove();
+
+        var payload = {};
+
+        var idProduct = document.getElementById('idProduct').value;
+        var tipPrecio = document.getElementById('tipPrecio').value;
+
+        payload.idProd = idProduct;
+        payload.tipPrecio = tipPrecio;
+
+        axios.post('historico_precios', payload)
+            .then(function (respuesta) {
+
+                $('#btnHistProd').html('<i class="fa fa-search"></i> Consultar').removeClass('disabled');
+
+                if (respuesta.data == 'empty') {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: '¡No se encontraron registros!',
+                        text: 'Sin registros para el articulo seleccionado.',
+                    })
+
+                } else {
+
+                    var dataHist = respuesta.data;
+
+                    $("#bodyHist").append(
+                        '<table id="tbl-hist-prec" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+                    );
+
+                    var tablaHist = $("#tbl-hist-prec").DataTable({
+
+                        data: dataHist,
+                        deferRender: true,
+                        iDisplayLength: 25,
+                        retrieve: true,
+                        processing: true,
+                        fixedHeader: true,
+                        responsive: true,
+                        language: {
+
+                            "sProcessing": "Procesando...",
+                            "sLengthMenu": "Mostrar _MENU_ registros",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "sEmptyTable": "Ningún dato disponible en esta tabla",
+                            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix": "",
+                            "sSearch": "Buscar:",
+                            "sUrl": "",
+                            "sInfoThousands": ",",
+                            "sLoadingRecords": "Cargando...",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            }
+
+                        },
+                        columns: [{
+                            title: "#"
+                        },
+                        {
+                            title: "ID Producto"
+                        },
+                        {
+                            title: "Producto"
+                        },
+                        {
+                            title: "Precio"
+                        },
+                        {
+                            title: "Cambio"
+                        },
+                        {
+                            title: "Fecha"
+                        },
+                        {
+                            title: "Usuario"
+                        }
+                        ],
+                    })
+
+
+                }
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+    })
+
+}
+
+/*=============================================
+AJUSTE DE PRECIO
+=============================================*/
+$(codProducto).change(function () {
+
+    var nomProducto = document.getElementById('nomProducto');
+    var oldPrecio = document.getElementById('oldPrecio');
+    var tipoPrec = document.getElementById('tipPrecio');
+
+    var tipPrecio = tipoPrec.value;
+
+    nomProducto.value = "";
+    oldPrecio.value = "";
+
+    var idProd = codProducto;
+
+    if (tipPrecio == "") {
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: 'Debe seleccionar el tipo de precio a ajustar!',
+        }).then(function (result) {
+            if (result.value) {
+                idProd.value = "";
+                tipoPrec.focus();
+            }
+        });
+    } else {
+
+        if (idProd.value == '') {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Ingrese código de producto!',
+            })
+
+        } else {
+
+            var payload = {};
+
+            payload.idProd = idProd.value;
+            payload.tipoPrecio = tipPrecio;
+
+            axios.post('/precio_ajuste_producto', payload)
+                .then(function (respuesta) {
+                    console.log(respuesta);
+                    var dataSet = respuesta.data;
+
+                    if (dataSet == 'Empty') {
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Oops...',
+                            text: 'El producto no existe o esta inactivo!',
+                        }).then(function (result) {
+                            if (result.value) {
+                                idProd.value = "";
+                            }
+                        });
+
+                    } else {
+
+                        var idProdBase = dataSet[0].idproducto;
+                        var descripcion = dataSet[0].producto;
+                        var precioProd = dataSet[0].precio;
+
+                        var idProducto = document.getElementById('idProducto');
+
+                        idProducto.value = idProdBase;
+                        nomProducto.value = descripcion;
+                        oldPrecio.value = precioProd;
+
+                    }
+
+                }).catch(errors => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la Base de Datos'
+                    })
+                })
+        }
+    }
+
+});
+
+$(tipPrecio).change(function () {
+
+    var nomProducto = document.getElementById('nomProducto');
+    var oldPrecio = document.getElementById('oldPrecio');
+    var newPrecio = document.getElementById('newPrecio');
+
+    nomProducto.value = "";
+    oldPrecio.value = "";
+    newPrecio.value = "";
+    codProducto.value = "";
+    codProducto.focus();
+
+});
+
+if (formAjustePrecio) {
+
+    formAjustePrecio.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var tipoPrecio = tipPrecio.value;
+        var idProducto = document.getElementById('idProducto').value;
+        var oldPrecio = document.getElementById('oldPrecio').value;
+        var newPrecio = document.getElementById('newPrecio').value;
+
+        payload.tipoPrecio = tipoPrecio;
+        payload.idProducto = idProducto;
+        payload.oldPrecio = oldPrecio;
+        payload.newPrecio = newPrecio;
+
+        console.log(payload);
+        axios.post('/ajusta_precio', payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Ok') {
+
+                    Swal.fire(
+                        'Éxito!',
+                        'Ajuste realizado correctamente.',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/productos";
+                        }
+                    });
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la Base de Datos'
+                    }).then(function (result) {
+                        if (result.value) {
+                            window.location = "/ajuste_precios";
+                        }
+                    });
+
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+    })
+
+}
 
 function paddy(num, padlen, padchar) {
     var pad_char = typeof padchar !== 'undefined' ? padchar : '0';

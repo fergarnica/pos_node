@@ -1,0 +1,93 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Administrar compras</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Administrar compras</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Default box -->
+        <div class="card" id="cardCompras">
+            <!-- Card Header -->
+            <div class="card-header ui-sortable-handle">
+                <form id="searchCompras">
+                    <div class="row">
+                        <div class="col-12 col-sm-3">
+                            <div class="form-group">
+                                <label>Rango de consulta:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="reservation">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="form-group">
+                                <label>Estatus:</label>
+                                <select class="form-control input-lg custom-select" id="statusComp">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="1">Vigente</option>
+                                    <option value="2">Anuladas</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-3">
+                            <div class="form-group">
+                                <label for=""></label>
+                                <div class="input-group">
+                                    <button type="submit" id="btnSearchCompras" class="btn btn-primary">Consultar
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Card Body -->
+            <!-- /.card-footer-->
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<!--=====================================
+MODAL DETALLE DE VENTA
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalDetCmpa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Detalle de compra</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="bodyDetCmpa">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+            </div>
+
+        </div>
+    </div>
+</div>

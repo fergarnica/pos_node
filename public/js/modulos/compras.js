@@ -12,6 +12,7 @@ const selectProveedores = document.getElementById('provCompra');
 const checkImpCom = document.getElementById('checkImpCom');
 
 const formularioCompra = document.getElementById('formularioCompra');
+const formSearchCompra = document.getElementById('searchCompras');
 
 if (barCode) {
     body.classList.add("sidebar-collapse");
@@ -78,7 +79,7 @@ function buscar() {
         })
 
     } else {
-        var route = '/productos_only/' + codigo;
+        var route = '/precio_producto_compra/' + codigo;
         axios.get(route)
             .then(function (respuesta) {
 
@@ -97,7 +98,7 @@ function buscar() {
                     var idProducto = dataSet[0].idproducto;
                     var descripcion = dataSet[0].producto;
                     var stock = dataSet[0].stock_total;
-                    var precio = dataSet[0].pre_costo_neto;
+                    var precio = dataSet[0].precio;
 
                     var prodItem = $(".nuevaDescripcionProducto");
 
@@ -157,7 +158,6 @@ function buscar() {
             })
     }
 }
-
 /* =============================================
 INSERTAR NUEVO ITEM
 =============================================*/
@@ -741,4 +741,524 @@ if (formularioCompra) {
             })
 
     })
+}
+/*=============================================
+CONSULTA DE COMPRAS
+=============================================*/
+if(formSearchCompra){
+
+    formSearchCompra.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        $('#btnSearchCompras').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Buscando...').addClass('disabled');
+
+        $('#tbl-admin-compras').DataTable().destroy();
+        $("#tbl-admin-compras").remove();
+        $("#btnOpcComp").remove();
+        $("#bodyCompras").remove();
+
+        var payload = {};
+
+        var periodoCmpas = document.getElementById("reservation").value;
+        var statusCmpas = document.getElementById("statusComp").value;
+
+        var fecInicial = periodoCmpas.split('-')[0];
+        var fecFinal = periodoCmpas.split('-')[1];
+
+        if (statusCmpas == "") {
+            statusCmpas = null;
+        }
+
+        payload.fecInicial = fecInicial;
+        payload.fecFinal = fecFinal;
+        payload.statusCmpas = statusCmpas;
+
+        axios.post('/consultar_compras', payload)
+            .then(function (respuesta) {
+
+                $('#btnSearchCompras').html('<i class="fa fa-search"></i> Consultar').removeClass('disabled');
+
+                if (respuesta.data == 'empty') {
+
+                    Swal.fire(
+                        '¡Sin registros!',
+                        '¡No existen registros con los filtros seleccionados!',
+                        'error'
+                    );
+
+                } else {
+
+                    var dataCmpas = respuesta.data;
+
+                    $("#cardCompras").append(
+                        '<div class="card-body" id="bodyCompras">' +
+                        '</div>'
+                    );
+
+                    $("#bodyCompras").append(
+                        '<div id="btnOpcComp" class="d-flex">' +
+                        '<div class="btn-group ml-auto">' +
+                        '<button type="button" id="btn-opciones-compras" class="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown"data-display="static" aria-haspopup="true" aria-expanded="false">Opciones</button>' +
+                        '<div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left">' +
+                        '<button id="btn-export-compra" class="dropdown-item"><i class="fas fa-file-excel"></i> Exportar</button>' +
+                        '<button id="btn-print-compra" class="dropdown-item"><i class="fas fa-print"></i> Imprimir</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<br>'
+                    );
+
+                    $("#bodyCompras").append(
+                        '<table id="tbl-admin-compras" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+                    );
+
+                    $('#footerCompra').remove();
+
+                    var tablaCompras = $("#tbl-admin-compras").DataTable({
+
+                        data: dataCmpas,
+                        deferRender: true,
+                        iDisplayLength: 25,
+                        retrieve: true,
+                        processing: true,
+                        fixedHeader: true,
+                        responsive: true,
+                        language: {
+
+                            "sProcessing": "Procesando...",
+                            "sLengthMenu": "Mostrar _MENU_ registros",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "sEmptyTable": "Ningún dato disponible en esta tabla",
+                            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix": "",
+                            "sSearch": "Buscar:",
+                            "sUrl": "",
+                            "sInfoThousands": ",",
+                            "sLoadingRecords": "Cargando...",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            }
+
+                        },
+                        columns: [{
+                            title: "# Compra"
+                        },
+                        {
+                            title: "# Comprobante"
+                        },
+                        {
+                            title: "Proveedor"
+                        },
+                        {
+                            title: "Usuario"
+                        },
+                        {
+                            title: "Forma de pago"
+                        },
+                        {
+                            title: "Subtotal", render: $.fn.dataTable.render.number(',', '.', 2)
+                        },
+                        {
+                            title: "GranTotal", render: $.fn.dataTable.render.number(',', '.', 2)
+                        },
+                        {
+                            title: "Estatus"
+                        },
+                        {
+                            title: "Fecha Venta"
+                        },
+                        {
+                            title: "Detalle"
+                        },
+                        {
+                            title: "Acciones"
+                        }
+                        ]/*,
+                        dom: '<lf<t>ip>',
+                        footerCallback: function (row, data, start, end, display) {
+                            var api = this.api(), data;
+
+                            // Remove the formatting to get integer data for summation
+                            var intVal = function (i) {
+                                return typeof i === 'string' ?
+                                    i.replace(/[\$,]/g, '') * 1 :
+                                    typeof i === 'number' ?
+                                        i : 0;
+                            };
+
+                            // Total todas las paginas
+                            var total = api
+                                .column(6)
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+                            //Total monto por pagina  
+                            var pageTotal = api
+                                .column(6, { page: 'current' })
+                                .data()
+                                .reduce(function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }, 0);
+
+                            //Formato de moneda
+                            var totalGlobal = currencyFormat(total);
+                            var totalxPagina = currencyFormat(pageTotal);
+
+                            $('#footerVenta').remove();
+
+
+
+                            if (window.matchMedia("(max-width:767px)").matches) {
+
+                                $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th></tr></tfoot>');
+
+
+                                $('#footerVenta').find('th').eq(0).html("Total:");
+                                $('#footerVenta').find('th').eq(1).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
+
+                            } else {
+
+                                $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>');
+
+                                $('#footerVenta').find('th').eq(0).html("Total:");
+                                $('#footerVenta').find('th').eq(6).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
+
+                            }
+                        }*/
+
+                    })
+
+                }
+
+            })
+
+    })
+}
+/*=============================================
+DETALLE DE COMPRA
+=============================================*/
+$(document).on("click", "#btn-detalle-cmpa", function () {
+
+    $('#table_detcmpas').DataTable().destroy();
+    $("#table_detcmpas").remove();
+    $("#bodyDetCmpa").append(
+        '<table id="table_detcmpas" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+    );
+
+    var payload = {};
+
+    var idCompra = $(this).attr("idCompra");
+    var idComprobante = $(this).attr("idComprobante");
+
+    payload.idCompra = idCompra;
+    payload.idComprobante = idComprobante;
+
+    axios.post('/det_compras', payload)
+        .then(function (respuesta) {
+
+            const tblDetCmpas = document.querySelector('#table_detcmpas');
+
+            if (tblDetCmpas) {
+                var dataSet = respuesta.data;
+
+                $(tblDetCmpas).DataTable({
+                    data: dataSet,
+                    deferRender: true,
+                    iDisplayLength: 25,
+                    retrieve: true,
+                    processing: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    searching: false,
+                    language: {
+
+                        "sProcessing": "Procesando...",
+                        "sLengthMenu": "Mostrar _MENU_ registros",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+
+                    },
+                    columns: [{
+                        title: "#"
+                    },
+                    {
+                        title: "ID Producto"
+                    },
+                    {
+                        title: "Descripción"
+                    },
+                    {
+                        title: "Cantidad"
+                    },
+                    {
+                        title: "Precio Unitario", render: $.fn.dataTable.render.number(',', '.', 2)
+                    },
+                    {
+                        title: "Total", render: $.fn.dataTable.render.number(',', '.', 2)
+                    }
+                    ]
+                });
+
+            }
+        }).catch(errors => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hubo un error',
+                text: 'Error en la Base de Datos'
+            })
+        })
+
+})
+
+/*=============================================
+Eliminar/Cancelar Compra
+=============================================*/
+$(document).on("click", "#btn-anular-compra", function () {
+
+    Swal.fire({
+        title: '¿Está seguro de anular la compra?',
+        text: "¡Si no lo está puede cancelar la acción!",
+        icon: 'warning',
+        input: 'select',
+        inputPlaceholder: 'Seleccione el motivo',
+        inputOptions: {
+            1: 'Devolución',
+            2: 'Reclamación',
+            3: 'Error cajero'
+        },
+        inputValidator: (value) => {
+            return new Promise((resolve) => {
+                if (value === '') {
+                    resolve('Debes seleccionar un motivo de anulación')
+                } else {
+                    resolve()
+                }
+            })
+        },
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Si, anular!'
+    }).then((result) => {
+
+        if (result.value) {
+
+            var payload = {};
+
+            var idCompra = $(this).attr("idCompra");
+            var idComprobante = $(this).attr("idComprobante");
+
+            payload.idCompra = idCompra;
+            payload.idComprobante = idComprobante;
+            payload.idMotivo = result.value;
+
+            console.log(payload);
+            axios.put('/anular_compra', payload)
+                .then(function (respuesta) {
+                    console.log(respuesta);
+
+                    if (respuesta.data == 'Ok') {
+                        Swal.fire(
+                            'Compra Anulada!',
+                            'La compra fue anulada correctamente',
+                            'success'
+                        ).then(function (result) {
+                            if (result.value) {
+                                window.location = "/admin_compras";
+                            }
+                        });
+
+                    }
+
+                })
+        }
+        
+    })
+})
+
+$("#reservation").change(function () {
+
+    $('#tbl-admin-compras').DataTable().destroy();
+    $("#tbl-admin-compras").remove();
+    $("#btnOpcComp").remove();
+
+});
+/*=============================================
+Exportar Compra
+=============================================*/
+$(document).on("click", "#btn-export-compra", function () {
+
+    $('#btn-opciones-compras').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Exportando...').addClass('disabled');
+
+    var payload = {};
+    var periodoComp = document.getElementById("reservation").value;
+    var statusComp = document.getElementById("statusComp").value;
+
+    if (statusComp == "") {
+        statusComp = null;
+    }
+
+    var fecInicial = periodoComp.split('-')[0];
+    var fecFinal = periodoComp.split('-')[1];
+
+    payload.fecInicial = fecInicial;
+    payload.fecFinal = fecFinal;
+    payload.statusComp = statusComp;
+
+    axios.post('/exportar_compras', payload, {
+        responseType: 'blob'
+    }).then(function (respuesta) {
+        
+        var data = respuesta.data;
+
+        $('#btn-opciones-compras').html('Opciones').removeClass('disabled');
+
+        if (data) {
+
+            var blob = new Blob([data], { type: 'vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
+            FileSaver.saveAs(blob, 'reporte_compras.xlsx');
+
+        } else {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'No existen registros!',
+            })
+
+        }
+
+    }).catch(() => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Hubo un error',
+            text: 'Error en la base de datos!'
+        }).then(function (result) {
+            if (result.value) {
+                window.location = "/admin_compras";
+            }
+        });
+    });
+
+})
+
+/*=============================================
+Imprimir Venta
+=============================================*/
+$(document).on("click", "#btn-print-compra", function () {
+
+    $('#btn-opciones-compras').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Imprimiendo...').addClass('disabled');
+
+    var payload = {};
+    var periodoComp = document.getElementById("reservation").value;
+    var statusComp = document.getElementById("statusComp").value;
+
+    if (statusComp == "") {
+        statusComp = null;
+    }
+
+    var fecInicial = periodoComp.split('-')[0];
+    var fecFinal = periodoComp.split('-')[1];
+
+    payload.fecInicial = fecInicial;
+    payload.fecFinal = fecFinal;
+    payload.statusComp = statusComp;
+
+    axios.post('/imprimir_compras', payload)
+        .then(function (respuesta) {
+
+            $('#btn-opciones-compras').html('Opciones').removeClass('disabled');
+
+            var data = respuesta.data;
+
+            if (data.length > 0) {
+
+                var type = 'application/pdf';
+                const blobURL = URL.createObjectURL(pdfBlobConversion(data, type));
+                const theWindow = window.open(blobURL);
+                const theDoc = theWindow.document;
+                const theScript = document.createElement('script');
+                function injectThis() {
+                    window.print();
+                }
+                theScript.innerHTML = 'window.onload = ${injectThis.toString()};';
+                theDoc.body.appendChild(theScript);
+
+            } else {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'No existen registros!',
+                })
+
+            }
+
+        }).catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hubo un error',
+                text: 'Error en la base de datos!'
+            }).then(function (result) {
+                if (result.value) {
+                    window.location = "/admin_compras";
+                }
+            });
+        });
+})
+
+//converts base64 to blob type for windows
+function pdfBlobConversion(b64Data, contentType) {
+    contentType = contentType || '';
+    var sliceSize = 512;
+    b64Data = b64Data.replace(/^[^,]+,/, '');
+    b64Data = b64Data.replace(/\s/g, '');
+    var byteCharacters = window.atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset = offset + sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, { type: contentType });
+    return blob;
 }
