@@ -50,12 +50,12 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   store: new MySQLStore(database),
-  cookie: {
-		maxAge: 60 * 60 * 1000,
-		path: '/',
-		httpOnly: false,
-		secure: false
-	}
+  /* cookie: {
+    maxAge: 60 * 60 * 1000,
+    path: '/',
+    httpOnly: false,
+    secure: false
+  } */
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -112,6 +112,6 @@ STARTING SERVER
   console.log('Server is in port', app.get('port'));
 }); */
 var server = app.listen(port, host, () => {
-  server.setTimeout(300000);
+  //server.setTimeout(300000);
   console.log('Server is in port ', port);
 });

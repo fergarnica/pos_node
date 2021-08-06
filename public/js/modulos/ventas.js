@@ -16,7 +16,15 @@ const checkImp = document.getElementById('checkImp');
 
 const formularioVenta = document.getElementById('formularioVenta');
 const formSearchVtas = document.getElementById('searchVentas');
+const formAbrirCaja = document.getElementById('formAbrirCaja');
+const formNewRetiro = document.getElementById('formNewRetiro');
+const formNewIngreso = document.getElementById('formNewIngreso');
+const formCorteCaja = document.getElementById('formCorteCaja');
 
+const divCajas = document.getElementById("mostrarCajas");
+const divRetiros = document.getElementById("bodyRetiros");
+const divIngresos = document.getElementById("bodyIngresos");
+const divCorteCaja = document.getElementById("bodyCorteCaja");
 
 if (barCode) {
     body.classList.add("sidebar-collapse");
@@ -65,6 +73,170 @@ if (barCode) {
         }
     });
 
+    /* =============================================
+    SELECCIONAR CAJA
+    =============================================*/
+    if (divCajas) {
+
+        body.classList.add("sidebar-collapse");
+
+        axios.get('/cajas')
+            .then(function (respuesta) {
+
+                var dataSet = respuesta.data;
+
+                for (var i = 0; i < dataSet.length; i++) {
+
+                    if (dataSet[i].idusuario == null) {
+                        var uso = 'DISPONIBLE';
+                        var status = 'Cerrada';
+                        var textColor = 'danger';
+                        var btnColor = 'success';
+                        var cardColor = 'bg-gradient-success';
+                        var opDisabled = null;
+                    } else {
+
+                        var uso = 'EN USO';
+                        var btnColor = 'secondary';
+                        var cardColor = 'bg-gradient-secondary';
+                        var opDisabled = 'disabled';
+
+                        if (dataSet[i].status == 0) {
+                            var status = 'Cerrada';
+                            var textColor = 'danger';
+                        } else {
+                            var status = 'Abierta';
+                            var textColor = 'success';
+                        }
+
+                    }
+
+                    $(divCajas).append(
+                        '<div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">' +
+                        '<div class="card bg-light">' +
+                        '<div class="card-header ' + cardColor + ' text-bold border-bottom-0">' +
+                        'CAJA ' + dataSet[i].idcaja +
+                        '<div class="card-tools">' +
+                        '<i class="fas fa-cash-register"></i>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="card-body pt-0">' +
+                        '<div class="row">' +
+                        '<div class="col-12">' +
+                        '<p></p>' +
+                        '<h2 class="lead"><b>' + uso + '</b></h2>' +
+                        '<p class="text-' + textColor + ' text-sm"><b>' + status + '</b></p>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="card-footer">' +
+                        '<div class="text-right">' +
+                        '<button class="btn btn-' + btnColor + ' btn-sm" data-toggle="modal" id="btn-abrir-caja" idCaja="' + dataSet[i].idcaja + '" data-target="#modalAbrirCaja" ' + opDisabled + '>' +
+                        '<i class="fas fa-donate"></i> Abrir' +
+                        '</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>'
+                    )
+
+                }
+
+            })
+
+    }
+
+    if (divRetiros) {
+
+        body.classList.add("sidebar-collapse");
+
+        /* =============================================
+        TABLA RETIROS
+        =============================================*/
+        $('#tbl-detalle-retiro').DataTable({
+            deferRender: true,
+            iDisplayLength: 50,
+            retrieve: true,
+            processing: true,
+            fixedHeader: false,
+            responsive: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            bInfo: false,
+            bLengthChange: false,
+            bAutoWidth: false,
+        });
+
+    }
+
+    if (divIngresos) {
+
+        body.classList.add("sidebar-collapse");
+
+        /* =============================================
+        TABLA RETIROS
+        =============================================*/
+        $('#tbl-detalle-ingreso').DataTable({
+            deferRender: true,
+            iDisplayLength: 50,
+            retrieve: true,
+            processing: true,
+            fixedHeader: false,
+            responsive: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            bInfo: false,
+            bLengthChange: false,
+            bAutoWidth: false,
+        });
+
+    }
+
+    if(divCorteCaja){
+
+        body.classList.add("sidebar-collapse");
+
+        /* =============================================
+        TABLA DETALLE CORTE
+        =============================================*/
+        $('#tbl-info-cortecaja').DataTable({
+            deferRender: true,
+            iDisplayLength: 50,
+            retrieve: true,
+            processing: true,
+            fixedHeader: false,
+            responsive: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            bInfo: false,
+            bLengthChange: false,
+            bAutoWidth: false,
+        });
+
+        /* =============================================
+        TABLA CORTE CAJA
+        =============================================*/
+        $('#tbl-det-cortecaja').DataTable({
+            deferRender: true,
+            iDisplayLength: 50,
+            retrieve: true,
+            processing: true,
+            fixedHeader: false,
+            responsive: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            bInfo: false,
+            bLengthChange: false,
+            bAutoWidth: false,
+        });
+
+    }
+
+
 })();
 /* =============================================
 AGREGAR PRODUCTOS A VENDER
@@ -101,12 +273,13 @@ function buscar() {
                     var descripcion = dataSet[0].producto;
                     var stock = dataSet[0].stock_total;
                     var precio = dataSet[0].precio;
+                    var marca = dataSet[0].marca;
 
                     var prodItem = $(".nuevaDescripcionProducto");
 
                     if (prodItem.length == 0) {
 
-                        newItem(idProducto, descripcion, stock, precio)
+                        newItem(idProducto, descripcion, marca, stock, precio)
 
                     } else {
 
@@ -114,7 +287,7 @@ function buscar() {
 
                         if (indexProd == -1) {
 
-                            newItem(idProducto, descripcion, stock, precio)
+                            newItem(idProducto, descripcion, marca, stock, precio)
 
                         } else {
 
@@ -164,39 +337,31 @@ function buscar() {
 /* =============================================
 INSERTAR NUEVO ITEM
 =============================================*/
-function newItem(idProducto, descripcion, stock, precio) {
+function newItem(idProducto, descripcion, marca, stock, precio) {
 
-    $("#nuevoProducto").append(
-        '<div class="row">' +
-        '<div class="col-4">' +
-        '<div class="input-group">' +
-        '<div class="input-group-prepend">' +
-        '<button type="button" idProducto="' + idProducto + '" class="btn btn-danger quitarProducto""><i class="fas fa-times"></i></button>' +
-        '</div>' +
-        '<input type="text" class="form-control nuevaDescripcionProducto" idProducto="' + idProducto + '" name="agregarProducto" value="' + descripcion + '" readonly required>' +
-        '</div>' +
-        '</div>' +
-        '<div class="col-3">' +
-        '<div class="input-group">' +
-        '<div class="input-group-prepend">' +
-        '<span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>' +
-        '</div>' +
-        '<input type="text" class="form-control text-right" precioReal="' + precio + '" id="' + idProducto + 'a" name="nuevoPrecio" value="' + precio + '" readonly required>' +
-        '</div>' +
-        '</div>' +
-        '<div class="col-2">' +
-        '<input type="number" idProducto="' + idProducto + '" id="' + idProducto + '" class="form-control text-center nuevaCantidadProducto" name="nuevaCantidadProducto" min="1" value="1" stock="' + stock + '" nuevoStock="' + Number(stock - 1) + '" required>' +
-        '</div>' +
-        '<div class="col-3 ingresoPrecio">' +
-        '<div class="input-group">' +
-        '<div class="input-group-prepend">' +
-        '<span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>' +
-        '</div>' +
-        '<input type="text" class="form-control text-right nuevoTotalProducto" id="' + idProducto + 'b"  precioReal="' + precio + '" value="' + precio + '" readonly required>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '<p></p>')
+    var t = $('#nuevoProdVenta').DataTable({
+        deferRender: true,
+        iDisplayLength: 50,
+        retrieve: true,
+        processing: true,
+        fixedHeader: false,
+        responsive: true,
+        paging: false,
+        searching: false,
+        ordering: false,
+        bInfo: false,
+        bLengthChange: false,
+        bAutoWidth: false
+    });
+
+    t.row.add([
+        '<button type="button" idProducto="' + idProducto + '" class="btn btn-sm btn-danger quitarProducto""><i class="fas fa-trash-alt"></i></button>',
+        '<div>' + descripcion + '<input type="hidden" class="form-control nuevaDescripcionProducto" idProducto="' + idProducto + '" id="' + idProducto + 'p"  value="' + descripcion + '">' + '</div>',
+        marca,
+        '<div>' + precio.toFixed(2) + '<input type="hidden" class="form-control" precioReal="' + precio + '" id="' + idProducto + 'a" name="nuevoPrecio" value="' + precio + '">' + '</div>',
+        '<input type="number" idProducto="' + idProducto + '" id="' + idProducto + '" class="form-control text-center nuevaCantidadProducto"  min="1" value="1" stock="' + stock + '" nuevoStock="' + Number(stock - 1) + '" required>',
+        '<input type="number" class="form-control text-center nuevoTotalProducto" id="' + idProducto + 'b"  precioReal="' + precio + '" value="' + precio.toFixed(2) + '" readonly >'
+    ]).draw(false);
 
     barCode.value = "";
 
@@ -257,47 +422,25 @@ MODIFICAR LA CANTIDAD MANUAL
 =============================================*/
 $("#formularioVenta").on("change", "input.nuevaCantidadProducto", function () {
 
-    var precio = $(this).parent().parent().children(".ingresoPrecio").children().children(".nuevoTotalProducto");
-    var precioFinal = $(this).val() * precio.attr("precioReal");
-    precio.val(precioFinal);
+    var idProdCam = $(this).attr("idproducto");
+    var newId = idProdCam + 'a';
+    var cant = $(this).val();
+
+    var precio = document.getElementById(newId);
+    var precioFinal = cant * precio.getAttribute("precioReal");
+
+    var newIdTotal = idProdCam + 'b';
+    document.getElementById(newIdTotal).value = precioFinal.toFixed(2);
 
     var nuevoStock = Number($(this).attr("stock")) - $(this).val();
 
     $(this).attr("nuevoStock", nuevoStock);
 
-    if (Number($(this).val()) > Number($(this).attr("stock"))) {
+    var numComprobante = document.getElementById('numComCompra');
+    var divNumTrans = document.getElementById('numTransCom');
 
-        /*=============================================
-        SI LA CANTIDAD ES SUPERIOR AL STOCK REGRESAR VALORES INICIALES
-        =============================================*/
-        $(this).val(1);
-
-        var precioFinal = $(this).val() * precio.attr("precioReal");
-
-        precio.val(precioFinal);
-
-        sumarTotalPrecios();
-
-        Swal.fire({
-            icon: 'warning',
-            title: 'La cantidad supera el Stock',
-            text: "¡Sólo existen " + $(this).attr("stock") + " unidades!"
-        });
-
-        return;
-
-    }
-
-    var divEfectivoRec = document.getElementById('efectivoRecibido');
-    var divNuevoCambio = document.getElementById('nuevoCambio');
-    var divNumTrans = document.getElementById('numTrans');
-
-    if (divEfectivoRec) {
-        divEfectivoRec.value = '';
-    }
-
-    if (divNuevoCambio) {
-        divNuevoCambio.value = '';
+    if (numComprobante) {
+        numComprobante.value = '';
     }
 
     if (divNumTrans) {
@@ -306,13 +449,8 @@ $("#formularioVenta").on("change", "input.nuevaCantidadProducto", function () {
 
     // SUMAR TOTAL DE PRECIOS
     sumarTotalPrecios();
-
     // AGREGAR IMPUESTO
     agregarImpuesto();
-
-    // AGRUPAR PRODUCTOS EN FORMATO JSON
-
-    //listarProductos()
 
 });
 /*=============================================
@@ -346,11 +484,6 @@ function updTotProd(idPrecio, cantNuevo, idprecioUnit) {
     sumarTotalPrecios();
     // AGREGAR IMPUESTO
     agregarImpuesto();
-
-
-    // AGRUPAR PRODUCTOS EN FORMATO JSON
-
-    //listarProductos()
 
 }
 /*=============================================
@@ -611,82 +744,32 @@ localStorage.removeItem("quitarProducto");
 
 $("#formularioVenta").on("click", "button.quitarProducto", function () {
 
-    $(this).parent().parent().parent().parent().remove();
-    var idProducto = $(this).attr("idProducto");
+    var row = $(this).closest("tr").get(0);
+    var oTable = $('#nuevoProdVenta').dataTable();
+    oTable.fnDeleteRow(oTable.fnGetPosition(row));
 
-    /*=============================================
-    ALMACENAR EN EL LOCALSTORAGE EL ID DEL PRODUCTO A QUITAR
-    =============================================*/
+    var totalItems = oTable.fnGetData().length;
 
-    if (localStorage.getItem("quitarProducto") == null) {
-        idQuitarProducto = [];
-    } else {
-        idQuitarProducto.concat(localStorage.getItem("quitarProducto"))
-    }
+    if (totalItems == 0) {
 
-    idQuitarProducto.push({ "idProducto": idProducto });
-
-    localStorage.setItem("quitarProducto", JSON.stringify(idQuitarProducto));
-
-    var prodItem = $(".nuevaDescripcionProducto");
-    var formaPago = document.getElementById('formaPago').value;
-    var cliActual = document.getElementById('clienteVenta').value;
-
-    if (prodItem.length == 0) {
-        $("#subtotalVenta").val(0.00);
-        $("#totalVenta").val(0.00);
+        $("#subtotalCompra").val(0.00);
+        $("#totalCompra").val(0.00);
         $("#big_total").html('$ 0.00');
         $('#impuestosBox').empty();
         $('#boxFormaPago').empty();
+        $(oTable).remove();
 
-        /*if (document.getElementById('formaPago').disabled == false) {
-            document.getElementById('formaPago').disabled = true;
-        }*/
-
-        if (cliActual > 0) {
-            document.getElementById('clienteVenta').value = 0;
-            if (document.getElementById('clienteVenta').disabled == false) {
-                document.getElementById('clienteVenta').disabled = true;
-            }
-        } else {
-            if (document.getElementById('clienteVenta').disabled == false) {
-                document.getElementById('clienteVenta').disabled = true;
-            }
-        }
-
-        if (formaPago > 0) {
-            document.getElementById('formaPago').value = 0;
-
-            if (document.getElementById('formaPago').disabled == false) {
-                document.getElementById('formaPago').disabled = true;
-            }
-        }
-
-        if (document.getElementById('checkImp').disabled == false) {
-            document.getElementById('checkImp').disabled = true;
-        }
-
-        if (document.getElementById('checkRed').disabled == false) {
-            document.getElementById('checkRed').disabled = true;
-        }
-
-        if (document.getElementById('checkImp').checked == true) {
-            document.getElementById('checkImp').checked = false;
-        }
-
-        if (document.getElementById('checkRed').checked == true) {
-            document.getElementById('checkRed').checked = false;
-        }
-
-        document.getElementById('barcodeVenta').focus();
+        window.location = "/punto_venta";
 
     } else {
+
         // SUMAR TOTAL DE PRECIOS
-        sumarTotalPrecios()
+        sumarTotalPrecios();
         // AGREGAR IMPUESTO
-        agregarImpuesto()
+        agregarImpuesto();
 
     }
+
 });
 
 /*=============================================
@@ -720,7 +803,6 @@ if (formularioVenta) {
         var subtotalVenta = document.getElementById('subtotalVenta').value;
         var totalVenta = document.getElementById('totalVenta').value;
 
-        payload.idcaja = 1;
         payload.idcliente = clienteVenta;
         payload.subtotal = subtotalVenta;
         payload.impuesto = impuesto;
@@ -1287,7 +1369,7 @@ $(document).on("click", "#btn-anular-venta", function () {
         input: 'select',
         inputPlaceholder: 'Seleccione el motivo',
         inputOptions: {
-            1: 'Devolución',
+            1: 'Error Sistema',
             2: 'Reclamación',
             3: 'Error cajero'
         },
@@ -1344,3 +1426,399 @@ $(document).on("click", "#btn-anular-venta", function () {
     })
 
 })
+
+/*=============================================
+Abrir caja
+=============================================*/
+$('#modalAbrirCaja').on('shown.bs.modal', function () {
+    console.log('entramos');
+    document.getElementById('montoApertura').focus();
+});
+
+$(document).on("click", "#btn-abrir-caja", function () {
+
+    var idCaja = $(this).attr("idCaja");
+
+    $("#idCajaAbrir").val(idCaja);
+
+});
+
+if (formAbrirCaja) {
+
+    formAbrirCaja.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+        var idCaja = document.getElementById('idCajaAbrir').value;
+        var montoIni = document.getElementById('montoApertura').value;
+
+        payload.idCaja = idCaja;
+        payload.montoIni = montoIni;
+
+        axios.put('/abrir_caja', payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Ok') {
+
+                    $('#modalAbrirCaja').modal('dispose');
+
+                    Swal.fire(
+                        'Exito!',
+                        'Caja abierta correctamente!',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/punto_venta";
+                        }
+                    });
+
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+    })
+
+}
+
+/*=============================================
+RETIRO DE EFECTIVO
+=============================================*/
+if (formNewRetiro) {
+
+    formNewRetiro.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var montoRetiro = document.getElementById('montoRetiro').value;
+        var cantRet1000 = document.getElementById('cantRet1000').value;
+        var cantRet500 = document.getElementById('cantRet500').value;
+        var cantRet200 = document.getElementById('cantRet200').value;
+        var cantRet100 = document.getElementById('cantRet100').value;
+        var cantRet50 = document.getElementById('cantRet50').value;
+        var cantRet20 = document.getElementById('cantRet20').value;
+        var cantRet10 = document.getElementById('cantRet10').value;
+        var cantRet5 = document.getElementById('cantRet5').value;
+        var cantRet2 = document.getElementById('cantRet2').value;
+        var cantRet1 = document.getElementById('cantRet1').value;
+        var cantRet50c = document.getElementById('cantRet50c').value;
+
+        if (cantRet1000 == '') {
+            var cantRet1000 = null;
+        }
+
+        if (cantRet500 == '') {
+            var cantRet500 = null;
+        }
+
+        if (cantRet200 == '') {
+            var cantRet200 = null;
+        }
+
+        if (cantRet100 == '') {
+            var cantRet100 = null;
+        }
+
+        if (cantRet50 == '') {
+            var cantRet50 = null;
+        }
+
+        if (cantRet20 == '') {
+            var cantRet20 = null;
+        }
+
+        if (cantRet10 == '') {
+            var cantRet10 = null;
+        }
+
+        if (cantRet5 == '') {
+            var cantRet5 = null;
+        }
+
+        if (cantRet2 == '') {
+            var cantRet2 = null;
+        }
+
+        if (cantRet1 == '') {
+            var cantRet1 = null;
+        }
+
+        if (cantRet50c == '') {
+            var cantRet50c = null;
+        }
+
+        payload.importe = montoRetiro;
+        payload.den_1000_mxn = cantRet1000;
+        payload.den_500_mxn = cantRet500;
+        payload.den_200_mxn = cantRet200;
+        payload.den_100_mxn = cantRet100;
+        payload.den_50_mxn = cantRet50;
+        payload.den_20_mxn = cantRet20;
+        payload.den_10_mxn = cantRet10;
+        payload.den_5_mxn = cantRet5;
+        payload.den_2_mxn = cantRet2;
+        payload.den_1_mxn = cantRet1;
+        payload.den_50c_mxn = cantRet50c;
+
+        axios.post('/realizar_retiro', payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Ok') {
+                    Swal.fire(
+                        'Exito!',
+                        'Retiro de efectivo registrado correctamente!',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/punto_venta";
+                        }
+                    });
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+    })
+
+}
+
+/*=============================================
+INGRESO DE EFECTIVO
+=============================================*/
+if (formNewIngreso) {
+
+    formNewIngreso.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var montoIngreso = document.getElementById('montoIngreso').value;
+        var cantIng1000 = document.getElementById('cantIng1000').value;
+        var cantIng500 = document.getElementById('cantIng500').value;
+        var cantIng200 = document.getElementById('cantIng200').value;
+        var cantIng100 = document.getElementById('cantIng100').value;
+        var cantIng50 = document.getElementById('cantIng50').value;
+        var cantIng20 = document.getElementById('cantIng20').value;
+        var cantIng10 = document.getElementById('cantIng10').value;
+        var cantIng5 = document.getElementById('cantIng5').value;
+        var cantIng2 = document.getElementById('cantIng2').value;
+        var cantIng1 = document.getElementById('cantIng1').value;
+        var cantIng50c = document.getElementById('cantIng50c').value;
+
+        if (cantIng1000 == '') {
+            var cantIng1000 = null;
+        }
+
+        if (cantIng500 == '') {
+            var cantIng500 = null;
+        }
+
+        if (cantIng200 == '') {
+            var cantIng200 = null;
+        }
+
+        if (cantIng100 == '') {
+            var cantIng100 = null;
+        }
+
+        if (cantIng50 == '') {
+            var cantIng50 = null;
+        }
+
+        if (cantIng20 == '') {
+            var cantIng20 = null;
+        }
+
+        if (cantIng10 == '') {
+            var cantIng10 = null;
+        }
+
+        if (cantIng5 == '') {
+            var cantIng5 = null;
+        }
+
+        if (cantIng2 == '') {
+            var cantIng2 = null;
+        }
+
+        if (cantIng1 == '') {
+            var cantIng1 = null;
+        }
+
+        if (cantIng50c == '') {
+            var cantIng50c = null;
+        }
+
+        payload.importe = montoIngreso;
+        payload.den_1000_mxn = cantIng1000;
+        payload.den_500_mxn = cantIng500;
+        payload.den_200_mxn = cantIng200;
+        payload.den_100_mxn = cantIng100;
+        payload.den_50_mxn = cantIng50;
+        payload.den_20_mxn = cantIng20;
+        payload.den_10_mxn = cantIng10;
+        payload.den_5_mxn = cantIng5;
+        payload.den_2_mxn = cantIng2;
+        payload.den_1_mxn = cantIng1;
+        payload.den_50c_mxn = cantIng50c;
+
+        axios.post('/realizar_ingreso', payload)
+            .then(function (respuesta) {
+
+                if (respuesta.data == 'Ok') {
+                    Swal.fire(
+                        'Exito!',
+                        'Ingreso de efectivo registrado correctamente!',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/punto_venta";
+                        }
+                    });
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+    })
+
+}
+/*=============================================
+CORTE DE CAJA
+=============================================*/
+if(formCorteCaja){
+
+    formCorteCaja.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var payload = {};
+
+        var montoCierre = document.getElementById('montoCierre').value;
+        var sumaMonto = document.getElementById('sumaIdeal').value;
+        var cantCorte1000 = document.getElementById('cantCorte1000').value;
+        var cantCorte500 = document.getElementById('cantCorte500').value;
+        var cantCorte200 = document.getElementById('cantCorte200').value;
+        var cantCorte100 = document.getElementById('cantCorte100').value;
+        var cantCorte50 = document.getElementById('cantCorte50').value;
+        var cantCorte20 = document.getElementById('cantCorte20').value;
+        var cantCorte10 = document.getElementById('cantCorte10').value;
+        var cantCorte5 = document.getElementById('cantCorte5').value;
+        var cantCorte2 = document.getElementById('cantCorte2').value;
+        var cantCorte1 = document.getElementById('cantCorte1').value;
+        var cantCorte50c = document.getElementById('cantCorte50c').value;
+
+        var diferencia = montoCierre - sumaMonto;
+
+        if (cantCorte1000 == '') {
+            var cantCorte1000 = null;
+        }
+
+        if (cantCorte500 == '') {
+            var cantCorte500 = null;
+        }
+
+        if (cantCorte200 == '') {
+            var cantCorte200 = null;
+        }
+
+        if (cantCorte100 == '') {
+            var cantCorte100 = null;
+        }
+
+        if (cantCorte50 == '') {
+            var cantCorte50 = null;
+        }
+
+        if (cantCorte20 == '') {
+            var cantCorte20 = null;
+        }
+
+        if (cantCorte10 == '') {
+            var cantCorte10 = null;
+        }
+
+        if (cantCorte5 == '') {
+            var cantCorte5 = null;
+        }
+
+        if (cantCorte2 == '') {
+            var cantCorte2 = null;
+        }
+
+        if (cantCorte1 == '') {
+            var cantCorte1 = null;
+        }
+
+        if (cantCorte50c == '') {
+            var cantCorte50c = null;
+        }
+
+        payload.importe = montoCierre;
+        payload.den_1000_mxn = cantCorte1000;
+        payload.den_500_mxn = cantCorte500;
+        payload.den_200_mxn = cantCorte200;
+        payload.den_100_mxn = cantCorte100;
+        payload.den_50_mxn = cantCorte50;
+        payload.den_20_mxn = cantCorte20;
+        payload.den_10_mxn = cantCorte10;
+        payload.den_5_mxn = cantCorte5;
+        payload.den_2_mxn = cantCorte2;
+        payload.den_1_mxn = cantCorte1;
+        payload.den_50c_mxn = cantCorte50c;
+        payload.diferencia = diferencia;
+
+        Swal.fire({
+            title: '¿Está seguro de realizar el corte de caja?',
+            text: "¡Si no lo está puede cancelar la acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Si, cerrar!'
+        }).then((result) => {
+            if (result.value) {
+
+                console.log('confirma');
+                axios.post('/corte_caja', payload)
+                    .then(function (respuesta) {
+                        console.log(respuesta);
+                        Swal.fire(
+                            'Exito!',
+                            'La caja se cerró correctamente!',
+                            'success'
+                        ).then(function (result) {
+                            if (result.value) {
+                                window.location = "/punto_venta";
+                            }
+                        });
+    
+                    }).catch(errors => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hubo un error',
+                            text: 'Error en la Base de Datos'
+                        })
+                    })
+            }
+        })
+
+
+    })
+
+}

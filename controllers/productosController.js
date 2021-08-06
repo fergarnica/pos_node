@@ -57,13 +57,13 @@ exports.categorias = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/categorias', {
             nombrePagina: 'Categorias'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -248,13 +248,13 @@ exports.marcas = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/marcas', {
             nombrePagina: 'Marcas'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -437,13 +437,13 @@ exports.productos = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/productos', {
             nombrePagina: 'Productos'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -460,13 +460,13 @@ exports.movimientosProductos = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/movimientos_productos', {
             nombrePagina: 'Movimientos de Productos'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -484,17 +484,17 @@ exports.agregarProducto = async (req, res) => {
 
     var { producto, bar_code, idcategoria, idpresentacion, idmarca, idproveedor, stock_total, pre_costo, pre_costo_neto, pre_mayoreo, pre_menudeo, inventariable, status, fecha_creacion } = req.body;
 
-    if( inventariable === true){
-        var inventariable=1;
-    }else{
-        var inventariable=0;
+    if (inventariable === true) {
+        var inventariable = 1;
+    } else {
+        var inventariable = 0;
     }
 
-    if(bar_code === ''){
+    if (bar_code === '') {
         var bar_code = null;
     }
 
-    if(stock_total === ''){
+    if (stock_total === '') {
         var stock_total = null;
     }
 
@@ -506,21 +506,21 @@ exports.agregarProducto = async (req, res) => {
         idproducto,
         producto,
         bar_code,
-        idcategoria, 
-        idpresentacion, 
-        idmarca, 
-        idproveedor, 
+        idcategoria,
+        idpresentacion,
+        idmarca,
+        idproveedor,
         stock_total,
         inventariable,
         status,
-        fecha_creacion    
+        fecha_creacion
     };
 
     const newPrecios = {
         idproducto,
-        pre_costo, 
-        pre_costo_neto, 
-        pre_mayoreo, 
+        pre_costo,
+        pre_costo_neto,
+        pre_mayoreo,
         pre_menudeo,
     }
 
@@ -532,9 +532,9 @@ exports.agregarProducto = async (req, res) => {
 
     const newPrecHist = {
         idproducto,
-        new_pre_costo, 
-        new_pre_costo_neto, 
-        new_pre_mayoreo, 
+        new_pre_costo,
+        new_pre_costo_neto,
+        new_pre_mayoreo,
         new_pre_menudeo,
         idusuario,
         fecha
@@ -546,7 +546,7 @@ exports.agregarProducto = async (req, res) => {
 
     await pool.query('INSERT INTO precios_hist SET ?', [newPrecHist]);
 
-    await pool.query('call sp_reg_mov_prod(?,?,?,?,?)',[newProd.idproducto, tipoMov, newProd.stock_total, idMotivo, idusuario]);
+    await pool.query('call sp_reg_mov_prod(?,?,?,?,?)', [newProd.idproducto, tipoMov, newProd.stock_total, idMotivo, idusuario]);
 
     res.status(200).send('Producto Creado Correctamente!');
 }
@@ -578,10 +578,10 @@ exports.mostrarProductos = async (req, res) => {
                 var status = "<button type='button' id='btn-estatus-producto' class='btn btn-success btn-sm' estadoProducto='0' idProducto=" + "'" + arrayProductos.idproducto + "'" + ">Activado</button>";
             }
 
-            if(arrayProductos.imagen === null){
-               var imagen =  "<img src='/uploads/productos/default/anonymous.png' width='40px'>";
-            }else{
-               var imagen = "<img src='/uploads/productos/"+ arrayProductos.imagen +"' width='40px'>";
+            if (arrayProductos.imagen === null) {
+                var imagen = "<img src='/uploads/productos/default/anonymous.png' width='40px'>";
+            } else {
+                var imagen = "<img src='/uploads/productos/" + arrayProductos.imagen + "' width='40px'>";
             }
 
             var fecha = moment(arrayProductos.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
@@ -617,7 +617,7 @@ exports.mostrarImgProducto = async (req, res) => {
 
     let idProducto = req.params.id;
 
-    const dataImg = await pool.query('SELECT idproducto, imagen FROM productos WHERE idproducto =?', idProducto );
+    const dataImg = await pool.query('SELECT idproducto, imagen FROM productos WHERE idproducto =?', idProducto);
 
     res.status(200).send(dataImg);
 
@@ -626,8 +626,8 @@ exports.mostrarImgProducto = async (req, res) => {
 exports.agregarImgProducto = async (req, res) => {
 
     const { idproducto } = req.body;
-    
-    if(req.file) {
+
+    if (req.file) {
 
         var imagen = req.file.filename;
 
@@ -635,19 +635,19 @@ exports.agregarImgProducto = async (req, res) => {
 
         var oldImg = existImg[0].imagen
 
-        if(oldImg === null){
+        if (oldImg === null) {
 
             await pool.query('UPDATE productos SET imagen = ? WHERE idproducto = ?', [imagen, idproducto]);
 
             req.flash('success', 'Imagen actualizada.');
             res.redirect('/productos');
 
-        }else{
+        } else {
 
             pathOld = __dirname + '../../public/uploads/productos/' + oldImg;
             await pool.query('UPDATE productos SET imagen = ? WHERE idproducto = ?', [imagen, idproducto]);
 
-            if (fs.existsSync(pathOld)){
+            if (fs.existsSync(pathOld)) {
                 fs.unlinkSync(pathOld);
             }
 
@@ -689,12 +689,12 @@ exports.mostrarProducto = async (req, res) => {
 
     let idProducto = req.params.id;
 
-    var values = await pool.query('call get_info_producto(?)',idProducto);
+    var values = await pool.query('call get_info_producto(?)', idProducto);
 
     var dataProducto = values[0];
 
     res.status(200).send(dataProducto);
-    
+
 }
 
 exports.precioProducto = async (req, res) => {
@@ -704,16 +704,16 @@ exports.precioProducto = async (req, res) => {
     var precioProdId = await pool.query('call get_precio_venta_producto(?,1)', idProducto);
     var newprecioProdId = precioProdId[0];
 
-    if(newprecioProdId.length === 0){
+    if (newprecioProdId.length === 0) {
         var precioProdCod = await pool.query('call get_precio_venta_producto(?,2)', idProducto);
         var newprecioProdCod = precioProdCod[0];
-        
-        if(newprecioProdCod.length === 0){
+
+        if (newprecioProdCod.length === 0) {
             res.send('Empty');
-        }else{
+        } else {
             res.status(200).send(newprecioProdCod);
         }
-    }else{
+    } else {
         res.status(200).send(newprecioProdId);
     }
 }
@@ -725,16 +725,16 @@ exports.precioProductoCompra = async (req, res) => {
     var precioProdId = await pool.query('call get_precio_compra_producto(?,1)', idProducto);
     var newprecioProdId = precioProdId[0];
 
-    if(newprecioProdId.length === 0){
+    if (newprecioProdId.length === 0) {
         var precioProdCod = await pool.query('call get_precio_compra_producto(?,2)', idProducto);
         var newprecioProdCod = precioProdCod[0];
-        
-        if(newprecioProdCod.length === 0){
+
+        if (newprecioProdCod.length === 0) {
             res.send('Empty');
-        }else{
+        } else {
             res.status(200).send(newprecioProdCod);
         }
-    }else{
+    } else {
         res.status(200).send(newprecioProdId);
     }
 }
@@ -746,13 +746,13 @@ exports.presentaciones = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/presentacion', {
             nombrePagina: 'Presentaciones'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -985,7 +985,7 @@ exports.editarProducto = async (req, res) => {
 
     var conteo = 0;
 
-    var values = await pool.query('call get_info_producto(?)',idProducto);
+    var values = await pool.query('call get_info_producto(?)', idProducto);
 
     var dataBase = values[0];
 
@@ -1064,13 +1064,13 @@ exports.movsProductos = async (req, res) => {
 
     var conteo = 0;
 
-    var q = await pool.query('call get_det_movsprod(?,?,?)',[idProd, mesIni, mesFin]);
+    var q = await pool.query('call get_det_movsprod(?,?,?)', [idProd, mesIni, mesFin]);
 
     const values = q[0];
 
-    if(values.length === 0){
+    if (values.length === 0) {
         res.send('empty');
-    }else{
+    } else {
 
         const dataMovs = [];
 
@@ -1098,7 +1098,7 @@ exports.movsProductos = async (req, res) => {
         res.send(dataMovs);
 
     }
-    
+
 }
 
 exports.entradaProductosForm = async (req, res) => {
@@ -1129,7 +1129,7 @@ exports.motivosEntradaInv = async (req, res) => {
 
             const obj = [
                 arrayMotivos.idmot_mov,
-                arrayMotivos.motivo           
+                arrayMotivos.motivo
             ];
 
             dataMotivos.push(obj);
@@ -1168,7 +1168,7 @@ exports.motivosSalidaInv = async (req, res) => {
 
             const obj = [
                 arrayMotivos.idmot_mov,
-                arrayMotivos.motivo           
+                arrayMotivos.motivo
             ];
 
             dataMotivos.push(obj);
@@ -1185,11 +1185,11 @@ exports.regMovInv = async (req, res) => {
 
     var { idproducto, tipo_mov, cantidad, idmot_mov } = req.body;
 
-    var q = await pool.query('call sp_ajuste_inv(?,?,?,?,?)',[idproducto,idmot_mov,cantidad,tipo_mov,idusuario]);
+    var q = await pool.query('call sp_ajuste_inv(?,?,?,?,?)', [idproducto, idmot_mov, cantidad, tipo_mov, idusuario]);
 
     var rowsAff = q.affectedRows;
 
-    if(rowsAff>0){
+    if (rowsAff > 0) {
         res.send('Ok');
     }
 
@@ -1202,13 +1202,13 @@ exports.historicoPrecios = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/precios_hist', {
             nombrePagina: 'Historico de Precios'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -1224,13 +1224,13 @@ exports.getHistPrecios = async (req, res) => {
 
     var conteo = 0;
 
-    var q = await pool.query('call get_histprec(?,?)',[idProd, tipPrecio]);
+    var q = await pool.query('call get_histprec(?,?)', [idProd, tipPrecio]);
 
     const values = q[0];
 
-    if(values.length === 0){
+    if (values.length === 0) {
         res.send('empty');
-    }else{
+    } else {
 
         const dataHist = [];
 
@@ -1241,12 +1241,12 @@ exports.getHistPrecios = async (req, res) => {
 
             var fecha = moment(arrayMovs.fecha).format('YYYY-MM-DD hh:mm:ss a');
 
-            if(arrayMovs.accion>0){
+            if (arrayMovs.accion > 0) {
                 var arrow = "<i class='fas fa-arrow-circle-up text-success'></i>"
-            }else{
-                if(arrayMovs.accion<0){
+            } else {
+                if (arrayMovs.accion < 0) {
                     var arrow = "<i class='fas fa-arrow-circle-down text-danger'></i>"
-                }else{
+                } else {
                     var arrow = "<i class='fas fa-minus-circle text-info'></i>"
                 }
             }
@@ -1267,7 +1267,7 @@ exports.getHistPrecios = async (req, res) => {
         res.send(dataHist);
 
     }
-    
+
 }
 
 exports.ajustePrecios = async (req, res) => {
@@ -1277,13 +1277,13 @@ exports.ajustePrecios = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/productos/ajuste_precios', {
             nombrePagina: 'Ajuste de Precios'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -1297,22 +1297,22 @@ exports.getPrecioAjuste = async (req, res) => {
 
     var { idProd, tipoPrecio } = req.body;
 
-    var tipBusqueda= 1;
+    var tipBusqueda = 1;
 
-    var precioProdId = await pool.query('call get_precio_ajuste_producto(?,?,?)', [idProd,tipoPrecio,tipBusqueda]);
+    var precioProdId = await pool.query('call get_precio_ajuste_producto(?,?,?)', [idProd, tipoPrecio, tipBusqueda]);
     var newprecioProdId = precioProdId[0];
 
-    if(newprecioProdId.length === 0){
-        var tipBusqueda= 2;
-        var precioProdCod = await pool.query('call get_precio_ajuste_producto(?,?,?)', [idProd,tipoPrecio,tipBusqueda]);
+    if (newprecioProdId.length === 0) {
+        var tipBusqueda = 2;
+        var precioProdCod = await pool.query('call get_precio_ajuste_producto(?,?,?)', [idProd, tipoPrecio, tipBusqueda]);
         var newprecioProdCod = precioProdCod[0];
-        
-        if(newprecioProdCod.length === 0){
+
+        if (newprecioProdCod.length === 0) {
             res.send('Empty');
-        }else{
+        } else {
             res.status(200).send(newprecioProdCod);
         }
-    }else{
+    } else {
         res.status(200).send(newprecioProdId);
     }
 
@@ -1323,33 +1323,150 @@ exports.ajustaPrecio = async (req, res) => {
     var idUsuario = res.locals.usuario.idusuario;
     var { idProducto, tipoPrecio, oldPrecio, newPrecio } = req.body;
 
-    var q = await pool.query('call sp_ajuste_precio(?,?,?,?,?)',[idProducto,tipoPrecio,oldPrecio,newPrecio,idUsuario]);
+    var q = await pool.query('call sp_ajuste_precio(?,?,?,?,?)', [idProducto, tipoPrecio, oldPrecio, newPrecio, idUsuario]);
 
     var rowsAff = q.affectedRows;
 
-    if(rowsAff>0){
+    if (rowsAff > 0) {
         res.send('Ok');
     }
 }
 
+exports.configuraPrecios = async (req, res) => {
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if (permiso > 0) {
+
+        res.render('modulos/productos/precios_config', {
+            nombrePagina: 'Configuración de Precios'
+        });
+
+    } else {
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
+}
+
+exports.getPreciosConfig = async (req, res) => {
+
+    let idProducto = req.params.id;
+
+    var q = await pool.query('call get_precios_config(?)', [idProducto]);
+
+    const values = q[0];
+
+    if (values.length === 0) {
+        res.send('Empty');
+    } else {
+
+        const dataConfig = [];
+
+        for (var x = 0; x < values.length; x++) {
+
+            const arrayPrec = values[x];
+
+            if (arrayPrec.estatus === 1) {
+                var radioBoton = "<div class='custom-control custom-radio'><input class='form-check-input radioPrec' type='radio' name='radio1' idPrec=" + "'" + arrayPrec.idprec + "'" + " id=" + "'" + arrayPrec.idprec + "r 'checked" + "></div>";
+            } else {
+                var radioBoton = "<div class='custom-control custom-radio'><input class='form-check-input radioPrec' type='radio' name='radio1' idPrec=" + "'" + arrayPrec.idprec + "'" + " id=" + "'" + arrayPrec.idprec + "r ' " + "></div>";
+            }
+
+            if (arrayPrec.tipo_precio !== null) {
+
+                const obj = [
+                    arrayPrec.tipo_precio,
+                    currencyFormat(arrayPrec.precio),
+                    radioBoton
+                ];
+
+                dataConfig.push(obj);
+
+            }
+        }
+
+        res.send(dataConfig);
+    }
+
+}
+
+exports.configPrecioProd = async (req, res) => {
+
+    var { idprecio, idproducto } = req.body;
+
+    var q = await pool.query('call sp_configura_precio(?,?)', [idproducto, idprecio]);
+
+    var rowsAff = q.affectedRows;
+
+    if (rowsAff > 0) {
+        res.send('Ok');
+    }
+
+}
+
+exports.getProdVendMes = async (req, res) => {
+
+    var q = await pool.query('call get_prods_mas_vend_mes()');
+
+    const values = q[0];
+
+    if (values.length === 0) {
+        res.send('empty');
+    } else {
+
+        const dataProd = [];
+
+        for (var x = 0; x < values.length; x++) {
+
+            conteo = x + 1;
+            var arrayProd = values[x];
+
+            if (arrayProd.imagen === null) {
+                var imagen = "<img src='/uploads/productos/default/anonymous.png' width='40px'>";
+            } else {
+                var imagen = "<img src='/uploads/productos/" + arrayProd.imagen + "' width='40px'>";
+            }
+
+            const obj = [
+                arrayProd.idproducto,
+                imagen + ' ' + arrayProd.producto,
+                arrayProd.cantidad,
+                currencyFormat(arrayProd.ingreso)
+            ];
+
+            dataProd.push(obj);
+        }
+
+        res.send(dataProd);
+
+    }
+
+}
 
 function currencyFormat(value) {
-	return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
- }
+    return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
 
- async function validAccess(idUsuario, url){
+async function validAccess(idUsuario, url) {
 
     var permiso = 0;
 
-    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
-    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',url);
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', url);
 
     var idPerfil = idPerfilQry[0].idperfil;
     var idMenu = idMenuQry[0].idmenu;
 
-    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1',[idMenu, idUsuario]);
-    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1',[idMenu,idPerfil]);
-    
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1', [idMenu, idPerfil]);
+
     var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
 
     return permiso

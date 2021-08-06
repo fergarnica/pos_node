@@ -1,98 +1,270 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1> Tablero  
-                        <small>Panel de Control</small>
-                    </h1>
-                    <small>Bienvenid@ {{ nombre }}</small>
-                    
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active">Tablero</li>
-                    </ol>
-                </div>
-            </div>
-        </div><!-- /.container-fluid -->
-    </section>
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1> Tablero
+            <small>Panel de Control</small>
+          </h1>
+          <small>Bienvenid@ {{ nombre }}</small>
 
-    <!-- Main content -->
-    <section class="content">
-      <div class="container-fluid">
-        <!-- Small boxes (Stat box) -->
-        <div class="row">
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-info">
-              <div class="inner">
-                <h3>150</h3>
-
-                <p>Productos</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-ios-barcode"></i>
-              </div>
-              <a href="/productos" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-success">
-              <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                <p>Ventas</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div>
-              <a href="#" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-warning">
-              <div class="inner">
-                <h3>44</h3>
-
-                <p>Clientes</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>
-              <a href="/clientes" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
-          <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="small-box bg-danger">
-              <div class="inner">
-                <h3>65</h3>
-
-                <p>Compras</p>
-              </div>
-              <div class="icon">
-                <i class="ion ion-pie-graph"></i>
-              </div>
-              <a href="#" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
-            </div>
-          </div>
-          <!-- ./col -->
         </div>
-        <!-- /.row -->
-        <!-- Main row -->
-        
-        <!-- /.row (main row) -->
-      </div><!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+            <li class="breadcrumb-item active">Tablero</li>
+          </ol>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <!-- Small boxes (Stat box) -->
+      <div class="row">
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3>{{ totalProd }}</h3>
+
+              <p>Productos</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-ios-barcode"></i>
+            </div>
+            <a href="/productos" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3>{{ totalVtas }}{{!-- <sup style="font-size: 20px">%</sup> --}}</h3>
+
+              <p>Ventas</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-bag"></i>
+            </div>
+            <a href="/admin_ventas" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3>{{ totalCli }}</h3>
+
+              <p>Clientes</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-person-add"></i>
+            </div>
+            <a href="/clientes" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+          <!-- small box -->
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3>{{ totalProvs }}</h3>
+
+              <p>Proveedores</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-clipboard"></i>
+            </div>
+            <a href="/proveedores" class="small-box-footer">Detalle <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <!-- ./col -->
+      </div>
+      <!-- /.row -->
+
+      <!-- Main row -->
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="d-flex justify-content-between">
+                <h3 class="card-title">Gráfico ventas últimos 7 días</h3>
+                <a href="/admin_ventas">Ver Reporte</a>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="d-flex">
+                <p class="d-flex flex-column">
+                  <span class="text-bold text-lg">{{ totalVtasSem }}</span>
+                  <span>Ventas</span>
+                </p>
+                <p class="ml-auto d-flex flex-column text-right">
+                  
+                  {{#if porcPos }}
+                  <span class="text-success">
+                    <i class="fas fa-arrow-up"></i> {{ porcPos }}%
+                  </span>
+                  {{else}}
+                  <span class="text-danger">
+                    <i class="fas fa-arrow-down"></i> {{ porcNeg }}%
+                  </span>
+                  {{/if}}
+                  <span class="text-muted">Con la semana anterior</span>
+                </p>
+              </div>
+              <!-- /.d-flex -->
+
+              <div class="position-relative mb-4">
+                <div class="chartjs-size-monitor">
+                  <div class="chartjs-size-monitor-expand">
+                    <div class=""></div>
+                  </div>
+                  <div class="chartjs-size-monitor-shrink">
+                    <div class=""></div>
+                  </div>
+                </div>
+                <canvas id="ventas-chart-sem" height="400" width="710"
+                  style="display: block; height: 200px; width: 355px;" class="chartjs-render-monitor"></canvas>
+              </div>
+
+              <div class="d-flex flex-row justify-content-end">
+                <span class="mr-2">
+                  <i class="fas fa-square text-primary"></i> Semana actual
+                </span>
+
+                <span>
+                  <i class="fas fa-square text-gray"></i> Semana pasada
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- /.card -->
+
+          <div class="card">
+            <div class="card-header border-0">
+              <h3 class="card-title">Productos más vendidos últimos 30 días</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+              <table class="table table-striped table-valign-middle text-center" id="table-prod-mes">
+              </table>
+            </div>
+          </div>
+          <!-- /.card -->
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="d-flex justify-content-between">
+                <h3 class="card-title">Gráfico ventas por mes</h3>
+                <a href="/admin_ventas">Ver reporte</a>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="d-flex">
+                <p class="d-flex flex-column">
+                  <span class="text-bold text-lg">$18,230.00</span>
+                  <span>Sales Over Time</span>
+                </p>
+                <p class="ml-auto d-flex flex-column text-right">
+                  <span class="text-success">
+                    <i class="fas fa-arrow-up"></i> 33.1%
+                  </span>
+                  <span class="text-muted">Con el mes anterior</span>
+                </p>
+              </div>
+              <!-- /.d-flex -->
+
+              <div class="position-relative mb-4">
+                <div class="chartjs-size-monitor">
+                  <div class="chartjs-size-monitor-expand">
+                    <div class=""></div>
+                  </div>
+                  <div class="chartjs-size-monitor-shrink">
+                    <div class=""></div>
+                  </div>
+                </div>
+                <canvas id="ventas-chart-mes" height="400" style="display: block; height: 200px; width: 355px;"
+                  width="710" class="chartjs-render-monitor"></canvas>
+              </div>
+
+              <div class="d-flex flex-row justify-content-end">
+                <span class="mr-2">
+                  <i class="fas fa-square text-primary"></i> Año actual
+                </span>
+
+                <span>
+                  <i class="fas fa-square text-gray"></i> Año anterior
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- /.card -->
+
+          <div class="card">
+            <div class="card-header border-0">
+              <h3 class="card-title">Online Store Overview</h3>
+              <div class="card-tools">
+                <a href="#" class="btn btn-sm btn-tool">
+                  <i class="fas fa-download"></i>
+                </a>
+                <a href="#" class="btn btn-sm btn-tool">
+                  <i class="fas fa-bars"></i>
+                </a>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                <p class="text-success text-xl">
+                  <i class="ion ion-ios-refresh-empty"></i>
+                </p>
+                <p class="d-flex flex-column text-right">
+                  <span class="font-weight-bold">
+                    <i class="ion ion-android-arrow-up text-success"></i> 12%
+                  </span>
+                  <span class="text-muted">CONVERSION RATE</span>
+                </p>
+              </div>
+              <!-- /.d-flex -->
+              <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+                <p class="text-warning text-xl">
+                  <i class="ion ion-ios-cart-outline"></i>
+                </p>
+                <p class="d-flex flex-column text-right">
+                  <span class="font-weight-bold">
+                    <i class="ion ion-android-arrow-up text-warning"></i> 0.8%
+                  </span>
+                  <span class="text-muted">SALES RATE</span>
+                </p>
+              </div>
+              <!-- /.d-flex -->
+              <div class="d-flex justify-content-between align-items-center mb-0">
+                <p class="text-danger text-xl">
+                  <i class="ion ion-ios-people-outline"></i>
+                </p>
+                <p class="d-flex flex-column text-right">
+                  <span class="font-weight-bold">
+                    <i class="ion ion-android-arrow-down text-danger"></i> 1%
+                  </span>
+                  <span class="text-muted">REGISTRATION RATE</span>
+                </p>
+              </div>
+              <!-- /.d-flex -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- /.row (main row) -->
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->

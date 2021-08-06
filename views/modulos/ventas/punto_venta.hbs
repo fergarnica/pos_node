@@ -39,39 +39,24 @@
                 </div>
 
             </div>
-
-            {{!-- <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-                </div>
-                <input type="text" id="barcodeVenta" name="bar_code" class="form-control"
-                    placeholder="Ingrese código de artículo o código de barras..." autofocus>
-            </div> --}}
-
             <form id="formularioVenta">
                 <div class="row">
                     <!-- left column -->
                     <div class="col-md-8">
-
                         <div class="card">
-
                             <div class="card-body">
-                                <div id="nuevoProducto">
-                                    <div class="row">
-                                        <div class="col-4 text-center">
-                                            <label>Descripción</label>
-                                        </div>
-                                        <div class="col-3 text-center">
-                                            <label>Precio</label>
-                                        </div>
-                                        <div class="col-2 text-center">
-                                            <label>Cant.</label>
-                                        </div>
-                                        <div class="col-3 text-center">
-                                            <label>Total</label>
-                                        </div>
-                                    </div>
-                                </div>
+                                <table id="nuevoProdVenta" class="cell-border text-center" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Descripción</th>
+                                            <th>Marca</th>
+                                            <th>Precio</th>
+                                            <th>Cant.</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                             <div class="card-footer-cut">
 
@@ -82,25 +67,79 @@
                     <div class="col-md-4">
                         <!-- Form Element sizes -->
                         <div class="card">
-                            {{!-- <div class="card-header">
-                                <h3 class="card-title">Different Height</h3>
+                            {{!-- <div class="card-header ui-sortable-handle">
+                                <small class="time"></i>Caja 1</small>
+
+                                <div class="card-tools">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+
                             </div> --}}
                             <div class="card-body">
-                                <label>Cliente:</label><label style="color:#C20F30">*</label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                <div class="row cabeceraVenta">
+                                    <div class="col-sm-12 text-right">
+                                        <ul class="navbar-nav ml-auto">
+                                            <li class="dropdown">
+                                                <a data-toggle="dropdown" href="#">
+                                                    <i class="fas fa-chevron-circle-down"></i>
+
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+
+                                                    {{!-- <label
+                                                        class="dropdown-item dropdown-header text-center"></label> --}}
+                                                    <!-- Message Start -->
+                                                    <a type="button" class="dropdown-item dropdown-footer"
+                                                        data-toggle="modal" data-target="#modalVerProd">
+                                                        <i class="fas fa-barcode"></i>
+                                                        Ver producto</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="/ingreso_efectivo" type="button" class="dropdown-item dropdown-footer">
+                                                        <i class="fas fa-money-bill-wave"></i>
+                                                        Ingresar efectivo</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="/retiro_efectivo" type="button" class="dropdown-item dropdown-footer">
+                                                        <i class="fas fa-money-bill"></i>
+                                                        Retirar efectivo</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="/corte_caja" class="dropdown-item dropdown-footer">
+                                                        <i class="fas fa-cash-register"></i>
+                                                        Corte de caja</a>
+                                                    
+                                                </div>
+                                                <!-- Message End -->
+                                            </li>
+                                        </ul>
+                                        {{!-- <i class="fas fa-ellipsis-h"></i> --}}
                                     </div>
-                                    <select class="form-control input-lg custom-select" id="clienteVenta" disabled
-                                        required>
-                                        <option value="0">Selecionar cliente...</option>
-                                    </select>
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-info" data-toggle="modal"
-                                            data-target="#modalAgregarCli">
-                                            <i class="fas fa-user-plus"></i>
-                                        </button>
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <label>Cliente:</label><label style="color:#C20F30">*</label>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                            </div>
+                                            <select class="form-control input-lg custom-select" id="clienteVenta"
+                                                disabled required>
+                                                <option value="0">Selecionar cliente...</option>
+                                            </select>
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-info" data-toggle="modal"
+                                                    data-target="#modalAgregarCli">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
                                 <div class="form-group row">
@@ -210,7 +249,7 @@ MODAL AGREGAR CLIENTE
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" style="background:#336699; color:white">
-                <h5 class="modal-title" id="exampleModalLabel">Agregar Presentación de Producto</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Agregar Cliente</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -253,4 +292,41 @@ MODAL AGREGAR CLIENTE
         </div>
 
     </div>
+</div>
+
+<!--=====================================
+MODAL CONSULTAR PRODUCTO
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalVerProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Consulta de Producto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formSearchArt">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>ID Producto / Código de barras:</label><label style="color:#C20F30">*</label>
+                        <input type="text" class="form-control" id="codBarArt" placeholder="Ingresar ID Producto"
+                            required autofocus>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="submit" id="btnAgregarCli" class="btn btn-primary">Consultar</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
 </div>

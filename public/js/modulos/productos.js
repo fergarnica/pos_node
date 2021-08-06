@@ -14,6 +14,7 @@ const formMovsProd = document.getElementById('formMovsProd');
 const formEntradaProd = document.getElementById('formEntradaProd');
 const formSalidaProd = document.getElementById('formSalidaProd');
 const formHistPrec = document.getElementById('formHistPrec');
+const formConfigPrec = document.getElementById('formConfigPrec');
 const formAjustePrecio = document.getElementById('formAjustePrecio');
 
 const tblCategorias = document.querySelector('#tbl-categorias');
@@ -1003,8 +1004,6 @@ $(document).on("click", "#btn-eliminar-marca", function () {
 
     var idMarca = $(this).attr("idMarca");
 
-    console.log(idMarca);
-
     Swal.fire({
         title: '¿Está seguro de borrar la marca?',
         text: "¡Si no lo está puede cancelar la acción!",
@@ -1084,7 +1083,6 @@ if (formNewPres) {
                 axios.post('/presentaciones', payload)
                     .then(function (respuesta) {
 
-                        console.log(respuesta);
                         if (respuesta.data == "Repetido") {
 
                             $('#modalAgregarPres').modal('dispose');
@@ -2576,6 +2574,159 @@ if (formAjustePrecio) {
     })
 
 }
+/*=============================================
+CONFIGURAR PRECIOS
+=============================================*/
+if (formConfigPrec) {
+
+    formConfigPrec.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        $('#btnConfigProd').html('<span id="loading" class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Buscando...').addClass('disabled');
+
+        $('#tbl-config-prec').DataTable().destroy();
+        $("#tbl-config-prec").remove();
+
+        var idProduct = document.getElementById('idProduct').value;
+
+        if (idProduct == '') {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Es necesario ingresar ID de producto o Código de Barras!',
+            })
+
+        } else {
+
+            var route = '/get_precios/' + idProduct;
+
+            axios.get(route)
+                .then(function (respuesta) {
+
+                    $('#btnConfigProd').html('<i class="fa fa-search"></i> Consultar').removeClass('disabled');
+
+                    if (respuesta.data == 'Empty') {
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Oops...',
+                            text: 'El producto no existe!',
+                        }).then(function (result) {
+                            if (result.value) {
+                                window.location = "/configurar_precios";
+                            }
+                        });
+
+                    } else {
+
+                        var dataConfig = respuesta.data;
+
+                        $("#bodyConfig").append(
+                            '<table id="tbl-config-prec" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+                        );
+
+                        var tablaConfig = $("#tbl-config-prec").DataTable({
+
+                            data: dataConfig,
+                            deferRender: true,
+                            iDisplayLength: 25,
+                            retrieve: true,
+                            processing: true,
+                            fixedHeader: true,
+                            responsive: true,
+                            language: {
+
+                                "sProcessing": "Procesando...",
+                                "sLengthMenu": "Mostrar _MENU_ registros",
+                                "sZeroRecords": "No se encontraron resultados",
+                                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                "sInfoPostFix": "",
+                                "sSearch": "Buscar:",
+                                "sUrl": "",
+                                "sInfoThousands": ",",
+                                "sLoadingRecords": "Cargando...",
+                                "oPaginate": {
+                                    "sFirst": "Primero",
+                                    "sLast": "Último",
+                                    "sNext": "Siguiente",
+                                    "sPrevious": "Anterior"
+                                },
+                                "oAria": {
+                                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                }
+
+                            },
+                            columns: [{
+                                title: "Tipo Precio"
+                            },
+                            {
+                                title: "Precio"
+                            },
+                            {
+                                title: "Acción"
+                            }
+                            ],
+                        })
+
+
+                    }
+                }).catch(errors => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la Base de Datos'
+                    })
+                })
+
+        }
+
+    })
+
+    $(idProdMov).change(function () {
+
+        $('#tbl-config-prec').DataTable().destroy();
+        $("#tbl-config-prec").remove();
+    
+    });
+
+}
+
+$(document).on("change", ".radioPrec", function () {
+
+    var idPrec = $(this).attr("idPrec");
+    var idProduct = document.getElementById('idProduct').value;
+    var payload = {};
+
+    payload.idprecio = idPrec;
+    payload.idproducto = idProduct;
+
+    axios.put('/configurar_precios', payload)
+        .then(function (respuesta) {
+
+            if (respuesta.data == 'Ok') {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Cambios guardados!',
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+            }
+
+        }).catch(errors => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hubo un error',
+                text: 'Error en la Base de Datos'
+            })
+        })
+
+});
 
 function paddy(num, padlen, padchar) {
     var pad_char = typeof padchar !== 'undefined' ? padchar : '0';

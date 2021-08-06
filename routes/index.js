@@ -475,6 +475,22 @@ module.exports = function () {
     isLoggedIn,
     productosController.ajustaPrecio
     );
+    router.get('/configurar_precios',
+    isLoggedIn,
+    productosController.configuraPrecios
+    );
+    router.get('/get_precios/:id',
+    isLoggedIn,
+    productosController.getPreciosConfig
+    );
+    router.put('/configurar_precios',
+    isLoggedIn,
+    productosController.configPrecioProd
+    );
+    router.get('/prod_vend_mes',
+    isLoggedIn,
+    productosController.getProdVendMes
+    );
 
     //Presentaciones
     router.get('/presentaciones',
@@ -542,6 +558,43 @@ module.exports = function () {
         isLoggedIn,
         ventasController.anularVenta
     );
+    router.get('/tot_vtas_semana',
+        isLoggedIn,
+        ventasController.totVtasSem
+    );
+    router.get('/cajas',
+        isLoggedIn,
+        ventasController.mostrarCajas
+    );
+    router.put('/abrir_caja',
+        isLoggedIn,
+        ventasController.abrirCaja
+    );
+    router.get('/retiro_efectivo',
+        isLoggedIn,
+        ventasController.retEfectivoPag
+    );
+    router.post('/realizar_retiro',
+        isLoggedIn,
+        ventasController.retiroEfectivo
+    );
+    router.get('/ingreso_efectivo',
+        isLoggedIn,
+        ventasController.ingEfectivoPag
+    );
+    router.post('/realizar_ingreso',
+        isLoggedIn,
+        ventasController.ingresoEfectivo
+    );
+    router.get('/corte_caja',
+        isLoggedIn,
+        ventasController.corteCajaPag
+    );
+    router.post('/corte_caja',
+        isLoggedIn,
+        ventasController.corteCaja
+    );
+    
     
     router.get('/menus',
         isLoggedIn,

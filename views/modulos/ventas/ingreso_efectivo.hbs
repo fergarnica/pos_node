@@ -1,0 +1,119 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Ingreso de efectivo</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Ingreso de efectivo</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <!-- Default box -->
+        <div class="card" id="cardIngreso">
+            <!-- Card Header -->
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-pencil-alt"></i>
+                    Realizar ingreso de efectivo
+                    <small>(Los campos con </small><small style="color:#C20F30">*</small><small> son necesarios)</small>
+                </h3>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body" id="bodyIngresos">
+                <form id="formNewIngreso" method="get">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Monto de Ingreso:<small
+                                    style="color:#C20F30">*</small></label>
+                            <div class="col-sm-8">
+                                <input type="number" min="1" step="any" class="form-control text-center" id="montoIngreso" required autofocus>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <table id="tbl-detalle-ingreso" class="display compact cell-border text-center" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Denominación</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>$1,000</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng1000"></td>
+                                </tr>
+                                <tr>
+                                    <td>$500</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng500"></td>
+                                </tr>
+                                <tr>
+                                    <td>$200</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng200"></td>
+                                </tr>
+                                <tr>
+                                    <td>$100</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng100"></td>
+                                </tr>
+                                <tr>
+                                    <td>$50</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng50"></td>
+                                </tr>
+                                <tr>
+                                    <td>$20</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng20"></td>
+                                </tr>
+                                <tr>
+                                    <td>$10</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng10"></td>
+                                </tr>
+                                <tr>
+                                    <td>$5</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng5"></td>
+                                </tr>
+                                <tr>
+                                    <td>$2</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng2"></td>
+                                </tr>
+                                <tr>
+                                    <td>$1</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng1"></td>
+                                </tr>
+                                <tr>
+                                    <td>$0.50</td>
+                                    <td><input type="number" class="form-control text-center" id="cantIng50c"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                <button type="submit" id="btnGuardarIngreso" class="btn btn-primary">Guardar
+                    <i class="fas fa-save"></i>
+                </button>
+                <button type="button" class="btn btn-danger float-right" onclick="location.href='/punto_venta'">Regresar
+                    <i class="fas fa-undo-alt"></i>
+                </button>
+            </div>
+            </form>
+        </div>
+        <!-- /.card -->
+    </section>
+    <!-- /.content -->
+</div>

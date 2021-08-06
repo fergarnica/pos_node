@@ -6,13 +6,54 @@ exports.home = async (req, res) => {
     var idusuario = res.locals.usuario.idusuario;
 
     var user = await pool.query('SELECT a.nombre FROM empleados a INNER JOIN usuarios b on a.idempleado=b.idempleado WHERE b.idusuario= ?', idusuario);
+    var totProd = await pool.query('SELECT COUNT(idproducto) AS total FROM productos');
+    var totCli = await pool.query('SELECT COUNT(idcliente) AS total_cli FROM clientes WHERE status=1');
+    var totVent = await pool.query('SELECT COUNT(idnota) AS total_ven FROM ventas WHERE status=1');
+    var totProv = await pool.query('SELECT COUNT(idproveedor) AS total_prov FROM proveedores WHERE status=1');
+    var toVenSem = await pool.query('SELECT COUNT(idnota) AS total_vtas FROM ventas WHERE DATE(fecha) BETWEEN DATE(NOW())-7 AND DATE(NOW()) AND status=1');
+    var porcVta1 = await pool.query('SELECT IFNULL(SUM(total),0) AS suma FROM ventas WHERE status=1 AND DATE(fecha) BETWEEN DATE(NOW())-7 AND DATE(NOW())');
+    var porcVta2 = await pool.query('SELECT IFNULL(SUM(total),0) AS suma FROM ventas WHERE status=1 AND DATE(fecha) BETWEEN DATE(NOW())-14 AND DATE(NOW())-8');
+
+    var porSem1 = porcVta1[0].suma;
+    var porSem2 = porcVta2[0].suma;
+
+    if(porSem1 === 0){
+        porSem1=1;
+    }
+
+    if(porSem2 === 0){
+        porSem2=1;
+    }
+
+    var porcentaje = (porSem1 * 100) / porSem2 - 100;
+    
+    if(porcentaje > 0){
+        var porcPos = porcentaje.toFixed(2);
+        var porcNeg = null;
+    }else{
+        var porcPos = null;
+        var porcNeg = porcentaje.toFixed(2);
+    }
 
     nombre = user[0].nombre.toUpperCase();
+    totalProd = totProd[0].total;
+    totalCli = totCli[0].total_cli;
+    totalVtas = totVent[0].total_ven;
+    totalProvs = totProv[0].total_prov;
+    totalVtasSem = toVenSem[0].total_vtas;
 
     res.render('index', {
         nombrePagina: 'Inicio',
-        nombre
+        nombre,
+        totalProd,
+        totalCli,
+        totalVtas,
+        totalProvs,
+        totalVtasSem,
+        porcPos,
+        porcNeg
     });
+
 }
 
 exports.menusActivos = async (req, res) => {

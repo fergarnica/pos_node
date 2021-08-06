@@ -29,3 +29,5 @@ input.error {
     background-repeat: repeat-x;
     background-size  : 0 100%, 14px 27px, 14px 27px
   }
+
+  .cabeceraVenta { height: 12px; }

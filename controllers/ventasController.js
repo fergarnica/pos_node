@@ -15,11 +15,25 @@ exports.puntoVenta = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
+    var cajaActiva = await pool.query('SELECT COUNT(idcaja) AS caja_activa FROM cajas WHERE idusuario=?', idUsuario);
+
+    totalCaja = cajaActiva[0].caja_activa;
+
     if (permiso > 0) {
 
-        res.render('modulos/ventas/punto_venta', {
-            nombrePagina: 'Punto de Venta'
-        });
+        if (totalCaja > 0) {
+
+            res.render('modulos/ventas/punto_venta', {
+                nombrePagina: 'Punto de Venta'
+            });
+
+        } else {
+
+            res.render('modulos/ventas/seleccionar_caja', {
+                nombrePagina: 'Punto de Venta'
+            });
+
+        }
 
     } else {
 
@@ -56,22 +70,35 @@ exports.adminVentas = async (req, res) => {
 
 exports.crearVenta = async (req, res) => {
 
-    var { idcaja, idcliente, subtotal, impuesto, redondeo, total, forma_pago, num_transaccion, status, fecha } = req.body;
+    var { idcliente, subtotal, impuesto, redondeo, total, forma_pago, num_transaccion, status, fecha } = req.body;
 
     var objProd = req.body.listaProductos;
     var idusuario = res.locals.usuario.idusuario;
     var tipoMov = 2;
     var idMotivo = 0;
 
-    var valFolio = await pool.query('SELECT IFNULL(MAX(idnota),100)+1 AS numVenta FROM ventas WHERE idcaja=?',idcaja);
+    var caja = await pool.query('SELECT idcaja FROM cajas WHERE idusuario=?', idusuario);
+
+    for (var i = 0; i < caja.length; i++) {
+        var idcaja = caja[i].idcaja;
+    }
+
+    var folioCorte = await pool.query('SELECT idcorte FROM cajas WHERE idusuario= ? AND idcaja=?', [idusuario, idcaja]);
+
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idnota),100)+1 AS numVenta FROM ventas WHERE idcaja=?', idcaja);
 
     for (var x = 0; x < valFolio.length; x++) {
         var idnota = valFolio[x].numVenta;
     }
 
+    for (var x = 0; x < folioCorte.length; x++) {
+        var idcorte = folioCorte[x].idcorte;
+    }
+
     const newVenta = {
         idnota,
         idcaja,
+        idcorte,
         idcliente,
         idusuario,
         subtotal,
@@ -108,10 +135,13 @@ exports.crearVenta = async (req, res) => {
         };
 
         await pool.query('INSERT INTO det_vtas SET ?', [newDetVenta]);
-        
-        await pool.query('call sp_ajuste_inv(?,?,?,?,?)',[newDetVenta.idproducto,idMotivo,cantidad,tipoMov,idusuario]);
+
+        await pool.query('call sp_ajuste_inv(?,?,?,?,?)', [newDetVenta.idproducto, idMotivo, cantidad, tipoMov, idusuario]);
+
 
     }
+
+    await pool.query('call sp_reg_vta_cortecaja(?,?,?,?,?)', [idcaja, idcorte, forma_pago, total, idusuario]);
 
     res.send('OK');
 
@@ -145,9 +175,9 @@ exports.consultarVentas = async (req, res) => {
 
             botonDet = "<div class='btn-group'><button type='button' id='btn-detalle-vta' class='btn btn-info' data-toggle='modal' data-target='#modalDetVta' idNota=" + "'" + array.idnota + "' idCaja=" + "'" + array.idcaja + "'" + "><i class='fas fa-eye'></i></button></div>";
 
-            if(array.estatus === 'Vigente'){
+            if (array.estatus === 'Vigente') {
                 botones = "<div class='btn-group'><button type='button' id='btn-imprimir-vta' class='btn btn-success' idNota=" + "'" + array.idnota + "'" + "><i class='fas fa-print'></i></button><button id='btn-anular-venta' class='btn btn-danger' idNota=" + "'" + array.idnota + "' idCaja=" + "'" + array.idcaja + "'" + "><i class='fa fa-times'></i></button></div>";
-            }else{
+            } else {
                 botones = "<div class='btn-group'><button type='button' id='btn-imprimir-vta' class='btn btn-success' idNota=" + "'" + array.idnota + "'" + "><i class='fas fa-print'></i></button></div>";
             }
 
@@ -211,11 +241,11 @@ exports.anularVenta = async (req, res) => {
 
     var idUsuario = res.locals.usuario.idusuario;
 
-    var q = await pool.query('call sp_anula_venta(?,?,?,?)',[idNota, idCaja, idMotivo, idUsuario]);
-    
+    var q = await pool.query('call sp_anula_venta(?,?,?,?)', [idNota, idCaja, idMotivo, idUsuario]);
+
     var rowsAff = q.affectedRows;
 
-    if(rowsAff>0){
+    if (rowsAff > 0) {
         res.send('Ok');
     }
 
@@ -466,9 +496,9 @@ exports.exportVentas = async (req, res) => {
         workbook.xlsx.write(res)
             .then(function (data) {
                 res.end();
-                console.log('File write done........');
+                //console.log('File write done........');
             });
-        
+
     }
 
 }
@@ -526,7 +556,7 @@ exports.imprimirVentas = async (req, res) => {
         var fecha_actual = moment().format('DD/MM/YYYY');
         var fecini = moment(inicial).format('DD/MM/YYYY');
         var fecfin = moment(final).format('DD/MM/YYYY');
-        
+
 
         var docDefinition = {
             info: {
@@ -537,7 +567,7 @@ exports.imprimirVentas = async (req, res) => {
             pageMargins: [40, 40, 40, 40],
             content: [
                 { text: 'REPORTE DE VENTAS', style: 'header' },
-                { text: '('+fecini+' - '+fecfin+')', alignment: 'center', fontSize: 10 },
+                { text: '(' + fecini + ' - ' + fecfin + ')', alignment: 'center', fontSize: 10 },
                 {
                     columns: [
                         {
@@ -553,7 +583,7 @@ exports.imprimirVentas = async (req, res) => {
                     // External data
                     dataVendedores,
                     // Columns display order
-                    ['idnota', 'idcaja', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'total', 'status','fecha_venta'],
+                    ['idnota', 'idcaja', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'total', 'status', 'fecha_venta'],
                     // Custom columns widths
                     // ['6%', '12%', '15%','15%','12%', '12%', '12%','12%','12%'],
                     // Show headers?
@@ -608,6 +638,428 @@ exports.imprimirVentas = async (req, res) => {
             res.send('ERROR:' + error);
         });
     }
+
+}
+
+exports.totVtasSem = async (req, res) => {
+
+    var day1 = moment().format('YYYY-MM-DD');
+    var day2 = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    var day3 = moment().subtract(2, 'days').format('YYYY-MM-DD');
+    var day4 = moment().subtract(3, 'days').format('YYYY-MM-DD');
+    var day5 = moment().subtract(4, 'days').format('YYYY-MM-DD');
+    var day6 = moment().subtract(5, 'days').format('YYYY-MM-DD');
+    var day7 = moment().subtract(6, 'days').format('YYYY-MM-DD');
+
+    var day8 = moment().subtract(7, 'days').format('YYYY-MM-DD');
+    var day9 = moment().subtract(8, 'days').format('YYYY-MM-DD');
+    var day10 = moment().subtract(9, 'days').format('YYYY-MM-DD');
+    var day11 = moment().subtract(10, 'days').format('YYYY-MM-DD');
+    var day12 = moment().subtract(11, 'days').format('YYYY-MM-DD');
+    var day13 = moment().subtract(12, 'days').format('YYYY-MM-DD');
+    var day14 = moment().subtract(13, 'days').format('YYYY-MM-DD');
+
+    var sumDay1 = await pool.query('call get_vtas_tot(?)', day1);
+    var sumDay2 = await pool.query('call get_vtas_tot(?)', day2);
+    var sumDay3 = await pool.query('call get_vtas_tot(?)', day3);
+    var sumDay4 = await pool.query('call get_vtas_tot(?)', day4);
+    var sumDay5 = await pool.query('call get_vtas_tot(?)', day5);
+    var sumDay6 = await pool.query('call get_vtas_tot(?)', day6);
+    var sumDay7 = await pool.query('call get_vtas_tot(?)', day7);
+
+    var sumDay8 = await pool.query('call get_vtas_tot(?)', day8);
+    var sumDay9 = await pool.query('call get_vtas_tot(?)', day9);
+    var sumDay10 = await pool.query('call get_vtas_tot(?)', day10);
+    var sumDay11 = await pool.query('call get_vtas_tot(?)', day11);
+    var sumDay12 = await pool.query('call get_vtas_tot(?)', day12);
+    var sumDay13 = await pool.query('call get_vtas_tot(?)', day13);
+    var sumDay14 = await pool.query('call get_vtas_tot(?)', day14);
+
+    var dataDay1 = sumDay1[0];
+    var dataDay2 = sumDay2[0];
+    var dataDay3 = sumDay3[0];
+    var dataDay4 = sumDay4[0];
+    var dataDay5 = sumDay5[0];
+    var dataDay6 = sumDay6[0];
+    var dataDay7 = sumDay7[0];
+
+    var dataDay8 = sumDay8[0];
+    var dataDay9 = sumDay9[0];
+    var dataDay10 = sumDay10[0];
+    var dataDay11 = sumDay11[0];
+    var dataDay12 = sumDay12[0];
+    var dataDay13 = sumDay13[0];
+    var dataDay14 = sumDay14[0];
+
+    for (var x = 0; x < dataDay1.length; x++) {
+        const array = dataDay1[x];
+        var sumaDay1 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay2.length; x++) {
+        const array = dataDay2[x];
+        var sumaDay2 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay3.length; x++) {
+        const array = dataDay3[x];
+        var sumaDay3 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay4.length; x++) {
+        const array = dataDay4[x];
+        var sumaDay4 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay5.length; x++) {
+        const array = dataDay5[x];
+        var sumaDay5 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay6.length; x++) {
+        const array = dataDay6[x];
+        var sumaDay6 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay7.length; x++) {
+        const array = dataDay7[x];
+        var sumaDay7 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay8.length; x++) {
+        const array = dataDay8[x];
+        var sumaDay8 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay9.length; x++) {
+        const array = dataDay9[x];
+        var sumaDay9 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay10.length; x++) {
+        const array = dataDay10[x];
+        var sumaDay10 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay11.length; x++) {
+        const array = dataDay11[x];
+        var sumaDay11 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay12.length; x++) {
+        const array = dataDay12[x];
+        var sumaDay12 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay13.length; x++) {
+        const array = dataDay13[x];
+        var sumaDay13 = array.suma;
+    }
+
+    for (var x = 0; x < dataDay14.length; x++) {
+        const array = dataDay14[x];
+        var sumaDay14 = array.suma;
+    }
+
+    var dataSem = [[sumaDay7, sumaDay6, sumaDay5, sumaDay4, sumaDay3, sumaDay2, sumaDay1], [sumaDay14, sumaDay13, sumaDay12, sumaDay11, sumaDay10, sumaDay9, sumaDay8]];
+
+    res.send(dataSem);
+
+}
+
+exports.mostrarCajas = async (req, res) => {
+
+    var infoCajas = await pool.query('SELECT idcaja, idusuario, status FROM cajas');
+
+    var dataCajas = infoCajas;
+
+    res.send(dataCajas);
+
+}
+
+exports.abrirCaja = async (req, res) => {
+
+    var idusuario = res.locals.usuario.idusuario;
+
+    var { idCaja, montoIni } = req.body;
+
+    var idcaja = idCaja;
+    var monto_inicial = montoIni;
+
+    var fecha_apertura = moment().format('YYYY-MM-DD h:mm:ss');
+    var status = 1;
+
+    var maxCorte = await pool.query('SELECT IFNULL(MAX(idcorte),0)+1 AS folioCorte FROM cortes_cajas WHERE idcaja=?', idcaja);
+
+    for (var x = 0; x < maxCorte.length; x++) {
+        var idcorte = maxCorte[x].folioCorte;
+    }
+
+    var q = await pool.query('UPDATE cajas SET idusuario=?, idcorte=?, status=1 WHERE idcaja=?', [idusuario, idcorte, idcaja]);
+
+    var rowsAff = q.affectedRows;
+
+    if (rowsAff > 0) {
+
+        const newCorte = {
+            idcorte,
+            idcaja,
+            fecha_apertura,
+            monto_inicial,
+            idusuario,
+            status
+        }
+
+        var q = await pool.query('INSERT INTO cortes_cajas SET ?', [newCorte]);
+
+        var rowsAff = q.affectedRows;
+
+        if (rowsAff > 0) {
+            res.send('Ok');
+        }
+    }
+}
+
+exports.retEfectivoPag = async (req, res) => {
+
+    res.render('modulos/ventas/retiro_efectivo', {
+        nombrePagina: 'Retiro de efectivo'
+    });
+
+}
+
+exports.retiroEfectivo = async (req, res) => {
+
+    let { importe, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn } = req.body;
+
+    var idusuario = res.locals.usuario.idusuario;
+    var fecha_retiro = moment().format('YYYY-MM-DD h:mm:ss');
+
+    var caja = await pool.query('SELECT idcaja FROM cajas WHERE idusuario=?', idusuario);
+
+    for (var i = 0; i < caja.length; i++) {
+        var idcaja = caja[i].idcaja;
+    }
+
+    var folioCorte = await pool.query('SELECT idcorte FROM cajas WHERE idusuario= ? AND idcaja=?', [idusuario, idcaja]);
+
+    for (var x = 0; x < folioCorte.length; x++) {
+        var idcorte = folioCorte[x].idcorte;
+    }
+
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idretiro),0)+1 AS numRetiro FROM retiros WHERE idcaja=?', idcaja);
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idretiro = valFolio[x].numRetiro;
+    }
+
+    var newRetiro = {
+        idretiro,
+        idcaja,
+        idcorte,
+        importe,
+        idusuario,
+        fecha_retiro
+    }
+
+    var newRetDet = {
+        idretiro,
+        idcaja,
+        den_1000_mxn,
+        den_500_mxn,
+        den_200_mxn,
+        den_100_mxn,
+        den_50_mxn,
+        den_20_mxn,
+        den_10_mxn,
+        den_5_mxn,
+        den_2_mxn,
+        den_1_mxn,
+        den_50c_mxn
+    }
+
+    await pool.query('INSERT INTO retiros SET ?', [newRetiro]);
+
+    await pool.query('INSERT INTO retiros_det SET ?', [newRetDet]);
+
+    await pool.query('call sp_reg_retiro_cortecaja(?,?,?,?)', [idcaja, idcorte, importe, idusuario]);
+
+    res.send('Ok');
+
+}
+
+exports.ingEfectivoPag = async (req, res) => {
+
+    res.render('modulos/ventas/ingreso_efectivo', {
+        nombrePagina: 'Ingreso de efectivo'
+    });
+
+}
+
+exports.ingresoEfectivo = async (req, res) => {
+
+    let { importe, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn } = req.body;
+
+    var idusuario = res.locals.usuario.idusuario;
+    var fecha_ingreso = moment().format('YYYY-MM-DD h:mm:ss');
+
+    var caja = await pool.query('SELECT idcaja FROM cajas WHERE idusuario=?', idusuario);
+
+    for (var i = 0; i < caja.length; i++) {
+        var idcaja = caja[i].idcaja;
+    }
+
+    var folioCorte = await pool.query('SELECT idcorte FROM cajas WHERE idusuario= ? AND idcaja=?', [idusuario, idcaja]);
+
+    for (var x = 0; x < folioCorte.length; x++) {
+        var idcorte = folioCorte[x].idcorte;
+    }
+
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idingreso),0)+1 AS numIngreso FROM ingresos_efectivo WHERE idcaja=?', idcaja);
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idingreso = valFolio[x].numIngreso;
+    }
+
+    var newIngreso = {
+        idingreso,
+        idcaja,
+        idcorte,
+        importe,
+        idusuario,
+        fecha_ingreso
+    }
+
+    var newIngDet = {
+        idingreso,
+        idcaja,
+        den_1000_mxn,
+        den_500_mxn,
+        den_200_mxn,
+        den_100_mxn,
+        den_50_mxn,
+        den_20_mxn,
+        den_10_mxn,
+        den_5_mxn,
+        den_2_mxn,
+        den_1_mxn,
+        den_50c_mxn
+    }
+
+    await pool.query('INSERT INTO ingresos_efectivo SET ?', [newIngreso]);
+
+    await pool.query('INSERT INTO ingresos_efectivo_det SET ?', [newIngDet]);
+
+    await pool.query('call sp_reg_ingreso_cortecaja(?,?,?,?)', [idcaja, idcorte, importe, idusuario]);
+
+    res.send('Ok');
+
+}
+
+exports.corteCajaPag = async (req, res) => {
+
+    var idusuario = res.locals.usuario.idusuario;
+
+    var cajaInfo = await pool.query('SELECT idcaja, idcorte FROM cajas WHERE idusuario=?', idusuario);
+
+    for (var i = 0; i < cajaInfo.length; i++) {
+        var idcaja = cajaInfo[i].idcaja;
+        var idcorte = cajaInfo[i].idcorte;
+    }
+
+    var infoPagos = await pool.query('SELECT monto_inicial, ventas_efectivo, ventas_tarjeta, ingreso_efectivo, retiro_efectivo FROM cortes_cajas WHERE idcaja=? AND idcorte=? AND idusuario=? AND status=1', [idcaja, idcorte, idusuario]);
+
+    for (var i = 0; i < infoPagos.length; i++) {
+        var monto_ini = infoPagos[i].monto_inicial;
+        var ventas_efec = infoPagos[i].ventas_efectivo;
+        var ventas_tarj = infoPagos[i].ventas_tarjeta;
+        var ingreso_efec = infoPagos[i].ingreso_efectivo;
+        var retiro_efec = infoPagos[i].retiro_efectivo;
+    }
+
+    if(!ventas_efec){
+        var ventas_efec = 0;
+    }
+
+    if(!ventas_tarj){
+        var ventas_tarj = 0;
+    }
+
+    if(!ingreso_efec){
+        var ingreso_efec = 0;
+    }
+
+    if(!retiro_efec){
+        var retiro_efec = 0;
+    }
+
+    var sumMontoIdeal = monto_ini + ventas_efec + ingreso_efec - retiro_efec;
+
+    var montoIdeal = currencyFormat(sumMontoIdeal);
+
+    var monto_inicial = currencyFormat(monto_ini);
+    var ventas_efectivo = currencyFormat(ventas_efec);
+    var ventas_tarjeta = currencyFormat(ventas_tarj);
+    var ingreso_efectivo = currencyFormat(ingreso_efec);
+    var retiro_efectivo = currencyFormat(retiro_efec);
+
+    res.render('modulos/ventas/corte_caja', {
+        nombrePagina: 'Corte de caja',
+        monto_inicial,
+        ventas_efectivo,
+        ventas_tarjeta,
+        ingreso_efectivo,
+        retiro_efectivo,
+        montoIdeal,
+        sumMontoIdeal
+    });
+
+}
+
+exports.corteCaja = async (req, res) => {
+
+    let { importe, diferencia, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn } = req.body;
+
+    var idusuario = res.locals.usuario.idusuario;
+    var fecha_corte = moment().format('YYYY-MM-DD h:mm:ss');
+    var tipo = 2;
+
+    var caja = await pool.query('SELECT idcaja FROM cajas WHERE idusuario=?', idusuario);
+
+    for (var i = 0; i < caja.length; i++) {
+        var idcaja = caja[i].idcaja;
+    }
+
+    var folioCorte = await pool.query('SELECT idcorte FROM cajas WHERE idusuario= ? AND idcaja=?', [idusuario, idcaja]);
+
+    for (var x = 0; x < folioCorte.length; x++) {
+        var idcorte = folioCorte[x].idcorte;
+    }
+
+    var newCorteDet = {
+        idcorte,
+        idcaja,
+        den_1000_mxn,
+        den_500_mxn,
+        den_200_mxn,
+        den_100_mxn,
+        den_50_mxn,
+        den_20_mxn,
+        den_10_mxn,
+        den_5_mxn,
+        den_2_mxn,
+        den_1_mxn,
+        den_50c_mxn,
+        tipo
+    }
+
+    await pool.query('UPDATE cortes_cajas SET fecha_corte=?, monto_final = ?, diferencia=? WHERE idcorte=? AND idcaja=?',[fecha_corte,importe,diferencia,idcorte,idcaja]);
+
+    await pool.query('INSERT INTO cortes_cajas_det SET ?', [newCorteDet]);
+
+    await pool.query('UPDATE cajas SET idcorte=NULL, idusuario=NULL, status=0 WHERE idcaja=?',idcaja);
+
+    res.send('Ok');
 
 }
 
@@ -685,8 +1137,8 @@ Object.byString = function (o, s) {
 }
 
 function currencyFormat(value) {
-	return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
- }
+    return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
 
 async function validAccess(idUsuario, url) {
 

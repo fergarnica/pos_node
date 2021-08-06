@@ -52,26 +52,21 @@
                 <div class="row">
                     <!-- left column -->
                     <div class="col-md-8">
-
                         <div class="card">
-
                             <div class="card-body">
-                                <div id="nuevoProducto">
-                                    <div class="row">
-                                        <div class="col-4 text-center">
-                                            <label>Descripción</label>
-                                        </div>
-                                        <div class="col-3 text-center">
-                                            <label>Precio</label>
-                                        </div>
-                                        <div class="col-2 text-center">
-                                            <label>Cant.</label>
-                                        </div>
-                                        <div class="col-3 text-center">
-                                            <label>Total</label>
-                                        </div>
-                                    </div>
-                                </div>
+                                <table id="nuevoProdCompra" class="cell-border text-center"
+                                    width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Acción</th>
+                                            <th>Descripción</th>
+                                            <th>Marca</th>
+                                            <th>Precio</th>
+                                            <th>Cant.</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                             <div class="card-footer-cut">
 
@@ -141,8 +136,8 @@
                                         <div class="col-sm-6 text-center text-info">
                                             <div class="form-group">
                                                 <label>SUBTOTAL</label>
-                                                <input type="number" class="form-control text-center" id="subtotalCompra"
-                                                    value="0.00" readonly="readonly" required>
+                                                <input type="number" class="form-control text-center"
+                                                    id="subtotalCompra" value="0.00" readonly="readonly" required>
                                             </div>
                                         </div>
                                     </div>

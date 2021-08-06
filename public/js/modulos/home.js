@@ -4,10 +4,14 @@ import Swal from 'sweetalert2';
 const menuLateral = document.getElementById('menu-lateral');
 
 const tblMenus = document.querySelector('#tbl-menus');
+const tblProdMes = document.querySelector('#table-prod-mes');
 
 const formNewMenu = document.getElementById('formNewMenu');
 const formNewSubMenu = document.getElementById('formNewSubMenu');
 const formEditMenu = document.getElementById('formEditMenu');
+
+const salesChartSem = document.querySelector('#ventas-chart-sem');
+const salesChartMes = document.querySelector('#ventas-chart-mes');
 
 (function () {
 
@@ -52,7 +56,7 @@ const formEditMenu = document.getElementById('formEditMenu');
                         processing: true,
                         fixedHeader: true,
                         responsive: true,
-                        columnDefs:[{
+                        columnDefs: [{
                             targets: "_all",
                             sortable: false
                         }],
@@ -114,7 +118,7 @@ const formEditMenu = document.getElementById('formEditMenu');
                                 $('td', row).css('background-color', '#D6EAF8');
                                 $(row).find('td:eq(3)').css('font-weight', 'bold');
                             }
-                        },
+                        }
                     });
 
                 }
@@ -127,6 +131,272 @@ const formEditMenu = document.getElementById('formEditMenu');
                 })
             })
     }
+
+    if (tblProdMes) {
+
+        axios.get('/prod_vend_mes')
+            .then(function (respuesta) {
+
+                if (respuesta.data != 'empty') {
+
+                    var dataSet = respuesta.data;
+
+                    $(tblProdMes).DataTable({
+                        data: dataSet,
+                        deferRender: true,
+                        iDisplayLength: 50,
+                        retrieve: true,
+                        processing: true,
+                        fixedHeader: false,
+                        responsive: false,
+                        paging: false,
+                        searching: false,
+                        ordering: false,
+                        bInfo: false,
+                        bLengthChange: false,
+                        bAutoWidth: false,
+                        columnDefs: [{
+                            targets: "_all",
+                            sortable: false
+                        }],
+                        language: {
+
+                            "sProcessing": "Procesando...",
+                            "sLengthMenu": "Mostrar _MENU_ registros",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "sEmptyTable": "Ningún dato disponible en esta tabla",
+                            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix": "",
+                            "sSearch": "Buscar:",
+                            "sUrl": "",
+                            "sInfoThousands": ",",
+                            "sLoadingRecords": "Cargando...",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            }
+
+                        },
+                        columns: [{
+                            title: "ID"
+                        },
+                        {
+                            title: "Producto"
+                        },
+                        {
+                            title: "Cantidad"
+                        },
+                        {
+                            title: "Ingreso"
+                        }
+                        ]
+                    });
+
+
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+    }
+
+    /*=============================================
+     Chart
+    =============================================*/
+    if (salesChartSem) {
+
+        axios.get('/tot_vtas_semana')
+            .then(function (respuesta) {
+
+                var dataSem1 = respuesta.data[0];
+                var dataSem2 = respuesta.data[1];
+
+                var ticksStyle = {
+                    fontColor: '#495057',
+                    fontStyle: 'bold'
+                }
+
+                var mode = 'index';
+                var intersect = true;
+
+                var d = new Date();
+                var currentDay = d.getDate();
+
+                var diasLabels = diasSemana(currentDay);
+
+                // eslint-disable-next-line no-unused-vars
+                var ventasChart = new Chart(salesChartSem, {
+                    data: {
+                        labels: diasLabels,
+                        datasets: [{
+                            type: 'line',
+                            data: dataSem1,
+                            backgroundColor: 'transparent',
+                            borderColor: '#007bff',
+                            pointBorderColor: '#007bff',
+                            pointBackgroundColor: '#007bff',
+                            fill: false
+                            // pointHoverBackgroundColor: '#007bff',
+                            // pointHoverBorderColor    : '#007bff'
+                        },
+                        {
+                            type: 'line',
+                            data: dataSem2,
+                            backgroundColor: 'tansparent',
+                            borderColor: '#ced4da',
+                            pointBorderColor: '#ced4da',
+                            pointBackgroundColor: '#ced4da',
+                            fill: false
+                            // pointHoverBackgroundColor: '#ced4da',
+                            // pointHoverBorderColor    : '#ced4da'
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        tooltips: {
+                            mode: mode,
+                            intersect: intersect
+                        },
+                        hover: {
+                            mode: mode,
+                            intersect: intersect
+                        },
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                // display: false,
+                                gridLines: {
+                                    display: true,
+                                    lineWidth: '4px',
+                                    color: 'rgba(0, 0, 0, .2)',
+                                    zeroLineColor: 'transparent'
+                                },
+                                /* ticks: $.extend({
+                                    beginAtZero: true,
+                                    suggestedMax: 200
+                                }, ticksStyle) */
+                                ticks: $.extend({
+                                    beginAtZero: true,
+
+                                    // Include a dollar sign in the ticks
+                                    callback: function (value) {
+                                        if (value >= 1000) {
+                                            value /= 1000
+                                            value += 'k'
+                                        }
+
+                                        return '$' + value
+                                    }
+                                }, ticksStyle)
+                            }],
+                            xAxes: [{
+                                display: true,
+                                gridLines: {
+                                    display: false
+                                },
+                                ticks: ticksStyle
+                            }]
+                        }
+                    }
+                })
+
+            });
+
+    }
+
+    if (salesChartMes) {
+
+        // eslint-disable-next-line no-unused-vars
+        var ticksStyle = {
+            fontColor: '#495057',
+            fontStyle: 'bold'
+        }
+
+        var mode = 'index';
+        var intersect = true;
+
+        var salesChart = new Chart(salesChartMes, {
+            type: 'bar',
+            data: {
+                labels: ['JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                datasets: [
+                    {
+                        backgroundColor: '#007bff',
+                        borderColor: '#007bff',
+                        data: [1000, 2000, 3000, 2500, 2700, 2500, 3000]
+                    },
+                    {
+                        backgroundColor: '#ced4da',
+                        borderColor: '#ced4da',
+                        data: [700, 1700, 2700, 2000, 1800, 1500, 2000]
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                hover: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                legend: {
+                    display: false
+                },
+                scales: {
+                    yAxes: [{
+                        // display: false,
+                        gridLines: {
+                            display: true,
+                            lineWidth: '4px',
+                            color: 'rgba(0, 0, 0, .2)',
+                            zeroLineColor: 'transparent'
+                        },
+                        ticks: $.extend({
+                            beginAtZero: true,
+
+                            // Include a dollar sign in the ticks
+                            callback: function (value) {
+                                if (value >= 1000) {
+                                    value /= 1000
+                                    value += 'k'
+                                }
+
+                                return '$' + value
+                            }
+                        }, ticksStyle)
+                    }],
+                    xAxes: [{
+                        display: true,
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: ticksStyle
+                    }]
+                }
+            }
+        })
+
+    }
+
+
+
 })();
 
 
@@ -190,12 +460,9 @@ $(document).on("click", "#btn-estatus-menu", function () {
     payload.idMenu = idMenu;
     payload.estadoMenu = estadoMenu;
 
-    console.log(payload);
-
     axios.put('/menus', payload)
         .then(function (respuesta) {
 
-            console.log(respuesta);
             if (window.matchMedia("(max-width:767px)").matches) {
 
                 Swal.fire(
@@ -349,7 +616,7 @@ if (formNewSubMenu) {
 
 }
 
-if(formEditMenu){
+if (formEditMenu) {
     formEditMenu.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -360,16 +627,16 @@ if(formEditMenu){
 
         var payload = {};
 
-        payload.idmenu= idMenu;
-        payload.nombre_menu= newNameMenu;
-        payload.url= newUrlMenu;
-        payload.icono= newIconoMenu;
+        payload.idmenu = idMenu;
+        payload.nombre_menu = newNameMenu;
+        payload.url = newUrlMenu;
+        payload.icono = newIconoMenu;
 
         var route = '/menus/' + idMenu;
 
         axios.put(route, payload)
             .then(function (respuesta) {
-                
+
                 if (respuesta.data == 'Nulos') {
 
                     Swal.fire({
@@ -420,7 +687,7 @@ $(document).on("click", "#btn-eliminar-menu", function () {
 
     var idPadre = $(this).attr("idPadre");
 
-    if(idPadre == 0){
+    if (idPadre == 0) {
 
         Swal.fire({
             title: '¿Está seguro de eliminar el menú?',
@@ -432,13 +699,13 @@ $(document).on("click", "#btn-eliminar-menu", function () {
             cancelButtonText: 'Cancelar',
             confirmButtonText: 'Si, eliminar!'
         }).then((result) => {
-    
+
             if (result.value) {
-    
+
                 var idMenu = $(this).attr("idMenu");
 
                 var route = '/menus/' + idMenu;
-    
+
                 axios.delete(route)
                     .then(function (respuesta) {
 
@@ -452,7 +719,7 @@ $(document).on("click", "#btn-eliminar-menu", function () {
                                     window.location = "/menus";
                                 }
                             });
-    
+
                         }
 
                     }).catch(errors => {
@@ -465,7 +732,7 @@ $(document).on("click", "#btn-eliminar-menu", function () {
             }
         })
 
-    }else{
+    } else {
 
         Swal.fire({
             title: '¿Está seguro de eliminar el Submenú?',
@@ -477,16 +744,16 @@ $(document).on("click", "#btn-eliminar-menu", function () {
             cancelButtonText: 'Cancelar',
             confirmButtonText: 'Si, eliminar!'
         }).then((result) => {
-    
+
             if (result.value) {
-        
+
                 var idMenu = $(this).attr("idMenu");
 
                 var route = '/submenus/' + idMenu;
-    
+
                 axios.delete(route)
                     .then(function (respuesta) {
-    
+
                         if (respuesta.data != 'Inexistente') {
                             Swal.fire(
                                 'Submenú eliminado!',
@@ -497,7 +764,7 @@ $(document).on("click", "#btn-eliminar-menu", function () {
                                     window.location = "/menus";
                                 }
                             });
-    
+
                         }
 
                     }).catch(errors => {
@@ -510,5 +777,52 @@ $(document).on("click", "#btn-eliminar-menu", function () {
             }
         })
     }
-    
+
 })
+
+
+function diaDeSemana(fechaDia) {
+
+    var dias = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    var fecha = new Date();
+
+    if (fechaDia <= 0) {
+        //console.log(fechaDia);
+        var mes = fecha.getMonth();
+        var ano = fecha.getFullYear(); //obteniendo año
+
+        var lastDay = new Date(ano, mes, 0);
+
+        var numberDay = lastDay.getDate();
+
+        var dia = numberDay + fechaDia;
+
+        
+    } else {
+        var mes = fecha.getMonth() + 1; //obteniendo mes
+        var dia = fechaDia;
+        var ano = fecha.getFullYear(); //obteniendo año
+
+    }
+
+    if (dia < 10) {
+        dia = '0' + dia; //agrega cero si el menor de 10
+    }
+
+    if (mes < 10) {
+        mes = '0' + mes //agrega cero si el menor de 10
+    }
+
+    var fec = mes + "/" + dia + "/" + ano;
+    var day = new Date(fec).getDay();
+
+    return dias[day];
+}
+
+function diasSemana(diaActual) {
+
+    var labelDays = [diaDeSemana((diaActual - 6)), diaDeSemana((diaActual - 5)), diaDeSemana((diaActual - 4)), diaDeSemana((diaActual - 3)), diaDeSemana((diaActual - 2)), diaDeSemana((diaActual - 1)), diaDeSemana(diaActual)];
+
+    return labelDays;
+}
+

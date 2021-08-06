@@ -1,0 +1,80 @@
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Seleccionar caja</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                        <li class="breadcrumb-item active">Seleccionar caja</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        <!-- Default box -->
+        <div class="card card-solid">
+            <div class="card-body pb-0">
+                <div class="row" id="mostrarCajas">
+
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <!-- /.card-footer -->
+        </div>
+        <!-- /.card -->
+
+
+    </section>
+    <!-- /.content -->
+</div>
+
+<!--=====================================
+MODAL DETALLE DE VENTA
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalAbrirCaja" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Abrir caja</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formAbrirCaja">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label"># Caja:</label>
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><i class="fas fa-cash-register"></i></div>
+                            </div>
+                            <input type="number" class="form-control" id="idCajaAbrir" disabled required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Monto:</label>
+                        <div class="input-group mb-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><i class="fas fa-dollar-sign"></i></div>
+                            </div>
+                            <input type="number" class="form-control" id="montoApertura" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="submit" id="btnAbrirCaja" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
