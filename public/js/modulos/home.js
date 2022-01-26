@@ -17,6 +17,11 @@ const salesChartMes = document.querySelector('#ventas-chart-mes');
 
     if (menuLateral) {
 
+        var divMenu = document.getElementById('menu-lateral');
+
+        /*var numberOfChildren = divMenu.getElementsByTagName('*').length;
+        console.log(numberOfChildren);*/
+
         var routeOne = '/menus_activos';
         var routeTwo = '/submenus_activos';
 
@@ -826,3 +831,20 @@ function diasSemana(diaActual) {
     return labelDays;
 }
 
+
+/*=============================================
+FUNCIÓN PARA GENERAR COOKIES
+=============================================*/
+
+/* function crearCookie(nombre, valor, diasExpedicion){
+
+    var hoy = new Date();
+  
+    hoy.setTime(hoy.getTime() + (diasExpedicion * 24 * 60 * 60 * 1000));
+  
+    var fechaExpedicion = "expires=" + hoy.toUTCString();
+  
+    document.cookie = nombre + "=" + valor + "; " + fechaExpedicion;
+  
+  } */
+  

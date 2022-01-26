@@ -1,8 +1,9 @@
 const path = require('path');
 const webpack = require('webpack');
+require("babel-polyfill");
 
 module.exports = {
-    entry: './public/js/app.js',
+    entry: ['babel-polyfill','./public/js/app.js'],
     output : {
         filename : 'bundle.js',
         path: path.join(__dirname, './public/dist')
@@ -15,7 +16,8 @@ module.exports = {
                     loader: 'babel-loader',
                     /* query: {compact: false}, */
                     options: {
-                        presets: ['@babel/preset-env']
+                        presets: ['@babel/preset-env'],
+                        plugins: ["transform-regenerator"]
                     }
                 }
             }

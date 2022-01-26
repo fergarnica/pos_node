@@ -68,9 +68,32 @@ exports.adminVentas = async (req, res) => {
 
 }
 
+exports.adminCajas = async (req, res) => {
+
+    var idUsuario = res.locals.usuario.idusuario;
+    var url = req.originalUrl;
+
+    var permiso = await validAccess(idUsuario, url);
+
+    if (permiso > 0) {
+
+        res.render('modulos/ventas/admin_cajas', {
+            nombrePagina: 'Administrar Cajas'
+        });
+
+    } else {
+
+        res.render('modulos/error/401', {
+            nombrePagina: '401 Unauthorized'
+        });
+
+    }
+
+}
+
 exports.crearVenta = async (req, res) => {
 
-    var { idcliente, subtotal, impuesto, redondeo, total, forma_pago, num_transaccion, status, fecha } = req.body;
+    var { idcliente, subtotal, impuesto, redondeo, total, monto, cambio, forma_pago, num_transaccion, status, fecha } = req.body;
 
     var objProd = req.body.listaProductos;
     var idusuario = res.locals.usuario.idusuario;
@@ -105,6 +128,8 @@ exports.crearVenta = async (req, res) => {
         impuesto,
         redondeo,
         total,
+        monto,
+        cambio,
         forma_pago,
         num_transaccion,
         status,
@@ -112,6 +137,8 @@ exports.crearVenta = async (req, res) => {
     };
 
     await pool.query('INSERT INTO ventas SET ?', [newVenta]);
+
+    await pool.query('call sp_reg_vta_cortecaja(?,?,?,?,?)', [idcaja, idcorte, forma_pago, total, idusuario]);
 
     for (var x = 0; x < objProd.length; x++) {
 
@@ -140,8 +167,6 @@ exports.crearVenta = async (req, res) => {
 
 
     }
-
-    await pool.query('call sp_reg_vta_cortecaja(?,?,?,?,?)', [idcaja, idcorte, forma_pago, total, idusuario]);
 
     res.send('OK');
 
@@ -184,10 +209,12 @@ exports.consultarVentas = async (req, res) => {
             const obj = [
                 array.idnota,
                 array.idcaja,
+                array.idcorte,
                 array.cliente,
                 array.usuario,
                 array.f_pago,
                 array.subtotal,
+                array.impuesto,
                 array.total,
                 array.estatus,
                 moment(array.fecha).format('YYYY-MM-DD h:mm:ss a'),
@@ -289,10 +316,12 @@ exports.exportVentas = async (req, res) => {
             const obj = {
                 idnota: arrayVentas.idnota,
                 idcaja: arrayVentas.idcaja,
+                idcorte: arrayVentas.idcorte,
                 cliente: arrayVentas.cliente,
                 usuario: arrayVentas.usuario,
                 forma_pago: arrayVentas.f_pago,
                 subtotal: arrayVentas.subtotal,
+                impuesto: arrayVentas.impuesto,
                 total: arrayVentas.total,
                 status: arrayVentas.estatus,
                 fecha_venta: fechaVenta
@@ -314,10 +343,12 @@ exports.exportVentas = async (req, res) => {
         worksheet.columns = [
             { header: 'ID Venta', width: 10 },
             { header: 'ID Caja', width: 10 },
+            { header: 'Num Corte', width: 12 },
             { header: 'Cliente', width: 40 },
             { header: 'Usuario', width: 25 },
             { header: 'Forma de Pago', width: 32 },
             { header: 'Subtotal', width: 25 },
+            { header: 'Comisión', width: 25 },
             { header: 'Total', width: 25 },
             { header: 'Estatus', width: 15 },
             { header: 'Fecha Venta', width: 25 }
@@ -333,6 +364,9 @@ exports.exportVentas = async (req, res) => {
         worksheet.getCell('G1').alignment = { vertical: 'middle', horizontal: 'center' };
         worksheet.getCell('H1').alignment = { vertical: 'middle', horizontal: 'center' };
         worksheet.getCell('I1').alignment = { vertical: 'middle', horizontal: 'center' };
+        worksheet.getCell('J1').alignment = { vertical: 'middle', horizontal: 'center' };
+        worksheet.getCell('K1').alignment = { vertical: 'middle', horizontal: 'center' };
+
         // for the wannabe graphic designers out there
         worksheet.getCell('A1').font = { bold: true };
         worksheet.getCell('B1').font = { bold: true };
@@ -343,6 +377,13 @@ exports.exportVentas = async (req, res) => {
         worksheet.getCell('G1').font = { bold: true };
         worksheet.getCell('H1').font = { bold: true };
         worksheet.getCell('I1').font = { bold: true };
+        worksheet.getCell('J1').font = { bold: true };
+        worksheet.getCell('K1').font = { bold: true };
+
+        //currency format
+        worksheet.getColumn(7).numFmt = '$#,##0.00;[Red]-$#,##0.00';
+        worksheet.getColumn(8).numFmt = '$#,##0.00;[Red]-$#,##0.00';
+        worksheet.getColumn(9).numFmt = '$#,##0.00;[Red]-$#,##0.00';
 
         // set single thin border around
         worksheet.getCell('A1').border = {
@@ -408,6 +449,20 @@ exports.exportVentas = async (req, res) => {
             right: { style: 'thin' }
         };
 
+        worksheet.getCell('J1').border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
+
+        worksheet.getCell('K1').border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        };
+
         var i;
 
         for (i = 0; i < dataVendedores.length; i++) {
@@ -431,7 +486,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(3).value = ventas.cliente;
+            row.getCell(3).value = ventas.idcorte;
             row.getCell(3).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(3).border = {
                 top: { style: 'thin' },
@@ -439,7 +494,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(4).value = ventas.usuario;
+            row.getCell(4).value = ventas.cliente;
             row.getCell(4).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(4).border = {
                 top: { style: 'thin' },
@@ -447,7 +502,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(5).value = ventas.forma_pago;
+            row.getCell(5).value = ventas.usuario;
             row.getCell(5).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(5).border = {
                 top: { style: 'thin' },
@@ -455,7 +510,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(6).value = ventas.subtotal;
+            row.getCell(6).value = ventas.forma_pago;
             row.getCell(6).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(6).border = {
                 top: { style: 'thin' },
@@ -463,7 +518,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(7).value = ventas.total;
+            row.getCell(7).value = ventas.subtotal;
             row.getCell(7).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(7).border = {
                 top: { style: 'thin' },
@@ -471,7 +526,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(8).value = ventas.status;
+            row.getCell(8).value = ventas.impuesto;
             row.getCell(8).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(8).border = {
                 top: { style: 'thin' },
@@ -479,9 +534,25 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(9).value = ventas.fecha_venta;
+            row.getCell(9).value = ventas.total;
             row.getCell(9).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(9).border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            row.getCell(10).value = ventas.status;
+            row.getCell(10).alignment = { vertical: 'middle', horizontal: 'center' };
+            row.getCell(10).border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+            row.getCell(11).value = ventas.fecha_venta;
+            row.getCell(11).alignment = { vertical: 'middle', horizontal: 'center' };
+            row.getCell(11).border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },
@@ -541,10 +612,12 @@ exports.imprimirVentas = async (req, res) => {
             const obj = {
                 idnota: arrayVentas.idnota,
                 idcaja: arrayVentas.idcaja,
+                idcorte: arrayVentas.idcorte,
                 cliente: arrayVentas.cliente,
                 usuario: arrayVentas.usuario,
                 forma_pago: arrayVentas.f_pago,
                 subtotal: currencyFormat(arrayVentas.subtotal),
+                impuesto: currencyFormat(arrayVentas.impuesto),
                 total: currencyFormat(arrayVentas.total),
                 status: arrayVentas.estatus,
                 fecha_venta: fechaVenta
@@ -583,7 +656,7 @@ exports.imprimirVentas = async (req, res) => {
                     // External data
                     dataVendedores,
                     // Columns display order
-                    ['idnota', 'idcaja', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'total', 'status', 'fecha_venta'],
+                    ['idnota', 'idcaja', 'idcorte', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'impuesto','total', 'status', 'fecha_venta'],
                     // Custom columns widths
                     // ['6%', '12%', '15%','15%','12%', '12%', '12%','12%','12%'],
                     // Show headers?
@@ -591,10 +664,12 @@ exports.imprimirVentas = async (req, res) => {
                     // Custom headers
                     [{ text: 'ID Venta', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'ID Caja', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
+                    { text: 'Num Corte', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Cliente', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Usuario', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Forma de Pago', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Subtotal', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
+                    { text: 'Comisión', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Total', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Estatus', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Fecha Venta', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' }
@@ -769,11 +844,51 @@ exports.totVtasSem = async (req, res) => {
 
 exports.mostrarCajas = async (req, res) => {
 
-    var infoCajas = await pool.query('SELECT idcaja, idusuario, status FROM cajas');
+    var infoCajas = await pool.query('SELECT a.idcaja, a.idcorte, a.status, a.idusuario, c.nombre_completo FROM cajas a LEFT JOIN usuarios b ON a.idusuario=b.idusuario LEFT JOIN empleados c ON b.idempleado=c.idempleado');
 
-    var dataCajas = infoCajas;
+    if (infoCajas.length === 0) {
+        res.send('empty');
+    } else {
 
-    res.send(dataCajas);
+        const dataCajas = [];
+
+        for (var x = 0; x < infoCajas.length; x++) {
+
+            conteo = x + 1;
+            const arrayCajas = infoCajas[x];
+
+            const obj = [
+                conteo,
+                arrayCajas.idcaja,
+                arrayCajas.idcorte,
+                arrayCajas.status,
+                arrayCajas.idusuario,
+                arrayCajas.nombre_completo
+            ];
+
+            dataCajas.push(obj);
+        }
+
+        res.send(dataCajas);
+    }
+
+}
+
+exports.agregarCaja = async (req, res) => {
+
+    var valFolio = await pool.query('SELECT IFNULL(MAX(idcaja),100)+1 AS caja FROM cajas');
+
+    for (var x = 0; x < valFolio.length; x++) {
+        var idcaja = valFolio[x].caja;
+    }
+
+    var newCaja = {
+        idcaja
+    }
+
+    await pool.query('INSERT INTO cajas SET ?', [newCaja]);
+
+    res.status(200).send('Ok');
 
 }
 
@@ -977,19 +1092,19 @@ exports.corteCajaPag = async (req, res) => {
         var retiro_efec = infoPagos[i].retiro_efectivo;
     }
 
-    if(!ventas_efec){
+    if (!ventas_efec) {
         var ventas_efec = 0;
     }
 
-    if(!ventas_tarj){
+    if (!ventas_tarj) {
         var ventas_tarj = 0;
     }
 
-    if(!ingreso_efec){
+    if (!ingreso_efec) {
         var ingreso_efec = 0;
     }
 
-    if(!retiro_efec){
+    if (!retiro_efec) {
         var retiro_efec = 0;
     }
 
@@ -1053,11 +1168,13 @@ exports.corteCaja = async (req, res) => {
         tipo
     }
 
-    await pool.query('UPDATE cortes_cajas SET fecha_corte=?, monto_final = ?, diferencia=? WHERE idcorte=? AND idcaja=?',[fecha_corte,importe,diferencia,idcorte,idcaja]);
+    var status = 2;
+
+    await pool.query('UPDATE cortes_cajas SET fecha_corte=?, monto_final = ?, diferencia=? , status=? WHERE idcorte=? AND idcaja=?', [fecha_corte, importe, diferencia, status, idcorte, idcaja]);
 
     await pool.query('INSERT INTO cortes_cajas_det SET ?', [newCorteDet]);
 
-    await pool.query('UPDATE cajas SET idcorte=NULL, idusuario=NULL, status=0 WHERE idcaja=?',idcaja);
+    await pool.query('UPDATE cajas SET idcorte=NULL, idusuario=NULL, status=0 WHERE idcaja=?', idcaja);
 
     res.send('Ok');
 

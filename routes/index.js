@@ -321,6 +321,10 @@ module.exports = function () {
         isLoggedIn,
         tercerosController.proveedoresActivos
     );
+    router.get('/detalle_proveedor/:id',
+        isLoggedIn,
+        tercerosController.detalleProv
+    );
     /* router.get('/layout_proveedores',
         isLoggedIn,
         tercerosController.layoutProveedores
@@ -566,6 +570,10 @@ module.exports = function () {
         isLoggedIn,
         ventasController.mostrarCajas
     );
+    router.post('/cajas',
+        isLoggedIn,
+        ventasController.agregarCaja
+    );
     router.put('/abrir_caja',
         isLoggedIn,
         ventasController.abrirCaja
@@ -593,6 +601,10 @@ module.exports = function () {
     router.post('/corte_caja',
         isLoggedIn,
         ventasController.corteCaja
+    );
+    router.get('/admin_cajas',
+        isLoggedIn,
+        ventasController.adminCajas
     );
     
     

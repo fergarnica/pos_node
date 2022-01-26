@@ -38,7 +38,7 @@
                             <div class="form-group">
                                 <label>Empresa:</label><label style="color:#C20F30">*</label>
                                 <input type="text" class="form-control" id="empProv" placeholder="Ingresar Nombre de Empresa"
-                                required autofocus>
+                                onkeyup="javascript:this.value=this.value.toUpperCase();" required autofocus>
                             </div>
                         </div>
                         <div class="col-sm-6">
@@ -54,13 +54,15 @@
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>RFC:</label>
-                                <input type="text" class="form-control" id="rfcProv" placeholder="Ingresar RFC">
+                                <input type="text" class="form-control" id="rfcProv" placeholder="Ingresar RFC" 
+                                onkeyup="javascript:this.value=this.value.toUpperCase();">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Razón Social:</label>
-                                <input type="text" class="form-control" id="rsProv" placeholder="Ingresar Razón Social">
+                                <input type="text" class="form-control" id="rsProv" placeholder="Ingresar Razón Social"
+                                onkeyup="javascript:this.value=this.value.toUpperCase();">
                             </div>
                         </div>
                     </div>
@@ -92,44 +94,46 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-group">
+                                <label>C.P.:</label>
+                                <input type="text" class="form-control" maxlength="5"  id="cpProv" placeholder="Ingresar Codigo Postal" autocomplete="off"
+                                 onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))">
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Estado:</label>
+                                <input type="text" class="form-control" id="estadoProv" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Municipio:</label>
+                                <input type="text" class="form-control" id="munProv" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Colonia:</label>
+                                <select class="form-control input-lg custom-select" id="colProv">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
                                 <label>Calle:</label>
-                                <input type="text" class="form-control" id="nameCalleProveedor" placeholder="Ingresar Nombre de Calle">
+                                <input type="text" class="form-control" id="nameCalleProveedor" placeholder="Ingresar Nombre de Calle" autocomplete="off">
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label>Número:</label>
-                                <input type="number" class="form-control" id="numCalleProv" placeholder="Ingresar Número de Calle">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Colonia:</label>
-                                <input type="text" class="form-control" id="colProv" placeholder="Ingresar Colonia">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Municipio:</label>
-                                <input type="text" class="form-control" id="munProv" placeholder="Ingresar Municipio">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Estado:</label>
-                                <input type="text" class="form-control" id="estadoProv" placeholder="Ingresar Estado de la República">
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>C.P.:</label>
-                                <input type="number" class="form-control" maxlength="5" oninput="if(this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" id="cpProv" placeholder="Ingresar Codigo Postal">
+                                <input type="number" class="form-control" id="numCalleProv" placeholder="Ingresar Número de Calle" autocomplete="off">
                             </div>
                         </div>
                     </div>

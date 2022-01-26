@@ -2091,6 +2091,9 @@ if (formMovsProd) {
                         processing: true,
                         fixedHeader: true,
                         responsive: true,
+                        columnDefs: [
+                            { orderable: false, targets: '_all'}
+                        ],
                         language: {
 
                             "sProcessing": "Procesando...",
@@ -2351,6 +2354,9 @@ if (formHistPrec) {
                         processing: true,
                         fixedHeader: true,
                         responsive: true,
+                        columnDefs: [
+                            { orderable: false, targets: '_all'}
+                        ],
                         language: {
 
                             "sProcessing": "Procesando...",
@@ -2635,6 +2641,9 @@ if (formConfigPrec) {
                             processing: true,
                             fixedHeader: true,
                             responsive: true,
+                            columnDefs: [
+                                { orderable: false, targets: '_all'}
+                            ],
                             language: {
 
                                 "sProcessing": "Procesando...",

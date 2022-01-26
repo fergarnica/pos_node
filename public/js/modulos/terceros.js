@@ -4,6 +4,9 @@ import moment from 'moment';
 import pdfMake from 'pdfMake';
 import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import FileSaver from 'file-saver';
+import clienteAxios from '../../../config/axios';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
+require('babel-polyfill');
 
 pdfMake.vfs = vfsFonts.pdfMake.vfs;
 
@@ -20,6 +23,9 @@ const telEditCliente = document.getElementById("telEditCliente");
 
 const tblProv = document.querySelector('#tbl-proveedores');
 const tblClientes = document.querySelector('#tbl-clientes');
+
+const contenedorMapa = document.querySelector('.contenedor-mapa');
+//const buscador = document.querySelector('#formNewProv');
 
 (function () {
 
@@ -216,6 +222,7 @@ const tblClientes = document.querySelector('#tbl-clientes');
 
     }
 
+
 })();
 
 if (provTel) {
@@ -233,7 +240,7 @@ if (telCliente) {
     im.mask(telCliente);
 }
 
-if(telEditCliente){
+if (telEditCliente) {
     var im = new Inputmask("(99)99-99-99-99");
     im.mask(telEditCliente);
 }
@@ -242,6 +249,8 @@ if(telEditCliente){
 Crear Proveedor
 =============================================*/
 if (formNewProv) {
+
+    formNewProv.addEventListener('input', buscarDireccion);
 
     formNewProv.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -311,6 +320,147 @@ if (formNewProv) {
             })
     })
 }
+
+async function buscarDireccion(e) {
+
+    if (e.target.id == 'cpProv') {
+
+        document.getElementById('estadoProv').value = '';
+        document.getElementById('munProv').value = '';
+        document.getElementById('nameCalleProveedor').value = '';
+        document.getElementById('numCalleProv').value = '';
+
+        removeOptions(document.getElementById('colProv'));
+
+        if (e.target.value.length == 5) {
+
+            var cp = e.target.value;
+
+            var route = 'cp_buscar/' + cp;
+            var routeColonias = 'colonias_por_cp/' + cp;
+
+            const cpConsulta = await clienteAxios.get(route);
+
+            if (cpConsulta.data.ok == true) {
+
+                //console.log(cpConsulta.data.response[0]);
+                var estado = cpConsulta.data.response[0].estado;
+                var mnpio = cpConsulta.data.response[0].municipio;
+
+                document.getElementById('estadoProv').value = estado;
+                document.getElementById('munProv').value = mnpio;
+
+                const cpConsultaColonias = await clienteAxios.get(routeColonias);
+
+                var colonias = cpConsultaColonias.data.response.colonias;
+
+                colonias.forEach(function (valor, indice, array) {
+
+                    var colonia = valor;
+
+                    $("<option />")
+                        .attr("value", colonia)
+                        .html(colonia)
+                        .appendTo("#colProv");
+
+                })
+
+
+            } else {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: cpConsulta.data.err.message + '!',
+                    text: 'El CP ingresado no existe, validar.'
+                }).then(function (result) {
+                    if (result.value) {
+                        document.getElementById('cpProv').value = '';
+                        document.getElementById('estadoProv').value = '';
+                        document.getElementById('munProv').value = '';
+                        document.getElementById('nameCalleProveedor').value = '';
+                        document.getElementById('numCalleProv').value = '';
+                        removeOptions(document.getElementById('colProv'));
+                    }
+                });
+
+            }
+
+        }
+
+    } else if (e.target.id == 'editCpProv') {
+
+        document.getElementById('editEstadoProv').value = '';
+        document.getElementById('editMunProv').value = '';
+        document.getElementById('editCalleProveedor').value = '';
+        document.getElementById('editNumCalleProv').value = '';
+
+        removeOptions(document.getElementById('editColProv'));
+
+        if (e.target.value.length == 5) {
+
+            var cp = e.target.value;
+
+            var route = 'cp_buscar/' + cp;
+            var routeColonias = 'colonias_por_cp/' + cp;
+
+            const cpConsulta = await clienteAxios.get(route);
+
+            if (cpConsulta.data.ok == true) {
+
+                //console.log(cpConsulta.data.response[0]);
+                var estado = cpConsulta.data.response[0].estado;
+                var mnpio = cpConsulta.data.response[0].municipio;
+
+                document.getElementById('editEstadoProv').value = estado;
+                document.getElementById('editMunProv').value = mnpio;
+
+                const cpConsultaColonias = await clienteAxios.get(routeColonias);
+
+                var colonias = cpConsultaColonias.data.response.colonias;
+
+                colonias.forEach(function (valor, indice, array) {
+
+                    var colonia = valor;
+
+                    $("<option />")
+                        .attr("value", colonia)
+                        .html(colonia)
+                        .appendTo("#editColProv");
+
+                })
+
+
+            } else {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: cpConsulta.data.err.message + '!',
+                    text: 'El CP ingresado no existe, validar.'
+                }).then(function (result) {
+                    if (result.value) {
+                        document.getElementById('editCpProv').value = '';
+                        document.getElementById('editEstadoProv').value = '';
+                        document.getElementById('editMunProv').value = '';
+                        document.getElementById('editCalleProveedor').value = '';
+                        document.getElementById('editNumCalleProv').value = '';
+                        removeOptions(document.getElementById('editColProv'));
+                    }
+                });
+
+            }
+
+        }
+    }
+
+}
+
+function removeOptions(selectElement) {
+    var i, L = selectElement.options.length - 1;
+    for (i = L; i >= 0; i--) {
+        selectElement.remove(i);
+    }
+}
+
 
 /*=============================================
 Activar/Desactivar Proveedor
@@ -444,10 +594,14 @@ if (formEditProv) {
             $("#editProvTel").val(telefono);
             $("#editCalleProveedor").val(calle);
             $("#editNumCalleProv").val(numero);
-            $("#editColProv").val(colonia);
             $("#editMunProv").val(municipio);
             $("#editEstadoProv").val(estado);
             $("#editCpProv").val(cp);
+
+            $("<option />")
+                .attr("value", colonia)
+                .html(colonia)
+                .appendTo("#editColProv");
 
         }).catch(() => {
             Swal.fire({
@@ -461,6 +615,7 @@ if (formEditProv) {
             });
         });
 
+    formEditProv.addEventListener('input', buscarDireccion);
 
     formEditProv.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -1023,3 +1178,49 @@ function s2ab(s) {
     })
 } */
 
+let marker;
+
+
+if (contenedorMapa) {
+
+    /*SE INICIALIZA MAPA*/
+    var lat = 19.617831;
+    var lng = -99.231266;
+
+    var map = L.map('map').setView([lat, lng], 12);
+
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributor',
+        //other attributes.
+    }).addTo(map);
+
+    const url = window.location.pathname;
+    const idProv = url.substring(url.lastIndexOf('/') + 1);
+
+    console.log(idProv);
+
+    var dir = 'Rosa Reina Cuautitlán Izcalli México';
+    const provider = new OpenStreetMapProvider();
+
+    provider.search({ query: dir }).then((resultado) => {
+
+        if (resultado.length > 0) {
+
+            map.setView(resultado[0].bounds[0], 15)
+
+            marker = new L.marker(resultado[0].bounds[0], {
+
+            })
+                .addTo(map);
+
+        }
+
+
+    })
+
+
+
+
+
+
+}

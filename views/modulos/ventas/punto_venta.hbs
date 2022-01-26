@@ -22,23 +22,26 @@
         <div class="container-fluid">
 
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-sm-12">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-barcode"></i></span>
                         </div>
-                        <input type="text" id="barcodeVenta" name="bar_code" class="form-control"
+                        <input type="text" id="barcodeVenta" name="bar_code" class="form-control" autocomplete="off"
                             placeholder="Ingrese código de artículo o código de barras..." autofocus>
                     </div>
 
                 </div>
-                <div class="col-sm-4">
+                {{!-- <div class="col-sm-4">
                     <div style="background-color:#2b2b2b;">
                         <h1 id="big_total" class="text-center text-black text-green" style="font-size:35px;">$ 0.00</h1>
                     </div>
-                </div>
+                </div> --}}
 
             </div>
+
+            <br>
+
             <form id="formularioVenta">
                 <div class="row">
                     <!-- left column -->
@@ -94,18 +97,20 @@
                                                         <i class="fas fa-barcode"></i>
                                                         Ver producto</a>
                                                     <div class="dropdown-divider"></div>
-                                                    <a href="/ingreso_efectivo" type="button" class="dropdown-item dropdown-footer">
+                                                    <a href="/ingreso_efectivo" type="button"
+                                                        class="dropdown-item dropdown-footer">
                                                         <i class="fas fa-money-bill-wave"></i>
                                                         Ingresar efectivo</a>
                                                     <div class="dropdown-divider"></div>
-                                                    <a href="/retiro_efectivo" type="button" class="dropdown-item dropdown-footer">
+                                                    <a href="/retiro_efectivo" type="button"
+                                                        class="dropdown-item dropdown-footer">
                                                         <i class="fas fa-money-bill"></i>
                                                         Retirar efectivo</a>
                                                     <div class="dropdown-divider"></div>
                                                     <a href="/corte_caja" class="dropdown-item dropdown-footer">
                                                         <i class="fas fa-cash-register"></i>
                                                         Corte de caja</a>
-                                                    
+
                                                 </div>
                                                 <!-- Message End -->
                                             </li>
@@ -180,8 +185,9 @@
                                         <div class="col-sm-6 text-center text-info">
                                             <div class="form-group">
                                                 <label>SUBTOTAL</label>
-                                                <input type="number" class="form-control text-center" id="subtotalVenta"
-                                                    value="0.00" readonly="readonly" required>
+                                                <input type="hidden" class="form-control text-center" id="subtotalVenta"
+                                                    required>
+                                                <h4 id="big_subtotal">$0.00</h4>
                                             </div>
                                         </div>
                                     </div>
@@ -192,7 +198,7 @@
 
                                 </div>
 
-                                <div class="row">
+                                {{!-- <div class="row">
                                     <div class="col-sm-4"></div>
                                     <div class="col-sm-8">
                                         <div class="form-group">
@@ -205,15 +211,16 @@
                                         </div>
 
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div id="total">
                                     <div class="row">
-                                        <div class="col-sm-12 text-center text-success">
+                                        <div class="col-sm-12 text-center text-success" style="background-color:#2b2b2b;">
                                             <div class="form-group">
-                                                <label>TOTAL</label>
-                                                <input type="number" class="form-control text-center" id="totalVenta"
-                                                    value="0.00" readonly="readonly" required>
+                                                <label>TOTAL A PAGAR</label>
+                                                <input type="hidden" class="form-control text-center" id="totalVenta"
+                                                    required>
+                                                <h1 id="big_total" class="text-center text-black text-green" style="font-size:35px;">$ 0.00</h1>
                                             </div>
                                         </div>
                                     </div>
@@ -226,9 +233,9 @@
 
                             </div>
 
-                            <div class="col-sm-6">
-                                <button type="submit" id="cobrarVenta" class="btn btn-success" disabled>
-                                    <i class="fas fa-money-bill-alt"></i> Cobrar</button>
+                            <div class="col-sm-12">
+                                <button type="submit" id="cobrarVenta" class="btn btn-success btn-block" disabled>
+                                    <i class="fas fa-money-bill-alt"></i> Completar venta</button>
                             </div>
                             <div class="card-footer-cut">
 

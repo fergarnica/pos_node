@@ -50,6 +50,42 @@ const configuracionMulter = {
 
 const upload = multer(configuracionMulter).single('imagen');
 
+exports.agregarImgProducto = async (req, res) => {
+
+    const { idproducto } = req.body;
+
+    if (req.file) {
+
+        var imagen = req.file.filename;
+
+        const existImg = await pool.query('SELECT imagen FROM productos WHERE idproducto =?', idproducto);
+
+        var oldImg = existImg[0].imagen
+
+        if (oldImg === null) {
+
+            await pool.query('UPDATE productos SET imagen = ? WHERE idproducto = ?', [imagen, idproducto]);
+
+            req.flash('success', 'Imagen actualizada.');
+            res.redirect('/productos');
+
+        } else {
+
+            pathOld = __dirname + '../../public/uploads/productos/' + oldImg;
+            await pool.query('UPDATE productos SET imagen = ? WHERE idproducto = ?', [imagen, idproducto]);
+
+            if (fs.existsSync(pathOld)) {
+                fs.unlinkSync(pathOld);
+            }
+
+            req.flash('success', 'Imagen actualizada.');
+            res.redirect('/productos');
+
+        }
+    }
+
+}
+
 exports.categorias = async (req, res) => {
 
     var idUsuario = res.locals.usuario.idusuario;
@@ -623,42 +659,6 @@ exports.mostrarImgProducto = async (req, res) => {
 
 }
 
-exports.agregarImgProducto = async (req, res) => {
-
-    const { idproducto } = req.body;
-
-    if (req.file) {
-
-        var imagen = req.file.filename;
-
-        const existImg = await pool.query('SELECT imagen FROM productos WHERE idproducto =?', idproducto);
-
-        var oldImg = existImg[0].imagen
-
-        if (oldImg === null) {
-
-            await pool.query('UPDATE productos SET imagen = ? WHERE idproducto = ?', [imagen, idproducto]);
-
-            req.flash('success', 'Imagen actualizada.');
-            res.redirect('/productos');
-
-        } else {
-
-            pathOld = __dirname + '../../public/uploads/productos/' + oldImg;
-            await pool.query('UPDATE productos SET imagen = ? WHERE idproducto = ?', [imagen, idproducto]);
-
-            if (fs.existsSync(pathOld)) {
-                fs.unlinkSync(pathOld);
-            }
-
-            req.flash('success', 'Imagen actualizada.');
-            res.redirect('/productos');
-
-        }
-    }
-
-}
-
 exports.activarProducto = async (req, res) => {
 
     const { idProd, estadoProd } = req.body;
@@ -679,9 +679,19 @@ exports.agregarProdForm = async (req, res) => {
 
 exports.editarProdForm = async (req, res) => {
 
-    res.render('modulos/productos/editar_producto', {
-        nombrePagina: 'Editar Producto'
-    });
+    let idProducto = req.params.id;
+
+    let existProducto = await pool.query('SELECT COUNT(1) AS exist FROM productos WHERE idproducto=?',idProducto);
+
+    let exist = existProducto[0].exist;
+
+    if(exist===1){
+        res.render('modulos/productos/editar_producto', {
+            nombrePagina: 'Editar Producto'
+        });
+    }else{
+        res.render('modulos/error/404');
+    }
 
 }
 

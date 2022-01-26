@@ -46,9 +46,39 @@ exports.cargaProvForm = async (req, res) => {
 }
 
 exports.editarProvForm = async (req, res) => {
-    res.render('modulos/proveedores/editar_proveedor', {
-        nombrePagina: 'Editar Proveedor'
-    });
+
+    let idProveedor = req.params.id;
+
+    let existProv = await pool.query('SELECT COUNT(1) AS exist FROM proveedores WHERE idproveedor=?',idProveedor);
+
+    let exist = existProv[0].exist;
+
+    if(exist===1){
+        res.render('modulos/proveedores/editar_proveedor', {
+            nombrePagina: 'Editar Proveedor'
+        });
+    }else{
+        res.render('modulos/error/404');
+    }
+
+}
+
+exports.detalleProv = async (req, res) => {
+
+    let idProveedor = req.params.id;
+
+    let existProv = await pool.query('SELECT COUNT(1) AS exist FROM proveedores WHERE idproveedor=?',idProveedor);
+
+    let exist = existProv[0].exist;
+
+    if(exist===1){
+        res.render('modulos/proveedores/detalle_proveedor', {
+            nombrePagina: 'Detalle Proveedor'
+        });
+    }else{
+        res.render('modulos/error/404');
+    }
+
 }
 
 exports.clientes = async (req, res) => {
@@ -181,7 +211,7 @@ exports.mostrarProveedores = async (req, res) => {
             conteo = x + 1;
             const arrayProveedores = values[x];
 
-            var botones = "<div class='btn-group'><a type='button' id='btn-editar-prov' rel='nofollow' class='btn btn-warning' href=" + "'/editar_proveedor/" + arrayProveedores.idproveedor + "'" + " idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-prov' class='btn btn-danger' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fa fa-times'></i></button></div>";
+            var botones = "<div class='btn-group'><a type='button' id='btn-detalle-prov' rel='nofollow' class='btn btn-info' href=" + "'/detalle_proveedor/" + arrayProveedores.idproveedor + "'" + " idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fas fa-eye'></i></a><a type='button' id='btn-editar-prov' rel='nofollow' class='btn btn-warning' href=" + "'/editar_proveedor/" + arrayProveedores.idproveedor + "'" + " idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-prov' class='btn btn-danger' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fa fa-times'></i></button></div>";
 
             if (arrayProveedores.status === 0) {
                 var status = "<button type='button' id='btn-estatus-prov' class='btn btn-danger btn-sm' estadoProveedor='1' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + ">Desactivado</button>";

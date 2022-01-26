@@ -4,7 +4,6 @@ import moment from 'moment';
 import pdfMake from 'pdfMake';
 import vfsFonts from 'pdfmake/build/vfs_fonts.js';
 import FileSaver from 'file-saver';
-//import http from 'http';
 
 pdfMake.vfs = vfsFonts.pdfMake.vfs;
 
@@ -20,17 +19,104 @@ const formAbrirCaja = document.getElementById('formAbrirCaja');
 const formNewRetiro = document.getElementById('formNewRetiro');
 const formNewIngreso = document.getElementById('formNewIngreso');
 const formCorteCaja = document.getElementById('formCorteCaja');
+const formSearchArt = document.getElementById('formSearchArt');
 
 const divCajas = document.getElementById("mostrarCajas");
 const divRetiros = document.getElementById("bodyRetiros");
 const divIngresos = document.getElementById("bodyIngresos");
 const divCorteCaja = document.getElementById("bodyCorteCaja");
 
+const tblCajas = document.querySelector('#tbl-admin-cajas');
+
+
 if (barCode) {
     body.classList.add("sidebar-collapse");
 }
 
 (function () {
+
+    /*=============================================
+        Data Table Perfiles
+    =============================================*/
+    if (tblCajas) {
+
+        axios.get('/cajas')
+            .then(function (respuesta) {
+
+                if (respuesta.data != 'empty') {
+
+                    var dataSet = respuesta.data;
+
+                    $(tblCajas).DataTable({
+                        data: dataSet,
+                        deferRender: true,
+                        iDisplayLength: 25,
+                        retrieve: true,
+                        processing: true,
+                        fixedHeader: true,
+                        responsive: true,
+                        columnDefs: [
+                            { orderable: false, targets: '_all' }
+                        ],
+                        language: {
+
+                            "sProcessing": "Procesando...",
+                            "sLengthMenu": "Mostrar _MENU_ registros",
+                            "sZeroRecords": "No se encontraron resultados",
+                            "sEmptyTable": "Ningún dato disponible en esta tabla",
+                            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                            "sInfoPostFix": "",
+                            "sSearch": "Buscar:",
+                            "sUrl": "",
+                            "sInfoThousands": ",",
+                            "sLoadingRecords": "Cargando...",
+                            "oPaginate": {
+                                "sFirst": "Primero",
+                                "sLast": "Último",
+                                "sNext": "Siguiente",
+                                "sPrevious": "Anterior"
+                            },
+                            "oAria": {
+                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                            }
+
+                        },
+                        columns: [{
+                            title: "#"
+                        },
+                        {
+                            title: "ID Caja"
+                        },
+                        {
+                            title: "# Corte"
+                        },
+                        {
+                            title: "Estatus"
+                        },
+                        {
+                            title: "ID Cajero"
+                        },
+                        {
+                            title: "Nombre Cajero"
+                        }
+                        ]
+                    });
+
+                }
+
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
+
+    }
 
     /* =============================================
     SELECT CLIENTES ACTIVOS
@@ -87,7 +173,7 @@ if (barCode) {
 
                 for (var i = 0; i < dataSet.length; i++) {
 
-                    if (dataSet[i].idusuario == null) {
+                    if (dataSet[i][4] == null) {
                         var uso = 'DISPONIBLE';
                         var status = 'Cerrada';
                         var textColor = 'danger';
@@ -101,7 +187,7 @@ if (barCode) {
                         var cardColor = 'bg-gradient-secondary';
                         var opDisabled = 'disabled';
 
-                        if (dataSet[i].status == 0) {
+                        if (dataSet[i][3] == 0) {
                             var status = 'Cerrada';
                             var textColor = 'danger';
                         } else {
@@ -115,7 +201,7 @@ if (barCode) {
                         '<div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">' +
                         '<div class="card bg-light">' +
                         '<div class="card-header ' + cardColor + ' text-bold border-bottom-0">' +
-                        'CAJA ' + dataSet[i].idcaja +
+                        'CAJA-' + dataSet[i][1] +
                         '<div class="card-tools">' +
                         '<i class="fas fa-cash-register"></i>' +
                         '</div>' +
@@ -131,7 +217,7 @@ if (barCode) {
                         '</div>' +
                         '<div class="card-footer">' +
                         '<div class="text-right">' +
-                        '<button class="btn btn-' + btnColor + ' btn-sm" data-toggle="modal" id="btn-abrir-caja" idCaja="' + dataSet[i].idcaja + '" data-target="#modalAbrirCaja" ' + opDisabled + '>' +
+                        '<button class="btn btn-' + btnColor + ' btn-sm" data-toggle="modal" id="btn-abrir-caja" idCaja="' + dataSet[i][1] + '" data-target="#modalAbrirCaja" ' + opDisabled + '>' +
                         '<i class="fas fa-donate"></i> Abrir' +
                         '</button>' +
                         '</div>' +
@@ -165,7 +251,7 @@ if (barCode) {
             ordering: false,
             bInfo: false,
             bLengthChange: false,
-            bAutoWidth: false,
+            bAutoWidth: false
         });
 
     }
@@ -189,12 +275,12 @@ if (barCode) {
             ordering: false,
             bInfo: false,
             bLengthChange: false,
-            bAutoWidth: false,
+            bAutoWidth: false
         });
 
     }
 
-    if(divCorteCaja){
+    if (divCorteCaja) {
 
         body.classList.add("sidebar-collapse");
 
@@ -213,7 +299,7 @@ if (barCode) {
             ordering: false,
             bInfo: false,
             bLengthChange: false,
-            bAutoWidth: false,
+            bAutoWidth: false
         });
 
         /* =============================================
@@ -231,7 +317,7 @@ if (barCode) {
             ordering: false,
             bInfo: false,
             bLengthChange: false,
-            bAutoWidth: false,
+            bAutoWidth: false
         });
 
     }
@@ -295,7 +381,7 @@ function buscar() {
                             var cantActual = stockInput.value;
                             var cantNuevo = parseInt(cantActual) + 1;
 
-                            if (cantNuevo > stock) {
+                            /*if (cantNuevo > stock) {
 
                                 barCode.value = "";
 
@@ -315,7 +401,16 @@ function buscar() {
                                 stockInput.value = cantNuevo;
 
                                 barCode.value = "";
-                            }
+                            }*/
+
+                            var idprecioUnit = idProducto + 'a';
+                            var idArt = idProducto;
+
+                            updTotProd(idArt, cantNuevo, idprecioUnit);
+
+                            stockInput.value = cantNuevo;
+
+                            barCode.value = "";
 
                         }
                     }
@@ -358,12 +453,33 @@ function newItem(idProducto, descripcion, marca, stock, precio) {
         '<button type="button" idProducto="' + idProducto + '" class="btn btn-sm btn-danger quitarProducto""><i class="fas fa-trash-alt"></i></button>',
         '<div>' + descripcion + '<input type="hidden" class="form-control nuevaDescripcionProducto" idProducto="' + idProducto + '" id="' + idProducto + 'p"  value="' + descripcion + '">' + '</div>',
         marca,
-        '<div>' + precio.toFixed(2) + '<input type="hidden" class="form-control" precioReal="' + precio + '" id="' + idProducto + 'a" name="nuevoPrecio" value="' + precio + '">' + '</div>',
+        '<div>' + currencyFormat(precio) + '<input type="hidden" class="form-control" precioReal="' + precio + '" id="' + idProducto + 'a" name="nuevoPrecio" value="' + precio + '">' + '</div>',
         '<input type="number" idProducto="' + idProducto + '" id="' + idProducto + '" class="form-control text-center nuevaCantidadProducto"  min="1" value="1" stock="' + stock + '" nuevoStock="' + Number(stock - 1) + '" required>',
-        '<input type="number" class="form-control text-center nuevoTotalProducto" id="' + idProducto + 'b"  precioReal="' + precio + '" value="' + precio.toFixed(2) + '" readonly >'
+        '<div><b id="' + idProducto + 'total">' + currencyFormat(precio) + '</b><input type="hidden" class="form-control text-center nuevoTotalProducto" id="' + idProducto + 'b"  precioReal="' + precio + '" value="' + precio + '">' + '</div>'
     ]).draw(false);
 
     barCode.value = "";
+
+    var divEfectivoRec = document.getElementById('efectivoRecibido');
+    var divNuevoCambio = document.getElementById('nuevoCambio');
+    var divNumTrans = document.getElementById('numTrans');
+
+    if (divEfectivoRec) {
+        divEfectivoRec.value = '';
+    }
+
+    if (divNuevoCambio) {
+        divNuevoCambio.value = '';
+        $("#totalCambio").html('$ -.--');
+    }
+
+    if (divNumTrans) {
+        divNumTrans.value = '';
+    }
+
+    if (document.getElementById('cobrarVenta').disabled == false) {
+        document.getElementById('cobrarVenta').disabled = true;
+    }
 
 }
 
@@ -413,6 +529,7 @@ function sumarTotalPrecios() {
         document.getElementById('clienteVenta').disabled = false;
     }
 
+    $("#big_subtotal").html(currencyFormat(sumaTotalPrecio));
     $("#big_total").html(currencyFormat(sumaTotalPrecio));
 
 };
@@ -430,39 +547,14 @@ $("#formularioVenta").on("change", "input.nuevaCantidadProducto", function () {
     var precioFinal = cant * precio.getAttribute("precioReal");
 
     var newIdTotal = idProdCam + 'b';
-    document.getElementById(newIdTotal).value = precioFinal.toFixed(2);
+    document.getElementById(newIdTotal).value = precioFinal;
+
+    var etiqTotal = '#' + idProdCam + 'total';
+    $(etiqTotal).html(currencyFormat(precioFinal));
 
     var nuevoStock = Number($(this).attr("stock")) - $(this).val();
 
     $(this).attr("nuevoStock", nuevoStock);
-
-    var numComprobante = document.getElementById('numComCompra');
-    var divNumTrans = document.getElementById('numTransCom');
-
-    if (numComprobante) {
-        numComprobante.value = '';
-    }
-
-    if (divNumTrans) {
-        divNumTrans.value = '';
-    }
-
-    // SUMAR TOTAL DE PRECIOS
-    sumarTotalPrecios();
-    // AGREGAR IMPUESTO
-    agregarImpuesto();
-
-});
-/*=============================================
-MODIFICAR LA CANTIDAD AL ACTUALIZAR AUTOMATICO
-=============================================*/
-function updTotProd(idPrecio, cantNuevo, idprecioUnit) {
-
-    var precioUnit = document.getElementById(idprecioUnit).value;
-    var precioTotal = parseInt(precioUnit) * parseInt(cantNuevo);
-
-    var preTotalInput = document.getElementById(idPrecio);
-    preTotalInput.value = precioTotal;
 
     var divEfectivoRec = document.getElementById('efectivoRecibido');
     var divNuevoCambio = document.getElementById('nuevoCambio');
@@ -474,10 +566,58 @@ function updTotProd(idPrecio, cantNuevo, idprecioUnit) {
 
     if (divNuevoCambio) {
         divNuevoCambio.value = '';
+        $("#totalCambio").html('$ -.--');
     }
 
     if (divNumTrans) {
         divNumTrans.value = '';
+    }
+
+    if (document.getElementById('cobrarVenta').disabled == false) {
+        document.getElementById('cobrarVenta').disabled = true;
+    }
+
+    // SUMAR TOTAL DE PRECIOS
+    sumarTotalPrecios();
+    // AGREGAR IMPUESTO
+    agregarImpuesto();
+
+});
+/*=============================================
+MODIFICAR LA CANTIDAD AL ACTUALIZAR AUTOMATICO
+=============================================*/
+function updTotProd(idArt, cantNuevo, idprecioUnit) {
+
+    var idPrecio = idArt + 'b'
+
+    var precioUnit = document.getElementById(idprecioUnit).value;
+    var precioTotal = parseInt(precioUnit) * parseInt(cantNuevo);
+
+    var preTotalInput = document.getElementById(idPrecio);
+    preTotalInput.value = precioTotal;
+
+    var etiqTotal = '#' + idArt + 'total';
+    $(etiqTotal).html(currencyFormat(precioTotal));
+
+    var divEfectivoRec = document.getElementById('efectivoRecibido');
+    var divNuevoCambio = document.getElementById('nuevoCambio');
+    var divNumTrans = document.getElementById('numTrans');
+
+    if (divEfectivoRec) {
+        divEfectivoRec.value = '';
+    }
+
+    if (divNuevoCambio) {
+        divNuevoCambio.value = '';
+        $("#totalCambio").html('$ -.--');
+    }
+
+    if (divNumTrans) {
+        divNumTrans.value = '';
+    }
+
+    if (document.getElementById('cobrarVenta').disabled == false) {
+        document.getElementById('cobrarVenta').disabled = true;
     }
 
     // SUMAR TOTAL DE PRECIOS
@@ -503,13 +643,14 @@ $("#formaPago").change(function () {
             '<div class="col-sm-6 text-center">' +
             '<div class="form-group">' +
             '<label>Recibido:</label><label style="color:#C20F30">*</label>' +
-            '<input type="number" id="efectivoRecibido" class="form-control text-center" required>' +
+            '<input type="number" id="efectivoRecibido" step="0.01" class="form-control text-center" required>' +
             '</div>' +
             '</div>' +
             '<div class="col-sm-6 text-center">' +
             '<div class="form-group">' +
             '<label>Cambio:</label>' +
-            '<input type="number" id="nuevoCambio" class="form-control text-center" readonly="readonly" required>' +
+            '<input type="hidden" id="nuevoCambio" class="form-control text-center" readonly="readonly" required>' +
+            '<h4 id="totalCambio">$ -.--</h4>' +
             '</div>' +
             '</div>' +
             '</div>')
@@ -575,6 +716,8 @@ $("#formularioVenta").on("change", "input#efectivoRecibido", function () {
                 document.getElementById('cobrarVenta').disabled = true;
             }
 
+            divCambio.value = '';
+            $("#totalCambio").html('$ -.--');
             divEfectivoRec.value = '';
             divEfectivoRec.focus();
         });
@@ -584,6 +727,7 @@ $("#formularioVenta").on("change", "input#efectivoRecibido", function () {
         var cambio = efectivoRec - totalVenta;
 
         divCambio.value = cambio;
+        $("#totalCambio").html(currencyFormat(cambio));
 
         if (document.getElementById('cobrarVenta').disabled == true) {
             document.getElementById('cobrarVenta').disabled = false;
@@ -602,10 +746,6 @@ if (selectClientes) {
 
         if (document.getElementById('checkImp').disabled == true) {
             document.getElementById('checkImp').disabled = false;
-        }
-
-        if (document.getElementById('checkRed').disabled == true) {
-            document.getElementById('checkRed').disabled = false;
         }
 
     });
@@ -628,17 +768,19 @@ if (checkImp) {
                 '<div class="col-sm-6 text-center">' +
                 '<div class="form-group">' +
                 '<label>% Impuesto:</label><label style="color:#C20F30">*</label>' +
-                '<input type="number" id="impuestoVenta" class="form-control text-center" min="0" max="50" value="0" required>' +
+                '<input type="number" id="impuestoVenta" class="form-control text-center" min="0" max="50" required>' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-sm-6 text-center">' +
                 '<div class="form-group">' +
-                '<label>Total Impuesto:</label><label style="color:#C20F30">*</label>' +
-                '<input type="number" id="nuevoPrecioImpuesto" class="form-control text-center" value="0" step="0.01" readonly="readonly" required>' +
+                '<label>Total Impuesto:</label>' +
+                '<input type="hidden" id="nuevoPrecioImpuesto" class="form-control text-center" value="0" step="0.01" readonly="readonly" required>' +
+                '<h4 id="totalComision">$ -.--</h4>' +
                 '</div>' +
                 '</div>' +
                 '</div>')
 
+            document.getElementById('impuestoVenta').focus();
 
         } else {
             $('#impuestosBox').empty();
@@ -658,6 +800,7 @@ if (checkImp) {
 
             if (divNuevoCambio) {
                 divNuevoCambio.value = '';
+                $("#totalCambio").html('$ -.--');
             }
 
             if (divNumTrans) {
@@ -692,6 +835,8 @@ function agregarImpuesto() {
 
         document.getElementById('nuevoPrecioImpuesto').value = precioImpuesto;
         document.getElementById('totalVenta').value = totalConImpuesto;
+
+        $("#totalComision").html(currencyFormat(precioImpuesto));
         $("#big_total").html(currencyFormat(totalConImpuesto));
 
         var divEfectivoRec = document.getElementById('efectivoRecibido');
@@ -704,6 +849,7 @@ function agregarImpuesto() {
 
         if (divNuevoCambio) {
             divNuevoCambio.value = '';
+            $("#totalCambio").html('$ -.--');
         }
 
         if (divNumTrans) {
@@ -780,72 +926,123 @@ if (formularioVenta) {
     formularioVenta.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        var payload = {};
+        Swal.fire({
+            title: '¿Está seguro de querer procesar esta venta?',
+            text: "¡Si no lo está puede cancelar la acción!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Aceptar'
+        }).then((result) => {
+            if (result.value) {
+                var payload = {};
 
-        var boxImpuesto = document.getElementById('impuestoVenta');
-        var numTrans = document.getElementById('numTrans');
+                var boxImpuesto = document.getElementById('impuestoVenta');
+                var numTrans = document.getElementById('numTrans');
+                var divEfectivoRec = document.getElementById('efectivoRecibido');
+                var nuevoCambio = document.getElementById('nuevoCambio');
 
-        if (boxImpuesto) {
-            var impuesto = document.getElementById('nuevoPrecioImpuesto').value;
-        } else {
-            var impuesto = null;
-        }
-
-        if (numTrans) {
-            var numTransaccion = document.getElementById('numTrans').value;
-        } else {
-            var numTransaccion = null;
-        }
-
-        var clienteVenta = document.getElementById('clienteVenta').value;
-        var formaPago = document.getElementById('formaPago').value;
-        var listaProductos = listarProductos();
-        var subtotalVenta = document.getElementById('subtotalVenta').value;
-        var totalVenta = document.getElementById('totalVenta').value;
-
-        payload.idcliente = clienteVenta;
-        payload.subtotal = subtotalVenta;
-        payload.impuesto = impuesto;
-        payload.redondeo = 0;
-        payload.total = totalVenta;
-        payload.forma_pago = formaPago;
-        payload.num_transaccion = numTransaccion;
-        payload.status = 1;
-        payload.fecha = moment().format('YYYY-MM-DD H:mm:ss');
-        payload.listaProductos = listaProductos;
-
-        axios.post('/crear_venta', payload)
-            .then(function (respuesta) {
-
-                if (respuesta.data == 'OK') {
-
-                    // Alerta
-                    Swal.fire(
-                        'Venta Realizada!',
-                        'Se realizó la venta correctamente',
-                        'success'
-                    ).then(function (result) {
-                        if (result.value) {
-                            window.location = "/punto_venta";
-                        }
-                    });
-
-
+                if (boxImpuesto) {
+                    var impuesto = document.getElementById('nuevoPrecioImpuesto').value;
                 } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Oops...',
-                        text: 'Hubo un error!',
-                    })
+                    var impuesto = 0.00;
                 }
 
-            }).catch(errors => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hubo un error',
-                    text: 'Error en la Base de Datos'
-                })
-            })
+                if (numTrans) {
+                    var numTransaccion = document.getElementById('numTrans').value;
+                } else {
+                    var numTransaccion = null;
+                }
+
+                var clienteVenta = document.getElementById('clienteVenta').value;
+                var formaPago = document.getElementById('formaPago').value;
+                var listaProductos = listarProductos();
+                var subtotalVenta = document.getElementById('subtotalVenta').value;
+                var totalVenta = document.getElementById('totalVenta').value;
+
+                if(divEfectivoRec){
+                    var efecRecibido = divEfectivoRec.value;
+                    var cambio = nuevoCambio.value;
+                }else{
+                    var efecRecibido = totalVenta;
+                    var cambio = 0.00;
+                }
+
+                if (Number(totalVenta) > Number(efecRecibido)) {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Efectivo ingresado insuficiente',
+                        text: "¡El efectivo ingresado es menor a la venta!"
+                    }).then(function (result) {
+
+                        if (document.getElementById('cobrarVenta').disabled == false) {
+                            document.getElementById('cobrarVenta').disabled = true;
+                        }
+                        var divCambio = document.getElementById('nuevoCambio');
+                        
+                        divCambio.value = '';
+                        $("#totalCambio").html('$ -.--');
+                        divEfectivoRec.value = '';
+                        divEfectivoRec.focus();
+                    });
+
+                } else {
+
+                    payload.idcliente = clienteVenta;
+                    payload.subtotal = subtotalVenta;
+                    payload.impuesto = impuesto;
+                    payload.redondeo = 0;
+                    payload.total = totalVenta;
+                    payload.monto = efecRecibido;
+                    payload.cambio = cambio;
+                    payload.forma_pago = formaPago;
+                    payload.num_transaccion = numTransaccion;
+                    payload.status = 1;
+                    payload.fecha = moment().format('YYYY-MM-DD H:mm:ss');
+                    payload.listaProductos = listaProductos;
+
+                    axios.post('/crear_venta', payload)
+                        .then(function (respuesta) {
+
+                            if (respuesta.data == 'OK') {
+
+                                // Alerta
+                                Swal.fire(
+                                    'Venta Realizada!',
+                                    'Se realizó la venta correctamente',
+                                    'success'
+                                ).then(function (result) {
+                                    if (result.value) {
+                                        window.location = "/punto_venta";
+                                    }
+                                });
+
+
+                            } else {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Oops...',
+                                    text: 'Hubo un error!',
+                                })
+                            }
+
+                        }).catch(errors => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hubo un error',
+                                text: 'Error en la Base de Datos'
+                            })
+                        })
+
+                }
+            }
+
+        })
+
+
     })
 }
 
@@ -1009,6 +1206,9 @@ if (formSearchVtas) {
                             title: "# Caja"
                         },
                         {
+                            title: "# Corte"
+                        },
+                        {
                             title: "Cliente"
                         },
                         {
@@ -1019,6 +1219,9 @@ if (formSearchVtas) {
                         },
                         {
                             title: "Subtotal", render: $.fn.dataTable.render.number(',', '.', 2)
+                        },
+                        {
+                            title: "Comisión", render: $.fn.dataTable.render.number(',', '.', 2)
                         },
                         {
                             title: "GranTotal", render: $.fn.dataTable.render.number(',', '.', 2)
@@ -1050,7 +1253,7 @@ if (formSearchVtas) {
 
                             // Total todas las paginas
                             var total = api
-                                .column(6)
+                                .column(8)
                                 .data()
                                 .reduce(function (a, b) {
                                     return intVal(a) + intVal(b);
@@ -1058,7 +1261,7 @@ if (formSearchVtas) {
 
                             //Total monto por pagina  
                             var pageTotal = api
-                                .column(6, { page: 'current' })
+                                .column(8, { page: 'current' })
                                 .data()
                                 .reduce(function (a, b) {
                                     return intVal(a) + intVal(b);
@@ -1082,10 +1285,10 @@ if (formSearchVtas) {
 
                             } else {
 
-                                $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>');
+                                $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>');
 
                                 $('#footerVenta').find('th').eq(0).html("Total:");
-                                $('#footerVenta').find('th').eq(6).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
+                                $('#footerVenta').find('th').eq(8).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
 
                             }
                         }
@@ -1142,6 +1345,11 @@ $(document).on("click", "#btn-detalle-vta", function () {
                     fixedHeader: true,
                     responsive: true,
                     searching: false,
+                    bPaginate: false,
+                    info: false,
+                    columnDefs: [
+                        { orderable: false, targets: '_all' }
+                    ],
                     language: {
 
                         "sProcessing": "Procesando...",
@@ -1431,7 +1639,6 @@ $(document).on("click", "#btn-anular-venta", function () {
 Abrir caja
 =============================================*/
 $('#modalAbrirCaja').on('shown.bs.modal', function () {
-    console.log('entramos');
     document.getElementById('montoApertura').focus();
 });
 
@@ -1701,7 +1908,7 @@ if (formNewIngreso) {
 /*=============================================
 CORTE DE CAJA
 =============================================*/
-if(formCorteCaja){
+if (formCorteCaja) {
 
     formCorteCaja.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -1794,10 +2001,9 @@ if(formCorteCaja){
         }).then((result) => {
             if (result.value) {
 
-                console.log('confirma');
                 axios.post('/corte_caja', payload)
                     .then(function (respuesta) {
-                        console.log(respuesta);
+
                         Swal.fire(
                             'Exito!',
                             'La caja se cerró correctamente!',
@@ -1807,7 +2013,7 @@ if(formCorteCaja){
                                 window.location = "/punto_venta";
                             }
                         });
-    
+
                     }).catch(errors => {
                         Swal.fire({
                             icon: 'error',
@@ -1820,5 +2026,64 @@ if(formCorteCaja){
 
 
     })
+
+}
+/*=============================================
+NUEVA CAJA
+=============================================*/
+$(document).on("click", "#btn-agregar-caja", function () {
+
+    Swal.fire({
+        title: '¿Está seguro de agregar una nueva caja?',
+        text: "¡Si no lo está puede cancelar la acción!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: 'Si, agregar!'
+    }).then((result) => {
+        if (result.value) {
+
+            axios.post('/cajas')
+                .then(function (respuesta) {
+
+                    Swal.fire(
+                        'Exito!',
+                        'Se agregó correctamente la caja!',
+                        'success'
+                    ).then(function (result) {
+                        if (result.value) {
+                            window.location = "/admin_cajas";
+                        }
+                    });
+
+                }).catch(errors => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la Base de Datos'
+                    })
+                })
+        }
+    })
+})
+
+/*=============================================
+CONSULTAR ARTICULO
+=============================================*/
+$('#modalVerProd').on('shown.bs.modal', function () {
+    document.getElementById('codBarArt').focus();
+});
+
+if(formSearchArt){
+
+    formSearchArt.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+
+        console.log('enviando...');
+
+    });
 
 }

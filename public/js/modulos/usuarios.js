@@ -30,9 +30,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
 
                 if (respuesta.data != 'empty') {
 
-                    //console.log(tableLanguage);
                     var dataSet = respuesta.data;
-                    //console.log(dataSet);
 
                     $(tblPerfiles).DataTable({
                         data: dataSet,
@@ -108,7 +106,7 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
             .then(function (respuesta) {
 
                 var dataSet = respuesta.data;
-                //console.log(dataSet);
+
                 if (respuesta.data != 'empty') {
                     $(tblEmpleados).DataTable({
                         data: dataSet,
@@ -193,7 +191,6 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
             .then(function (respuesta) {
 
                 var dataSet = respuesta.data;
-                //console.log(dataSet);
 
                 if (respuesta.data != 'empty') {
                     $(tblUsuarios).DataTable({
@@ -543,11 +540,9 @@ $(document).on("click", "#btn-eliminar-perfil", function () {
 
             var route = '/perfiles/' + idPerfil;
 
-            console.log(route);
-
             axios.delete(route)
                 .then(function (respuesta) {
-                    //console.log(respuesta);
+
                     Swal.fire(
                         'Eliminado!',
                         respuesta.data,
@@ -764,9 +759,6 @@ if (formEditUser) {
         const responseOne = respuesta[0];
         const responseTwo = respuesta[1];
 
-        //console.log(responseOne);
-        //console.log(responseTwo);
-
         var nameEmpleado = responseOne.data[0].nombre_completo;
         var idUsuario = responseOne.data[0].idusuario;
         var userName = responseOne.data[0].usuario;
@@ -821,7 +813,6 @@ if (formEditUser) {
 
         axios.put(route, payload)
             .then(function (respuesta) {
-                console.log(respuesta);
 
                 if (respuesta.data == 'Nulos') {
 
@@ -901,9 +892,6 @@ if (formNewEmpleado) {
         payload.telefono = empTel;
         payload.fecha_contratacion = moment(fecCont, 'DD/MM/YYYY').format('YYYY-MM-DD');
 
-        console.log(fecCont);
-        console.log(payload);
-
         if (payload.nombre == "") {
             Swal.fire({
                 icon: 'warning',
@@ -965,7 +953,6 @@ if (formNewEmpleado) {
                                     axios.post('/empleados', payload)
                                         .then(function (respuesta) {
 
-                                            console.log(respuesta);
                                             if (respuesta.status === 200) {
 
                                                 if (respuesta.data == 'Repetido') {
@@ -1029,8 +1016,6 @@ $(document).on("click", "#btn-estatus-empleado", function () {
 
     payload.idEmpleado = idEmpleado;
     payload.estadoEmpleado = estadoEmpleado;
-
-    console.log(payload);
 
     axios.put('/empleados', payload)
         .then(function (respuesta) {
@@ -1210,11 +1195,9 @@ $(document).on("click", "#btn-eliminar-empleado", function () {
 
             var route = '/empleados/' + idPerfil;
 
-            console.log(route);
-
             axios.delete(route)
                 .then(function (respuesta) {
-                    //console.log(respuesta);
+
                     Swal.fire(
                         'Eliminado!',
                         respuesta.data,
@@ -1303,8 +1286,6 @@ $(document).on("click", "#btn-estatus-usuario", function () {
     payload.idUsuario = idUsuario;
     payload.estadoUsuario = estadoUsuario;
 
-    console.log(payload);
-
     axios.put('/usuarios', payload)
         .then(function (respuesta) {
             if (window.matchMedia("(max-width:767px)").matches) {
@@ -1365,11 +1346,9 @@ $(document).on("click", "#btn-eliminar-usuario", function () {
 
             var route = '/usuarios/' + idUsuario;
 
-            console.log(route);
-
             axios.delete(route)
                 .then(function (respuesta) {
-                    //console.log(respuesta);
+
                     Swal.fire(
                         'Eliminado!',
                         respuesta.data,
