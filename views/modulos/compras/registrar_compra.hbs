@@ -22,7 +22,7 @@
         <div class="container-fluid">
 
             <div class="row">
-                <div class="col-sm-8">
+                <div class="col-sm-12">
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-barcode"></i></span>
@@ -32,21 +32,15 @@
                     </div>
 
                 </div>
-                <div class="col-sm-4">
+                {{!-- <div class="col-sm-4">
                     <div style="background-color:#2b2b2b;">
                         <h1 id="big_total" class="text-center text-black text-green" style="font-size:35px;">$ 0.00</h1>
                     </div>
-                </div>
+                </div> --}}
 
             </div>
 
-            {{!-- <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-                </div>
-                <input type="text" id="barcodeVenta" name="bar_code" class="form-control"
-                    placeholder="Ingrese código de artículo o código de barras..." autofocus>
-            </div> --}}
+            <br>
 
             <form id="formularioCompra">
                 <div class="row">
@@ -163,13 +157,26 @@
                                     </div>
                                 </div>
 
-                                <div id="total">
+                                {{!-- <div id="total">
                                     <div class="row">
                                         <div class="col-sm-12 text-center text-success">
                                             <div class="form-group">
                                                 <label>TOTAL</label>
                                                 <input type="number" class="form-control text-center" id="totalCompra"
                                                     value="0.00" readonly="readonly" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> --}}
+
+                                <div id="total">
+                                    <div class="row">
+                                        <div class="col-sm-12 text-center text-success" style="background-color:#2b2b2b;">
+                                            <div class="form-group">
+                                                <label>TOTAL A PAGAR</label>
+                                                <input type="hidden" class="form-control text-center" id="totalCompra"
+                                                    required>
+                                                <h1 id="big_total" class="text-center text-black text-green" style="font-size:35px;">$ 0.00</h1>
                                             </div>
                                         </div>
                                     </div>
