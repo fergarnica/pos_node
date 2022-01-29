@@ -24,8 +24,11 @@ const telEditCliente = document.getElementById("telEditCliente");
 const tblProv = document.querySelector('#tbl-proveedores');
 const tblClientes = document.querySelector('#tbl-clientes');
 
+const infoDetProv = document.getElementById('infodet-proveedor');
+
 const contenedorMapa = document.querySelector('.contenedor-mapa');
 //const buscador = document.querySelector('#formNewProv');
+let marker;
 
 (function () {
 
@@ -571,7 +574,7 @@ if (formEditProv) {
     axios.get(route)
         .then(function (respuesta) {
 
-            var idProveedor = respuesta.data[0].idproveedor;
+            var idProv = respuesta.data[0].idproveedor;
             var proveedor = respuesta.data[0].proveedor;
             var nombre = respuesta.data[0].nombre_proveedor;
             var rfc = respuesta.data[0].rfc;
@@ -585,7 +588,7 @@ if (formEditProv) {
             var estado = respuesta.data[0].estado;
             var cp = respuesta.data[0].cp;
 
-            $("#idProv").val(idProveedor);
+            $("#idProv").val(idProv);
             $("#editProv").val(proveedor);
             $("#editNomProv").val(nombre);
             $("#editRfcProv").val(rfc);
@@ -1178,49 +1181,93 @@ function s2ab(s) {
     })
 } */
 
-let marker;
 
-
-if (contenedorMapa) {
-
-    /*SE INICIALIZA MAPA*/
-    var lat = 19.617831;
-    var lng = -99.231266;
-
-    var map = L.map('map').setView([lat, lng], 12);
-
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributor',
-        //other attributes.
-    }).addTo(map);
+if(infoDetProv){
 
     const url = window.location.pathname;
     const idProv = url.substring(url.lastIndexOf('/') + 1);
 
-    console.log(idProv);
+    var route = '/proveedores/' + idProv;
 
-    var dir = 'Rosa Reina Cuautitlán Izcalli México';
-    const provider = new OpenStreetMapProvider();
+    axios.get(route)
+        .then(function (respuesta) {
 
-    provider.search({ query: dir }).then((resultado) => {
+            var idProveedor = respuesta.data[0].idproveedor;
+            var proveedor = respuesta.data[0].proveedor;
+            var nombre_contacto = respuesta.data[0].nombre_proveedor;
+            var rfc = respuesta.data[0].rfc;
+            var razon_social = respuesta.data[0].razon_social;
+            var email = respuesta.data[0].email;
+            var telefono = respuesta.data[0].telefono;
+            var calle = respuesta.data[0].calle;
+            var numero = respuesta.data[0].numero;
+            var colonia = respuesta.data[0].colonia;
+            var municipio = respuesta.data[0].municipio;
+            var estado = respuesta.data[0].estado;
+            var cp = respuesta.data[0].cp;
+            var dir = calle + ' ' + municipio + ' ' + estado;
+            var direccion = calle + ' ' +  numero + ', ' + colonia + ', ' + municipio + ', ' + estado + ', ' + cp;
 
-        if (resultado.length > 0) {
+            $(infoDetProv).append(
+                '<div class="row">'+
+                '<div class="col-12">'+
+                '<h2>'+ proveedor +'</h2>'+
+                '</div>'+
+                '</div>'+
+                '<div class="row">'+
+                '<div class="col-12">'+
+                '<h5>'+ razon_social +'</h5>'+
+                '</div>'+
+                '</div>'+
+                '<hr>'+
+                '<br>'+
+                '<dl class="row">'+
+                '<dt class="col-sm-2">Contacto:</dt>'+
+                '<dd class="col-sm-10">'+ nombre_contacto +'</dd>'+
+                '<dt class="col-sm-2">E-mail:</dt>'+
+                '<dd class="col-sm-10">'+ email +'</dd>'+
+                '<dt class="col-sm-2">Telefono:</dt>'+
+                '<dd class="col-sm-10">'+ telefono +'</dd>'+
+                '<dt class="col-sm-2">Dirección:</dt>'+
+                '<dd class="col-sm-10">'+ direccion +'</dd>'+
+                '</dl>'+
+                '<br>'
+            );
 
-            map.setView(resultado[0].bounds[0], 15)
 
-            marker = new L.marker(resultado[0].bounds[0], {
+            if (contenedorMapa) {
 
-            })
-                .addTo(map);
+                /*SE INICIALIZA MAPA*/
+                var lat = 19.617831;
+                var lng = -99.231266;
+            
+                var map = L.map('map').setView([lat, lng], 12);
+            
+                L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributor',
+                    //other attributes.
+                }).addTo(map);
+            
+                const provider = new OpenStreetMapProvider();
+            
+                provider.search({ query: dir }).then((resultado) => {
+            
+                    if (resultado.length > 0) {
+            
+                        map.setView(resultado[0].bounds[0], 15)
+            
+                        marker = new L.marker(resultado[0].bounds[0], {
+            
+                        })
+                            .addTo(map);
+                    }
+            
+                })
+            
+            }
 
-        }
-
-
-    })
-
-
-
-
+        })
 
 
 }
+

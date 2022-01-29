@@ -12,6 +12,7 @@ const formEditMenu = document.getElementById('formEditMenu');
 
 const salesChartSem = document.querySelector('#ventas-chart-sem');
 const salesChartMes = document.querySelector('#ventas-chart-mes');
+const salesCharTot = document.querySelector('#revenue-chart-canvas');
 
 (function () {
 
@@ -218,7 +219,7 @@ const salesChartMes = document.querySelector('#ventas-chart-mes');
     }
 
     /*=============================================
-     Chart
+     Chart Ventas x Dia
     =============================================*/
     if (salesChartSem) {
 
@@ -270,6 +271,7 @@ const salesChartMes = document.querySelector('#ventas-chart-mes');
                     },
                     options: {
                         maintainAspectRatio: false,
+                        responsive: true,
                         tooltips: {
                             mode: mode,
                             intersect: intersect
@@ -323,86 +325,170 @@ const salesChartMes = document.querySelector('#ventas-chart-mes');
 
     }
 
+    /*=============================================
+     Chart Ventas x Mes
+    =============================================*/
     if (salesChartMes) {
 
-        // eslint-disable-next-line no-unused-vars
-        var ticksStyle = {
-            fontColor: '#495057',
-            fontStyle: 'bold'
-        }
+        axios.get('/tot_vtas_mes')
+            .then(function (respuesta) {
 
-        var mode = 'index';
-        var intersect = true;
+                var dataMes1 = respuesta.data[0];
+                var dataMes2 = respuesta.data[1];
 
-        var salesChart = new Chart(salesChartMes, {
-            type: 'bar',
-            data: {
-                labels: ['JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-                datasets: [
-                    {
-                        backgroundColor: '#007bff',
-                        borderColor: '#007bff',
-                        data: [1000, 2000, 3000, 2500, 2700, 2500, 3000]
-                    },
-                    {
-                        backgroundColor: '#ced4da',
-                        borderColor: '#ced4da',
-                        data: [700, 1700, 2700, 2000, 1800, 1500, 2000]
-                    }
-                ]
-            },
-            options: {
-                maintainAspectRatio: false,
-                tooltips: {
-                    mode: mode,
-                    intersect: intersect
-                },
-                hover: {
-                    mode: mode,
-                    intersect: intersect
-                },
-                legend: {
-                    display: false
-                },
-                scales: {
-                    yAxes: [{
-                        // display: false,
-                        gridLines: {
-                            display: true,
-                            lineWidth: '4px',
-                            color: 'rgba(0, 0, 0, .2)',
-                            zeroLineColor: 'transparent'
-                        },
-                        ticks: $.extend({
-                            beginAtZero: true,
+                var month = moment().month();
 
-                            // Include a dollar sign in the ticks
-                            callback: function (value) {
-                                if (value >= 1000) {
-                                    value /= 1000
-                                    value += 'k'
-                                }
+                var labelsMes = labelMeses(month);
 
-                                return '$' + value
+                // eslint-disable-next-line no-unused-vars
+                var ticksStyle = {
+                    fontColor: '#495057',
+                    fontStyle: 'bold'
+                }
+
+                var mode = 'index';
+                var intersect = true;
+
+                var salesChart = new Chart(salesChartMes, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsMes,
+                        datasets: [
+                            {
+                                backgroundColor: '#007bff',
+                                borderColor: '#007bff',
+                                data: dataMes1
+                            },
+                            {
+                                backgroundColor: '#ced4da',
+                                borderColor: '#ced4da',
+                                data: dataMes2
                             }
-                        }, ticksStyle)
-                    }],
-                    xAxes: [{
-                        display: true,
-                        gridLines: {
+                        ]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        tooltips: {
+                            mode: mode,
+                            intersect: intersect
+                        },
+                        hover: {
+                            mode: mode,
+                            intersect: intersect
+                        },
+                        legend: {
                             display: false
                         },
-                        ticks: ticksStyle
-                    }]
+                        scales: {
+                            yAxes: [{
+                                // display: false,
+                                gridLines: {
+                                    display: true,
+                                    lineWidth: '4px',
+                                    color: 'rgba(0, 0, 0, .2)',
+                                    zeroLineColor: 'transparent'
+                                },
+                                ticks: $.extend({
+                                    beginAtZero: true,
+
+                                    // Include a dollar sign in the ticks
+                                    callback: function (value) {
+                                        if (value >= 1000) {
+                                            value /= 1000
+                                            value += 'k'
+                                        }
+
+                                        return '$' + value
+                                    }
+                                }, ticksStyle)
+                            }],
+                            xAxes: [{
+                                display: true,
+                                gridLines: {
+                                    display: false
+                                },
+                                ticks: ticksStyle
+                            }]
+                        }
+                    }
+                })
+
+            })
+
+
+
+    }
+
+    if (salesCharTot) {
+        axios.get('/tot_vtas_mes')
+            .then(function (respuesta) {
+
+                var dataAnio1 = respuesta.data[2];
+                var dataAnio2 = respuesta.data[3];
+
+                var month = moment().month();
+
+                var labelsMes = labelMeses(month);
+
+                const ctx = document.getElementById('revenue-chart-canvas').getContext('2d');
+
+                var salesChartOptions = {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
+                        }],
+                        yAxes: [{
+                            gridLines: {
+                                display: false
+                            }
+                        }]
+                    }
                 }
-            }
-        })
+
+                const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labelsMes,
+                        datasets: [
+                            {
+                                label: 'Año actual',
+                                backgroundColor: 'rgba(60,141,188,0.9)',
+                                borderColor: 'rgba(60,141,188,0.8)',
+                                pointRadius: false,
+                                pointColor: '#3b8bba',
+                                pointStrokeColor: 'rgba(60,141,188,1)',
+                                pointHighlightFill: '#fff',
+                                pointHighlightStroke: 'rgba(60,141,188,1)',
+                                data: dataAnio1
+                            },
+                            {
+                                label: 'Año anterior',
+                                backgroundColor: 'rgba(210, 214, 222, 1)',
+                                borderColor: 'rgba(210, 214, 222, 1)',
+                                pointRadius: false,
+                                pointColor: 'rgba(210, 214, 222, 1)',
+                                pointStrokeColor: '#c1c7d1',
+                                pointHighlightFill: '#fff',
+                                pointHighlightStroke: 'rgba(220,220,220,1)',
+                                data: dataAnio2
+                            }
+                        ]
+                    },
+                    options: salesChartOptions
+                });
+
+
+            })
 
     }
 
 
-
 })();
+
 
 
 function crearMenu(menu) {
@@ -802,7 +888,7 @@ function diaDeSemana(fechaDia) {
 
         var dia = numberDay + fechaDia;
 
-        
+
     } else {
         var mes = fecha.getMonth() + 1; //obteniendo mes
         var dia = fechaDia;
@@ -824,11 +910,90 @@ function diaDeSemana(fechaDia) {
     return dias[day];
 }
 
+
 function diasSemana(diaActual) {
 
     var labelDays = [diaDeSemana((diaActual - 6)), diaDeSemana((diaActual - 5)), diaDeSemana((diaActual - 4)), diaDeSemana((diaActual - 3)), diaDeSemana((diaActual - 2)), diaDeSemana((diaActual - 1)), diaDeSemana(diaActual)];
 
     return labelDays;
+}
+
+function descripcionMes(numMes) {
+
+    var meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+    return meses[numMes];
+
+}
+
+function labelMeses(numMes) {
+
+    var mes1 = numMes;
+    var mes2 = numMes - 1;
+    var mes3 = numMes - 2;
+    var mes4 = numMes - 3;
+    var mes5 = numMes - 4;
+    var mes6 = numMes - 5;
+    var mes7 = numMes - 6;
+
+    if (mes2 === -1) {
+        mes2 = 11;
+    }
+
+    if (mes3 === -1) {
+        mes3 = 11;
+    } else if (mes3 === -2) {
+        mes3 = 10;
+    }
+
+    if (mes4 === -1) {
+        mes4 = 11;
+    } else if (mes4 === -2) {
+        mes4 = 10;
+    } else if (mes4 === -3) {
+        mes4 = 9;
+    }
+
+    if (mes5 === -1) {
+        mes5 = 11;
+    } else if (mes5 === -2) {
+        mes5 = 10;
+    } else if (mes5 === -3) {
+        mes5 = 9;
+    } else if (mes5 === -4) {
+        mes5 = 8;
+    }
+
+    if (mes6 === -1) {
+        mes6 = 11;
+    } else if (mes6 === -2) {
+        mes6 = 10;
+    } else if (mes6 === -3) {
+        mes6 = 9;
+    } else if (mes6 === -4) {
+        mes6 = 8;
+    } else if (mes6 === -5) {
+        mes6 = 7;
+    }
+
+    if (mes7 === -1) {
+        mes7 = 11;
+    } else if (mes7 === -2) {
+        mes7 = 10;
+    } else if (mes7 === -3) {
+        mes7 = 9;
+    } else if (mes7 === -4) {
+        mes7 = 8;
+    } else if (mes7 === -5) {
+        mes7 = 7;
+    } else if (mes7 === -6) {
+        mes7 = 6;
+    }
+
+    var labelMonths = [descripcionMes((mes7)), descripcionMes((mes6)), descripcionMes((mes5)), descripcionMes((mes4)), descripcionMes((mes3)), descripcionMes((mes2)), descripcionMes((mes1))];
+
+    return labelMonths;
+
 }
 
 
@@ -847,4 +1012,4 @@ FUNCIÓN PARA GENERAR COOKIES
     document.cookie = nombre + "=" + valor + "; " + fechaExpedicion;
   
   } */
-  
+

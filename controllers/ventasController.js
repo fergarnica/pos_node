@@ -842,6 +842,130 @@ exports.totVtasSem = async (req, res) => {
 
 }
 
+exports.totVtasMes = async (req, res) => {
+
+    var sumMes1 = await pool.query('call get_vtas_totxmes(?)', 0);
+    var sumMes2 = await pool.query('call get_vtas_totxmes(?)', 1);
+    var sumMes3 = await pool.query('call get_vtas_totxmes(?)', 2);
+    var sumMes4 = await pool.query('call get_vtas_totxmes(?)', 3);
+    var sumMes5 = await pool.query('call get_vtas_totxmes(?)', 4);
+    var sumMes6 = await pool.query('call get_vtas_totxmes(?)', 5);
+    var sumMes7 = await pool.query('call get_vtas_totxmes(?)', 6);
+
+    var sumMes8 = await pool.query('call get_vtas_totxmes(?)', 12);
+    var sumMes9 = await pool.query('call get_vtas_totxmes(?)', 13);
+    var sumMes10 = await pool.query('call get_vtas_totxmes(?)', 14);
+    var sumMes11 = await pool.query('call get_vtas_totxmes(?)', 15);
+    var sumMes12 = await pool.query('call get_vtas_totxmes(?)', 16);
+    var sumMes13 = await pool.query('call get_vtas_totxmes(?)', 17);
+    var sumMes14 = await pool.query('call get_vtas_totxmes(?)', 18);
+
+    var dataMes1 = sumMes1[0];
+    var dataMes2 = sumMes2[0];
+    var dataMes3 = sumMes3[0];
+    var dataMes4 = sumMes4[0];
+    var dataMes5 = sumMes5[0];
+    var dataMes6 = sumMes6[0];
+    var dataMes7 = sumMes7[0];
+
+    var dataMes8 = sumMes8[0];
+    var dataMes9 = sumMes9[0];
+    var dataMes10 = sumMes10[0];
+    var dataMes11 = sumMes11[0];
+    var dataMes12 = sumMes12[0];
+    var dataMes13 = sumMes13[0];
+    var dataMes14 = sumMes14[0];
+
+    for (var x = 0; x < dataMes1.length; x++) {
+        const array = dataMes1[x];
+        var sumaMes1 = array.suma;
+        var cantMes1 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes2.length; x++) {
+        const array = dataMes2[x];
+        var sumaMes2 = array.suma;
+        var cantMes2 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes3.length; x++) {
+        const array = dataMes3[x];
+        var sumaMes3 = array.suma;
+        var cantMes3 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes4.length; x++) {
+        const array = dataMes4[x];
+        var sumaMes4 = array.suma;
+        var cantMes4 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes5.length; x++) {
+        const array = dataMes5[x];
+        var sumaMes5 = array.suma;
+        var cantMes5 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes6.length; x++) {
+        const array = dataMes6[x];
+        var sumaMes6 = array.suma;
+        var cantMes6 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes7.length; x++) {
+        const array = dataMes7[x];
+        var sumaMes7 = array.suma;
+        var cantMes7 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes8.length; x++) {
+        const array = dataMes8[x];
+        var sumaMes8 = array.suma;
+        var cantMes8 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes9.length; x++) {
+        const array = dataMes9[x];
+        var sumaMes9 = array.suma;
+        var cantMes9 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes10.length; x++) {
+        const array = dataMes10[x];
+        var sumaMes10 = array.suma;
+        var cantMes10 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes11.length; x++) {
+        const array = dataMes11[x];
+        var sumaMes11 = array.suma;
+        var cantMes11 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes12.length; x++) {
+        const array = dataMes12[x];
+        var sumaMes12 = array.suma;
+        var cantMes12 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes13.length; x++) {
+        const array = dataMes13[x];
+        var sumaMes13 = array.suma;
+        var cantMes13 = array.cantidad;
+    }
+
+    for (var x = 0; x < dataMes14.length; x++) {
+        const array = dataMes14[x];
+        var sumaMes14 = array.suma;
+        var cantMes14 = array.cantidad;
+    }
+
+    var dataMes = [[sumaMes7, sumaMes6, sumaMes5, sumaMes4, sumaMes3, sumaMes2, sumaMes1], [sumaMes14, sumaMes13, sumaMes12, sumaMes11, sumaMes10, sumaMes9, sumaMes8],[cantMes7, cantMes6, cantMes5, cantMes4, cantMes3, cantMes2, cantMes1],[cantMes14, cantMes13, cantMes12, cantMes11, cantMes10, cantMes9, cantMes8]];
+
+    res.send(dataMes);
+
+}
+
 exports.mostrarCajas = async (req, res) => {
 
     var infoCajas = await pool.query('SELECT a.idcaja, a.idcorte, a.status, a.idusuario, c.nombre_completo FROM cajas a LEFT JOIN usuarios b ON a.idusuario=b.idusuario LEFT JOIN empleados c ON b.idempleado=c.idempleado');

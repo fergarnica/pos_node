@@ -13,9 +13,24 @@ exports.home = async (req, res) => {
     var toVenSem = await pool.query('SELECT COUNT(idnota) AS total_vtas FROM ventas WHERE DATE(fecha) BETWEEN DATE(NOW())-7 AND DATE(NOW()) AND status=1');
     var porcVta1 = await pool.query('SELECT IFNULL(SUM(total),0) AS suma FROM ventas WHERE status=1 AND DATE(fecha) BETWEEN DATE(NOW())-7 AND DATE(NOW())');
     var porcVta2 = await pool.query('SELECT IFNULL(SUM(total),0) AS suma FROM ventas WHERE status=1 AND DATE(fecha) BETWEEN DATE(NOW())-14 AND DATE(NOW())-8');
+    var toVenMes =  await pool.query('call get_vtas_totxmes(?)', 0);
+    var toVenMes2 =  await pool.query('call get_vtas_totxmes(?)', 1);
 
     var porSem1 = porcVta1[0].suma;
     var porSem2 = porcVta2[0].suma;
+
+    var totalMes = toVenMes[0];
+    var totalMes2 = toVenMes2[0];
+
+    for (var x = 0; x < totalMes.length; x++) {
+        const array = totalMes[x];
+        var totalVtasMes = array.suma;
+    }
+
+    for (var x = 0; x < totalMes2.length; x++) {
+        const array = totalMes2[x];
+        var totalVtasMes2 = array.suma;
+    }
 
     if(porSem1 === 0){
         porSem1=1;
@@ -25,7 +40,9 @@ exports.home = async (req, res) => {
         porSem2=1;
     }
 
-    var porcentaje = (porSem1 * 100) / porSem2 - 100;
+    var porcentaje = ((porSem1*100)/porSem2)-100;
+
+    var porcentajeMes = ((totalVtasMes*100)/totalVtasMes2)-100;
     
     if(porcentaje > 0){
         var porcPos = porcentaje.toFixed(2);
@@ -35,12 +52,22 @@ exports.home = async (req, res) => {
         var porcNeg = porcentaje.toFixed(2);
     }
 
+
+    if(porcentajeMes > 0){
+        var porcMesPos = porcentajeMes.toFixed(2);
+        var porcMesNeg = null;
+    }else{
+        var porcMesPos = null;
+        var porcMesNeg = porcentajeMes.toFixed(2);
+    }
+
     nombre = user[0].nombre.toUpperCase();
     totalProd = totProd[0].total;
     totalCli = totCli[0].total_cli;
     totalVtas = totVent[0].total_ven;
     totalProvs = totProv[0].total_prov;
     totalVtasSem = toVenSem[0].total_vtas;
+    totalMesActual = currencyFormat(totalVtasMes)
 
     res.render('index', {
         nombrePagina: 'Inicio',
@@ -51,7 +78,10 @@ exports.home = async (req, res) => {
         totalProvs,
         totalVtasSem,
         porcPos,
-        porcNeg
+        porcNeg,
+        porcMesPos,
+        porcMesNeg,
+        totalMesActual
     });
 
 }
@@ -398,4 +428,8 @@ async function validAccess(idUsuario, url){
 
     return permiso
 
+}
+
+function currencyFormat(value) {
+    return '$' + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 }

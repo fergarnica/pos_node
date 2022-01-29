@@ -1010,11 +1010,12 @@ if (formularioVenta) {
                             if (respuesta.data == 'OK') {
 
                                 // Alerta
-                                Swal.fire(
-                                    'Venta Realizada!',
-                                    'Se realizó la venta correctamente',
-                                    'success'
-                                ).then(function (result) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Venta Realizada!',
+                                    text: 'Se realizó la venta correctamente.',
+                                    allowOutsideClick: false
+                                }).then(function (result) {
                                     if (result.value) {
                                         window.location = "/punto_venta";
                                     }
@@ -1025,7 +1026,7 @@ if (formularioVenta) {
                                 Swal.fire({
                                     icon: 'warning',
                                     title: 'Oops...',
-                                    text: 'Hubo un error!',
+                                    text: 'Hubo un error!'
                                 })
                             }
 

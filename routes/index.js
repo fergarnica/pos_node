@@ -566,6 +566,10 @@ module.exports = function () {
         isLoggedIn,
         ventasController.totVtasSem
     );
+    router.get('/tot_vtas_mes',
+        isLoggedIn,
+        ventasController.totVtasMes
+    );
     router.get('/cajas',
         isLoggedIn,
         ventasController.mostrarCajas
