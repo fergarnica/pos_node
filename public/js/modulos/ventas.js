@@ -28,7 +28,6 @@ const divCorteCaja = document.getElementById("bodyCorteCaja");
 
 const tblCajas = document.querySelector('#tbl-admin-cajas');
 
-
 if (barCode) {
     body.classList.add("sidebar-collapse");
 }
@@ -962,10 +961,10 @@ if (formularioVenta) {
                 var subtotalVenta = document.getElementById('subtotalVenta').value;
                 var totalVenta = document.getElementById('totalVenta').value;
 
-                if(divEfectivoRec){
+                if (divEfectivoRec) {
                     var efecRecibido = divEfectivoRec.value;
                     var cambio = nuevoCambio.value;
-                }else{
+                } else {
                     var efecRecibido = totalVenta;
                     var cambio = 0.00;
                 }
@@ -982,7 +981,7 @@ if (formularioVenta) {
                             document.getElementById('cobrarVenta').disabled = true;
                         }
                         var divCambio = document.getElementById('nuevoCambio');
-                        
+
                         divCambio.value = '';
                         $("#totalCambio").html('$ -.--');
                         divEfectivoRec.value = '';
@@ -1670,11 +1669,12 @@ if (formAbrirCaja) {
 
                     $('#modalAbrirCaja').modal('dispose');
 
-                    Swal.fire(
-                        'Exito!',
-                        'Caja abierta correctamente!',
-                        'success'
-                    ).then(function (result) {
+                    Swal.fire({
+                        title: 'Exito!',
+                        text: 'Caja abierta correctamente!',
+                        icon: 'success',
+                        allowOutsideClick: false
+                    }).then(function (result) {
                         if (result.value) {
                             window.location = "/punto_venta";
                         }
@@ -1704,8 +1704,56 @@ if (formNewRetiro) {
 
         var payload = {};
 
-        var montoRetiro = document.getElementById('montoRetiro').value;
-        var cantRet1000 = document.getElementById('cantRet1000').value;
+        var efectivoCaja = Number.parseFloat(document.getElementById('efectivoCaja').value);
+        var montoRetiro = Number.parseFloat(document.getElementById('montoRetiro').value);
+
+        if (efectivoCaja >= montoRetiro) {
+
+            payload.importe = montoRetiro;
+
+            axios.post('/realizar_retiro', payload)
+                .then(function (respuesta) {
+
+                    if (respuesta.data == 'Ok') {
+
+                        $("#modalRetirarEfec").remove();
+
+                        Swal.fire({
+                            title: 'Exito!',
+                            text: 'Retiro de efectivo registrado correctamente!',
+                            icon: 'success',
+                            allowOutsideClick: false
+                        }).then(function (result) {
+                            if (result.value) {
+                                window.location = "/punto_venta";
+                            }
+                        });
+                    }
+
+                }).catch(errors => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hubo un error',
+                        text: 'Error en la Base de Datos'
+                    })
+                })
+
+        } else {
+
+            document.getElementById('montoRetiro').value = '';
+            document.getElementById('montoRetiro').focus();
+
+            $('#modalRetirarEfec').modal('dispose');
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Efectivo insuficiente',
+                text: 'El efectivo disponible en caja es menor al monto que se desea retirar!',
+                allowOutsideClick: false
+            })
+
+        }
+        /* var cantRet1000 = document.getElementById('cantRet1000').value;
         var cantRet500 = document.getElementById('cantRet500').value;
         var cantRet200 = document.getElementById('cantRet200').value;
         var cantRet100 = document.getElementById('cantRet100').value;
@@ -1715,9 +1763,9 @@ if (formNewRetiro) {
         var cantRet5 = document.getElementById('cantRet5').value;
         var cantRet2 = document.getElementById('cantRet2').value;
         var cantRet1 = document.getElementById('cantRet1').value;
-        var cantRet50c = document.getElementById('cantRet50c').value;
+        var cantRet50c = document.getElementById('cantRet50c').value; */
 
-        if (cantRet1000 == '') {
+        /* if (cantRet1000 == '') {
             var cantRet1000 = null;
         }
 
@@ -1760,9 +1808,9 @@ if (formNewRetiro) {
         if (cantRet50c == '') {
             var cantRet50c = null;
         }
+ */
 
-        payload.importe = montoRetiro;
-        payload.den_1000_mxn = cantRet1000;
+        /* payload.den_1000_mxn = cantRet1000;
         payload.den_500_mxn = cantRet500;
         payload.den_200_mxn = cantRet200;
         payload.den_100_mxn = cantRet100;
@@ -1772,34 +1820,16 @@ if (formNewRetiro) {
         payload.den_5_mxn = cantRet5;
         payload.den_2_mxn = cantRet2;
         payload.den_1_mxn = cantRet1;
-        payload.den_50c_mxn = cantRet50c;
+        payload.den_50c_mxn = cantRet50c; */
 
-        axios.post('/realizar_retiro', payload)
-            .then(function (respuesta) {
-
-                if (respuesta.data == 'Ok') {
-                    Swal.fire(
-                        'Exito!',
-                        'Retiro de efectivo registrado correctamente!',
-                        'success'
-                    ).then(function (result) {
-                        if (result.value) {
-                            window.location = "/punto_venta";
-                        }
-                    });
-                }
-
-            }).catch(errors => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Hubo un error',
-                    text: 'Error en la Base de Datos'
-                })
-            })
 
     })
 
 }
+
+$('#modalRetirarEfec').on('shown.bs.modal', function () {
+    document.getElementById('montoRetiro').focus();
+});
 
 /*=============================================
 INGRESO DE EFECTIVO
@@ -1812,7 +1842,7 @@ if (formNewIngreso) {
         var payload = {};
 
         var montoIngreso = document.getElementById('montoIngreso').value;
-        var cantIng1000 = document.getElementById('cantIng1000').value;
+        /* var cantIng1000 = document.getElementById('cantIng1000').value;
         var cantIng500 = document.getElementById('cantIng500').value;
         var cantIng200 = document.getElementById('cantIng200').value;
         var cantIng100 = document.getElementById('cantIng100').value;
@@ -1822,9 +1852,9 @@ if (formNewIngreso) {
         var cantIng5 = document.getElementById('cantIng5').value;
         var cantIng2 = document.getElementById('cantIng2').value;
         var cantIng1 = document.getElementById('cantIng1').value;
-        var cantIng50c = document.getElementById('cantIng50c').value;
+        var cantIng50c = document.getElementById('cantIng50c').value; */
 
-        if (cantIng1000 == '') {
+        /* if (cantIng1000 == '') {
             var cantIng1000 = null;
         }
 
@@ -1866,10 +1896,10 @@ if (formNewIngreso) {
 
         if (cantIng50c == '') {
             var cantIng50c = null;
-        }
+        } */
 
         payload.importe = montoIngreso;
-        payload.den_1000_mxn = cantIng1000;
+        /* payload.den_1000_mxn = cantIng1000;
         payload.den_500_mxn = cantIng500;
         payload.den_200_mxn = cantIng200;
         payload.den_100_mxn = cantIng100;
@@ -1879,12 +1909,15 @@ if (formNewIngreso) {
         payload.den_5_mxn = cantIng5;
         payload.den_2_mxn = cantIng2;
         payload.den_1_mxn = cantIng1;
-        payload.den_50c_mxn = cantIng50c;
+        payload.den_50c_mxn = cantIng50c; */
 
         axios.post('/realizar_ingreso', payload)
             .then(function (respuesta) {
 
                 if (respuesta.data == 'Ok') {
+
+                    $("#modalIngresarEfec").remove();
+
                     Swal.fire(
                         'Exito!',
                         'Ingreso de efectivo registrado correctamente!',
@@ -1906,9 +1939,117 @@ if (formNewIngreso) {
     })
 
 }
+
+$('#modalIngresarEfec').on('shown.bs.modal', function () {
+    document.getElementById('montoIngreso').focus();
+});
+
 /*=============================================
 CORTE DE CAJA
 =============================================*/
+$(document).on("click", "#corteCajaBtn", function () {
+
+    $('#tbl-info-cortecaja').DataTable().destroy();
+    $("#tbl-info-cortecaja").remove();
+    $("#bodyDetCorte").append(
+        '<table id="tbl-info-cortecaja" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+    );
+
+    var payload = {};
+
+    var idInfoCaja = $(this).attr("idBtn");
+
+    var idCaja = idInfoCaja.split('-')[0];
+    var idCorte = idInfoCaja.split('-')[1];
+
+    payload.idcaja = idCaja;
+    payload.idcorte = idCorte;
+
+    axios.post('/info_corte_caja', payload)
+        .then(function (respuesta) {
+
+            const tblCorte = document.querySelector('#tbl-info-cortecaja');
+
+            if (tblCorte) {
+
+                var dataSet = respuesta.data;
+
+                $(tblCorte).DataTable({
+                    data: dataSet,
+                    deferRender: true,
+                    iDisplayLength: 25,
+                    retrieve: true,
+                    processing: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    searching: false,
+                    bPaginate: false,
+                    info: false,
+                    columnDefs: [
+                        { orderable: false, targets: '_all' }
+                    ],
+                    language: {
+
+                        "sProcessing": "Procesando...",
+                        "sLengthMenu": "Mostrar _MENU_ registros",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+
+                    },
+                    createdRow: function (row, data, dataIndex) {
+                        var indx = data[0];
+                        //Pintar toda la columna
+                        if (indx === 6) {
+                            $(row).find('td:eq(0)').css('background-color', '#E7F3F1');
+                            $(row).find('td:eq(1)').css('background-color', '#E7F3F1');
+                            $(row).find('td:eq(2)').css('background-color', '#E7F3F1');
+                        }
+                    },
+                    columns: [{
+                        title: "#"
+                    }, {
+                        title: "Concepto"
+                    },
+                    {
+                        title: "Detalles"
+                    }
+                    ]
+                });
+            }
+
+        }).catch(errors => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hubo un error',
+                text: 'Error en la Base de Datos'
+            })
+        })
+
+});
+
+$('#modalCorteCaja').on('shown.bs.modal', function () {
+    document.getElementById('montoCierre').focus();
+});
+
+
 if (formCorteCaja) {
 
     formCorteCaja.addEventListener('submit', function (e) {
@@ -1916,9 +2057,10 @@ if (formCorteCaja) {
 
         var payload = {};
 
-        var montoCierre = document.getElementById('montoCierre').value;
-        var sumaMonto = document.getElementById('sumaIdeal').value;
-        var cantCorte1000 = document.getElementById('cantCorte1000').value;
+        var montoCierre = Number.parseFloat(document.getElementById('montoCierre').value);
+        var sumaMonto = Number.parseFloat(document.getElementById('efectivoCaja').value);
+
+        /*var cantCorte1000 = document.getElementById('cantCorte1000').value;
         var cantCorte500 = document.getElementById('cantCorte500').value;
         var cantCorte200 = document.getElementById('cantCorte200').value;
         var cantCorte100 = document.getElementById('cantCorte100').value;
@@ -1928,11 +2070,11 @@ if (formCorteCaja) {
         var cantCorte5 = document.getElementById('cantCorte5').value;
         var cantCorte2 = document.getElementById('cantCorte2').value;
         var cantCorte1 = document.getElementById('cantCorte1').value;
-        var cantCorte50c = document.getElementById('cantCorte50c').value;
+        var cantCorte50c = document.getElementById('cantCorte50c').value;*/
 
         var diferencia = montoCierre - sumaMonto;
 
-        if (cantCorte1000 == '') {
+        /*if (cantCorte1000 == '') {
             var cantCorte1000 = null;
         }
 
@@ -1974,10 +2116,10 @@ if (formCorteCaja) {
 
         if (cantCorte50c == '') {
             var cantCorte50c = null;
-        }
+        }*/
 
         payload.importe = montoCierre;
-        payload.den_1000_mxn = cantCorte1000;
+        /*payload.den_1000_mxn = cantCorte1000;
         payload.den_500_mxn = cantCorte500;
         payload.den_200_mxn = cantCorte200;
         payload.den_100_mxn = cantCorte100;
@@ -1987,7 +2129,7 @@ if (formCorteCaja) {
         payload.den_5_mxn = cantCorte5;
         payload.den_2_mxn = cantCorte2;
         payload.den_1_mxn = cantCorte1;
-        payload.den_50c_mxn = cantCorte50c;
+        payload.den_50c_mxn = cantCorte50c;*/
         payload.diferencia = diferencia;
 
         Swal.fire({
@@ -2005,11 +2147,14 @@ if (formCorteCaja) {
                 axios.post('/corte_caja', payload)
                     .then(function (respuesta) {
 
-                        Swal.fire(
-                            'Exito!',
-                            'La caja se cerró correctamente!',
-                            'success'
-                        ).then(function (result) {
+                        $("#modalCorteCaja").remove();
+
+                        Swal.fire({
+                            title: 'Exito!',
+                            text: 'La caja se cerró correctamente!',
+                            icon: 'success',
+                            allowOutsideClick: false
+                        }).then(function (result) {
                             if (result.value) {
                                 window.location = "/punto_venta";
                             }
@@ -2073,17 +2218,92 @@ $(document).on("click", "#btn-agregar-caja", function () {
 /*=============================================
 CONSULTAR ARTICULO
 =============================================*/
-$('#modalVerProd').on('shown.bs.modal', function () {
+$('#modalSearchProd').on('shown.bs.modal', function () {
     document.getElementById('codBarArt').focus();
 });
 
-if(formSearchArt){
+if (formSearchArt) {
 
     formSearchArt.addEventListener('submit', function (e) {
         e.preventDefault();
 
+        $("#bodyDetProducto").remove();
 
-        console.log('enviando...');
+        var idArt = document.getElementById('codBarArt').value;
+
+        var route = '/productos/' + idArt;
+
+        axios.get(route)
+            .then(function (respuesta) {
+
+                if (respuesta.data.length > 0) {
+
+                    $("#modalSearchProd").removeClass('fade').modal('hide');
+                    $("#modalVerProd").modal("show");
+                    document.getElementById('codBarArt').value = '';
+
+                    var dataSet = respuesta.data[0];
+                    
+                    if(dataSet.bar_code == ''){
+                        var codBar = '------'
+                    }else{
+                        var codBar = dataSet.bar_code;
+                    }
+
+                    $("#ver-producto").append(
+                        '<div id="bodyDetProducto">'+
+                        '<div class="row">' +
+                        '<div class="col-sm-12">' +
+                        '<h2>' + dataSet.idproducto +' / '+ dataSet.producto +'</h2>' +
+                        '</div>' +
+                        '</div>' +
+                        '<hr>' +
+                        '<div class="row">' +
+                        '<div class="col-sm-7">' +
+                        '<dl class="row">' +
+                        '<dt class="col-sm-4">Código Barras:</dt>' +
+                        '<dd class="col-sm-8">'+ codBar +'</dd>' +
+                        '<dt class="col-sm-4">Marca:</dt>' +
+                        '<dd class="col-sm-8">'+ dataSet.marca +'</dd>' +
+                        '<dt class="col-sm-4">Categoria:</dt>' +
+                        '<dd class="col-sm-8">'+ dataSet.categoria +'</dd >' +
+                        '<dt class="col-sm-4">Proveedor:</dt>' +
+                        '<dd class="col-sm-8">'+ dataSet.proveedor +'</dd>' +
+                        '</dl>' +
+                        '</div>' +
+                        '<div class="col-sm-5">' +
+                        '<dl class="row">' +
+                        '<dt class="col-sm-4">Stock:</dt>' +
+                        '<dd class="col-sm-8">'+ dataSet.stock_total +'</dd>' +
+                        '<dt class="col-sm-4">Mayoreo:</dt>' +
+                        '<dd class="col-sm-8">'+ currencyFormat(dataSet.pre_mayoreo) +'</dd>' +
+                        '<dt class="col-sm-4">Menudeo:</dt>' +
+                        '<dd class="col-sm-8">'+ currencyFormat(dataSet.pre_menudeo) +'</dd >' +
+                        '<dt class="col-sm-4">Alta:</dt>' +
+                        '<dd class="col-sm-8">'+ moment(dataSet.fecha_creacion).format('DD/MM/YYYY hh:mm a') +'</dd>' +
+                        '</dl>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>'
+                    );
+
+                } else {
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops...',
+                        text: 'El producto no existe o esta inactivo!',
+                    })
+
+                }
+
+            }).catch(errors => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hubo un error',
+                    text: 'Error en la Base de Datos'
+                })
+            })
 
     });
 

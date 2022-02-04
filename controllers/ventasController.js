@@ -15,16 +15,35 @@ exports.puntoVenta = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    var cajaActiva = await pool.query('SELECT COUNT(idcaja) AS caja_activa FROM cajas WHERE idusuario=?', idUsuario);
+    var existCaja = await pool.query('SELECT count(idcaja) AS exist FROM cajas WHERE idusuario=?', idUsuario);
+    var user = await pool.query('SELECT a.nombre FROM empleados a INNER JOIN usuarios b on a.idempleado=b.idempleado WHERE b.idusuario= ?', idUsuario);
 
-    totalCaja = cajaActiva[0].caja_activa;
+    var cuentaCaja = existCaja[0].exist;
+    var nombre = user[0].nombre;
 
     if (permiso > 0) {
 
-        if (totalCaja > 0) {
+        if (cuentaCaja === 1) {
+
+            var cajaActiva = await pool.query('SELECT idcaja, idcorte FROM cajas WHERE idusuario=?', idUsuario);
+            var idCaja = cajaActiva[0].idcaja;
+            var idCorte = cajaActiva[0].idcorte;
+
+            var infoPagos = await pool.query('SELECT monto_inicial, IFNULL(ventas_efectivo,0) AS ventas_efectivo, ventas_tarjeta, IFNULL(ingreso_efectivo,0) AS ingreso_efectivo, IFNULL(retiro_efectivo,0) AS retiro_efectivo FROM cortes_cajas WHERE idcaja=? AND idcorte=? AND idusuario=? AND status=1', [idCaja, idCorte, idUsuario]);
+
+            var montoIni = infoPagos[0].monto_inicial;
+            var ventasEfec = infoPagos[0].ventas_efectivo;
+            var ingresoEfec = infoPagos[0].ingreso_efectivo;
+            var retiroEfec = infoPagos[0].retiro_efectivo;
+
+            var montoEfec = montoIni + ventasEfec + ingresoEfec - retiroEfec;
 
             res.render('modulos/ventas/punto_venta', {
-                nombrePagina: 'Punto de Venta'
+                nombrePagina: 'Punto de Venta',
+                idCaja,
+                idCorte,
+                nombre,
+                montoEfec
             });
 
         } else {
@@ -656,7 +675,7 @@ exports.imprimirVentas = async (req, res) => {
                     // External data
                     dataVendedores,
                     // Columns display order
-                    ['idnota', 'idcaja', 'idcorte', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'impuesto','total', 'status', 'fecha_venta'],
+                    ['idnota', 'idcaja', 'idcorte', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'impuesto', 'total', 'status', 'fecha_venta'],
                     // Custom columns widths
                     // ['6%', '12%', '15%','15%','12%', '12%', '12%','12%','12%'],
                     // Show headers?
@@ -960,7 +979,7 @@ exports.totVtasMes = async (req, res) => {
         var cantMes14 = array.cantidad;
     }
 
-    var dataMes = [[sumaMes7, sumaMes6, sumaMes5, sumaMes4, sumaMes3, sumaMes2, sumaMes1], [sumaMes14, sumaMes13, sumaMes12, sumaMes11, sumaMes10, sumaMes9, sumaMes8],[cantMes7, cantMes6, cantMes5, cantMes4, cantMes3, cantMes2, cantMes1],[cantMes14, cantMes13, cantMes12, cantMes11, cantMes10, cantMes9, cantMes8]];
+    var dataMes = [[sumaMes7, sumaMes6, sumaMes5, sumaMes4, sumaMes3, sumaMes2, sumaMes1], [sumaMes14, sumaMes13, sumaMes12, sumaMes11, sumaMes10, sumaMes9, sumaMes8], [cantMes7, cantMes6, cantMes5, cantMes4, cantMes3, cantMes2, cantMes1], [cantMes14, cantMes13, cantMes12, cantMes11, cantMes10, cantMes9, cantMes8]];
 
     res.send(dataMes);
 
@@ -1059,17 +1078,17 @@ exports.abrirCaja = async (req, res) => {
     }
 }
 
-exports.retEfectivoPag = async (req, res) => {
+/* exports.retEfectivoPag = async (req, res) => {
 
     res.render('modulos/ventas/retiro_efectivo', {
         nombrePagina: 'Retiro de efectivo'
     });
 
-}
+} */
 
 exports.retiroEfectivo = async (req, res) => {
 
-    let { importe, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn } = req.body;
+    let { importe/*, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn*/ } = req.body;
 
     var idusuario = res.locals.usuario.idusuario;
     var fecha_retiro = moment().format('YYYY-MM-DD h:mm:ss');
@@ -1101,7 +1120,7 @@ exports.retiroEfectivo = async (req, res) => {
         fecha_retiro
     }
 
-    var newRetDet = {
+    /*var newRetDet = {
         idretiro,
         idcaja,
         den_1000_mxn,
@@ -1115,11 +1134,11 @@ exports.retiroEfectivo = async (req, res) => {
         den_2_mxn,
         den_1_mxn,
         den_50c_mxn
-    }
+    }*/
 
     await pool.query('INSERT INTO retiros SET ?', [newRetiro]);
 
-    await pool.query('INSERT INTO retiros_det SET ?', [newRetDet]);
+    // await pool.query('INSERT INTO retiros_det SET ?', [newRetDet]);
 
     await pool.query('call sp_reg_retiro_cortecaja(?,?,?,?)', [idcaja, idcorte, importe, idusuario]);
 
@@ -1127,17 +1146,17 @@ exports.retiroEfectivo = async (req, res) => {
 
 }
 
-exports.ingEfectivoPag = async (req, res) => {
+/* exports.ingEfectivoPag = async (req, res) => {
 
     res.render('modulos/ventas/ingreso_efectivo', {
         nombrePagina: 'Ingreso de efectivo'
     });
 
-}
+} */
 
 exports.ingresoEfectivo = async (req, res) => {
 
-    let { importe, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn } = req.body;
+    let { importe/*, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn*/ } = req.body;
 
     var idusuario = res.locals.usuario.idusuario;
     var fecha_ingreso = moment().format('YYYY-MM-DD h:mm:ss');
@@ -1169,7 +1188,7 @@ exports.ingresoEfectivo = async (req, res) => {
         fecha_ingreso
     }
 
-    var newIngDet = {
+    /* var newIngDet = {
         idingreso,
         idcaja,
         den_1000_mxn,
@@ -1183,11 +1202,11 @@ exports.ingresoEfectivo = async (req, res) => {
         den_2_mxn,
         den_1_mxn,
         den_50c_mxn
-    }
+    } */
 
     await pool.query('INSERT INTO ingresos_efectivo SET ?', [newIngreso]);
 
-    await pool.query('INSERT INTO ingresos_efectivo_det SET ?', [newIngDet]);
+    //await pool.query('INSERT INTO ingresos_efectivo_det SET ?', [newIngDet]);
 
     await pool.query('call sp_reg_ingreso_cortecaja(?,?,?,?)', [idcaja, idcorte, importe, idusuario]);
 
@@ -1195,7 +1214,7 @@ exports.ingresoEfectivo = async (req, res) => {
 
 }
 
-exports.corteCajaPag = async (req, res) => {
+/*exports.corteCajaPag = async (req, res) => {
 
     var idusuario = res.locals.usuario.idusuario;
 
@@ -1253,11 +1272,45 @@ exports.corteCajaPag = async (req, res) => {
         sumMontoIdeal
     });
 
+}*/
+
+exports.corteCajaInfo = async (req, res) => {
+
+    const idUsuario = res.locals.usuario.idusuario;
+
+    const { idcaja, idcorte } = req.body;
+
+    var infoCaja = await pool.query('call get_info_corte_caja(?,?,?)', [idcaja, idcorte, idUsuario]);
+
+    var infoMontos = infoCaja[0];
+
+    const dataCaja = [];
+
+    if(infoMontos.length > 0){
+
+        for(var i = 0; i < infoMontos.length; i++){
+
+            const obj = [
+                infoMontos[i].idx,
+                infoMontos[i].leyend,
+                currencyFormat(infoMontos[i].monto)
+            ]
+            
+            dataCaja.push(obj);
+
+        }
+
+        res.send(dataCaja);
+        
+    }else{
+        res.send('Empty');
+    }
+
 }
 
 exports.corteCaja = async (req, res) => {
 
-    let { importe, diferencia, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn } = req.body;
+    let { importe, diferencia/*, den_1000_mxn, den_500_mxn, den_200_mxn, den_100_mxn, den_50_mxn, den_20_mxn, den_10_mxn, den_5_mxn, den_2_mxn, den_1_mxn, den_50c_mxn*/ } = req.body;
 
     var idusuario = res.locals.usuario.idusuario;
     var fecha_corte = moment().format('YYYY-MM-DD h:mm:ss');
@@ -1275,7 +1328,7 @@ exports.corteCaja = async (req, res) => {
         var idcorte = folioCorte[x].idcorte;
     }
 
-    var newCorteDet = {
+    /*var newCorteDet = {
         idcorte,
         idcaja,
         den_1000_mxn,
@@ -1290,13 +1343,13 @@ exports.corteCaja = async (req, res) => {
         den_1_mxn,
         den_50c_mxn,
         tipo
-    }
+    }*/
 
     var status = 2;
 
     await pool.query('UPDATE cortes_cajas SET fecha_corte=?, monto_final = ?, diferencia=? , status=? WHERE idcorte=? AND idcaja=?', [fecha_corte, importe, diferencia, status, idcorte, idcaja]);
 
-    await pool.query('INSERT INTO cortes_cajas_det SET ?', [newCorteDet]);
+    //await pool.query('INSERT INTO cortes_cajas_det SET ?', [newCorteDet]);
 
     await pool.query('UPDATE cajas SET idcorte=NULL, idusuario=NULL, status=0 WHERE idcaja=?', idcaja);
 

@@ -66,6 +66,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" id="efectivoCaja" value="{{montoEfec}}">
                     <!-- right column -->
                     <div class="col-md-4">
                         <!-- Form Element sizes -->
@@ -80,7 +81,10 @@
                             </div> --}}
                             <div class="card-body">
                                 <div class="row cabeceraVenta">
-                                    <div class="col-sm-12 text-right">
+                                    <div class="col-sm-10 text-muted text-left">
+                                        <small>Caja: #{{idCaja}} -- Corte: #{{idCorte}} -- Vendedor: {{nombre}}</small>
+                                    </div>
+                                    <div class="col-sm-2 text-right">
                                         <ul class="navbar-nav ml-auto">
                                             <li class="dropdown">
                                                 <a data-toggle="dropdown" href="#">
@@ -93,21 +97,23 @@
                                                         class="dropdown-item dropdown-header text-center"></label> --}}
                                                     <!-- Message Start -->
                                                     <a type="button" class="dropdown-item dropdown-footer"
-                                                        data-toggle="modal" data-target="#modalVerProd">
+                                                        data-toggle="modal" data-target="#modalSearchProd">
                                                         <i class="fas fa-barcode"></i>
                                                         Ver producto</a>
                                                     <div class="dropdown-divider"></div>
-                                                    <a href="/ingreso_efectivo" type="button"
-                                                        class="dropdown-item dropdown-footer">
+                                                    <a type="button" class="dropdown-item dropdown-footer"
+                                                        data-toggle="modal" data-target="#modalIngresarEfec">
                                                         <i class="fas fa-money-bill-wave"></i>
                                                         Ingresar efectivo</a>
                                                     <div class="dropdown-divider"></div>
-                                                    <a href="/retiro_efectivo" type="button"
-                                                        class="dropdown-item dropdown-footer">
+                                                    <a type="button" class="dropdown-item dropdown-footer"
+                                                        data-toggle="modal" data-target="#modalRetirarEfec">
                                                         <i class="fas fa-money-bill"></i>
                                                         Retirar efectivo</a>
                                                     <div class="dropdown-divider"></div>
-                                                    <a href="/corte_caja" class="dropdown-item dropdown-footer">
+                                                    <a type="button" class="dropdown-item dropdown-footer"
+                                                        data-toggle="modal" data-target="#modalCorteCaja"
+                                                        id="corteCajaBtn" idBtn="{{idCaja}}-{{idCorte}}">
                                                         <i class="fas fa-cash-register"></i>
                                                         Corte de caja</a>
 
@@ -120,11 +126,12 @@
 
                                 </div>
 
-                                <div class="row">
+                                <hr>
+                                {{!-- <div class="row">
                                     <div class="col-sm-12">
                                         <label>Cliente:</label><label style="color:#C20F30">*</label>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="input-group mb-3">
@@ -133,7 +140,7 @@
                                             </div>
                                             <select class="form-control input-lg custom-select" id="clienteVenta"
                                                 disabled required>
-                                                <option value="0">Selecionar cliente...</option>
+                                                <option value="0">Seleccionar cliente...</option>
                                             </select>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-info" data-toggle="modal"
@@ -148,7 +155,7 @@
                                 </div>
 
                                 <div class="form-group row">
-                                    <div class="col-sm-6 col-form-label text-center">
+                                    <div class="col-sm-6 col-form-label text-right">
                                         <label>Forma de pago:</label><label style="color:#C20F30">*</label>
                                     </div>
                                     <div class="col-sm-6 text-center">
@@ -180,19 +187,19 @@
 
                                 <div id="subtotal">
                                     <div class="row">
-                                        <div class="col-sm-6">
-                                        </div>
-                                        <div class="col-sm-6 text-center text-info">
-                                            <div class="form-group">
-                                                <label>SUBTOTAL</label>
-                                                <input type="hidden" class="form-control text-center" id="subtotalVenta"
-                                                    required>
-                                                <h4 id="big_subtotal">$0.00</h4>
-                                            </div>
+                                        {{!-- <div class="col-sm-6 text-muted">
+                                            <p>Subtotal:</p>
+                                        </div> --}}
+                                        <div class="col-sm-12 text-center text-info" style="background-color:#f1ffec;">
+                                            Subtotal
+                                            <input type="hidden" class="form-control text-center" id="subtotalVenta"
+                                                required>
+                                            <h5 id="big_subtotal">$0.00</h5>
                                         </div>
                                     </div>
 
                                 </div>
+                                <br>
 
                                 <div id="impuestosBox">
 
@@ -215,16 +222,19 @@
 
                                 <div id="total">
                                     <div class="row">
-                                        <div class="col-sm-12 text-center text-success" style="background-color:#2b2b2b;">
+                                        <div class="col-sm-12 text-center text-success"
+                                            style="background-color:#2b2b2b;">
                                             <div class="form-group">
                                                 <label>TOTAL A PAGAR</label>
                                                 <input type="hidden" class="form-control text-center" id="totalVenta"
                                                     required>
-                                                <h1 id="big_total" class="text-center text-black text-green" style="font-size:35px;">$ 0.00</h1>
+                                                <h1 id="big_total" class="text-center text-black text-green"
+                                                    style="font-size:35px;">$ 0.00</h1>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <hr>
                                 <div id="boxFormaPago">
@@ -305,7 +315,7 @@ MODAL AGREGAR CLIENTE
 MODAL CONSULTAR PRODUCTO
 ======================================-->
 <!-- Modal -->
-<div class="modal fade" id="modalVerProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalSearchProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header" style="background:#336699; color:white">
@@ -336,4 +346,146 @@ MODAL CONSULTAR PRODUCTO
 
     </div>
 
+</div>
+
+<!--=====================================
+MODAL INGRESAR EFECTIVO
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalIngresarEfec" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Ingresar Efectivo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formNewIngreso">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>Monto de Ingreso:</label><label style="color:#C20F30">*</label>
+                        <input type="number" min="1" step="any" class="form-control" id="montoIngreso" required
+                            autofocus>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="submit" id="btnGuardarIngreso" class="btn btn-primary">Guardar
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=====================================
+MODAL RETIRAR EFECTIVO
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalRetirarEfec" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Retirar Efectivo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formNewRetiro">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>Monto de Retiro:</label><label style="color:#C20F30">*</label>
+                        <input type="number" min="1" step="any" class="form-control" id="montoRetiro" required
+                            autofocus>
+                    </div>
+
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="submit" id="btnGuardarRetiro" class="btn btn-primary">Guardar
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=====================================
+MODAL CORTE DE CAJA
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalCorteCaja" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Corte de Caja</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formCorteCaja">
+                <div class="modal-body">
+                    <div id="bodyDetCorte">
+
+                    </div>
+                    <br>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Monto de Cierre:<small
+                                style="color:#C20F30">*</small></label>
+                        <div class="col-sm-8">
+                            <input type="number" min="1" step="any" class="form-control text-center" id="montoCierre"
+                                required autofocus>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="submit" id="btnGuardarRetiro" class="btn btn-primary">Guardar
+                        <i class="fas fa-save"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--=====================================
+MODAL CORTE DE CAJA
+======================================-->
+<!-- Modal -->
+<div class="modal fade" id="modalVerProd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background:#336699; color:white">
+                <h5 class="modal-title" id="exampleModalLabel">Información de Producto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ver-producto">
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+            </div>
+        </div>
+    </div>
 </div>

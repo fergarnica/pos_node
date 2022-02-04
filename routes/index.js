@@ -582,26 +582,26 @@ module.exports = function () {
         isLoggedIn,
         ventasController.abrirCaja
     );
-    router.get('/retiro_efectivo',
+    /* router.get('/retiro_efectivo',
         isLoggedIn,
         ventasController.retEfectivoPag
-    );
+    ); */
     router.post('/realizar_retiro',
         isLoggedIn,
         ventasController.retiroEfectivo
     );
-    router.get('/ingreso_efectivo',
+    /* router.get('/ingreso_efectivo',
         isLoggedIn,
         ventasController.ingEfectivoPag
-    );
+    ); */
     router.post('/realizar_ingreso',
         isLoggedIn,
         ventasController.ingresoEfectivo
     );
-    router.get('/corte_caja',
+    /*router.get('/corte_caja',
         isLoggedIn,
         ventasController.corteCajaPag
-    );
+    );*/
     router.post('/corte_caja',
         isLoggedIn,
         ventasController.corteCaja
@@ -609,6 +609,10 @@ module.exports = function () {
     router.get('/admin_cajas',
         isLoggedIn,
         ventasController.adminCajas
+    );
+    router.post('/info_corte_caja',
+        isLoggedIn,
+        ventasController.corteCajaInfo
     );
     
     
