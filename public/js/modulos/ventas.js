@@ -528,6 +528,17 @@ function sumarTotalPrecios() {
         document.getElementById('clienteVenta').disabled = false;
     }
 
+    var divMontoDebitado = document.getElementById('montoDebitado');
+
+    if (divMontoDebitado) {
+        divMontoDebitado.value = sumaTotalPrecio;
+
+        if (document.getElementById('cobrarVenta').disabled == true) {
+            document.getElementById('cobrarVenta').disabled = false;
+        }
+
+    }
+
     $("#big_subtotal").html(currencyFormat(sumaTotalPrecio));
     $("#big_total").html(currencyFormat(sumaTotalPrecio));
 
@@ -652,7 +663,8 @@ $("#formaPago").change(function () {
             '<h4 id="totalCambio">$ -.--</h4>' +
             '</div>' +
             '</div>' +
-            '</div>')
+            '</div>'
+        )
 
         var divEfectivoRec = document.getElementById('efectivoRecibido');
         divEfectivoRec.focus();
@@ -661,19 +673,26 @@ $("#formaPago").change(function () {
 
         if (fPago == 2) {
 
+            var totalVentaActual = document.getElementById('totalVenta').value;
+
             $('#boxFormaPago').empty();
 
             $("#boxFormaPago").html(
                 '<div class="row">' +
                 '<div class="col-sm-6 text-center">' +
                 '<div class="form-group">' +
+                '<label>Monto Debitado:</label><label style="color:#C20F30">*</label>' +
+                '<input type="number" id="montoDebitado" step="0.01" class="form-control text-center" readonly="readonly" value=' + totalVentaActual + ' required>' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-sm-6 text-center">' +
+                '<div class="form-group">' +
                 '<label># Transacción:</label><label style="color:#C20F30">*</label>' +
                 '<input type="number" id="numTrans" class="form-control text-center" required>' +
                 '</div>' +
                 '</div>' +
-                '<div class="col-sm-6 text-center">' +
-                '</div>' +
-                '</div>')
+                '</div>'
+            )
 
             if (document.getElementById('cobrarVenta').disabled == true) {
                 document.getElementById('cobrarVenta').disabled = false;
@@ -683,11 +702,54 @@ $("#formaPago").change(function () {
             divNumTrans.focus();
 
         } else {
-            $('#boxFormaPago').empty();
 
-            if (document.getElementById('cobrarVenta').disabled == false) {
-                document.getElementById('cobrarVenta').disabled = true;
+            if (fPago == 3) {
+
+                $("#boxFormaPago").html(
+                    '<div class="row">' +
+                    '<div class="col-sm-6 text-center">' +
+                    '<div class="form-group">' +
+                    '<label>Monto Debitado:</label><label style="color:#C20F30">*</label>' +
+                    '<input type="number" id="montoDebitado" step="0.01" class="form-control text-center" required>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-sm-6 text-center">' +
+                    '<div class="form-group">' +
+                    '<label># Transacción:</label><label style="color:#C20F30">*</label>' +
+                    '<input type="number" id="numTrans" class="form-control text-center" required>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="row">' +
+                    '<div class="col-sm-6 text-center">' +
+                    '<div class="form-group">' +
+                    '<label>Recibido:</label><label style="color:#C20F30">*</label>' +
+                    '<input type="number" id="efectivoRecibido" step="0.01" class="form-control text-center" required>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-sm-6 text-center">' +
+                    '<div class="form-group">' +
+                    '<label>Cambio:</label>' +
+                    '<input type="hidden" id="nuevoCambio" class="form-control text-center" readonly="readonly" required>' +
+                    '<h4 id="totalCambio">$ -.--</h4>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>'
+                )
+
+                var divMontoDebitado = document.getElementById('montoDebitado');
+                divMontoDebitado.focus();
+
+            } else {
+
+                $('#boxFormaPago').empty();
+
+                if (document.getElementById('cobrarVenta').disabled == false) {
+                    document.getElementById('cobrarVenta').disabled = true;
+                }
+
             }
+
         }
     }
 
@@ -702,37 +764,139 @@ $("#formularioVenta").on("change", "input#efectivoRecibido", function () {
     var efectivoRec = divEfectivoRec.value;
     var totalVenta = document.getElementById('totalVenta').value;
     var divCambio = document.getElementById('nuevoCambio');
+    var formaPago = document.getElementById('formaPago').value;
 
-    if (Number(totalVenta) > Number(efectivoRec)) {
+    if (formaPago == 1) {
 
-        Swal.fire({
-            icon: 'warning',
-            title: 'Efectivo ingresado insuficiente',
-            text: "¡El efectivo ingresado es menor a la venta!"
-        }).then(function (result) {
+        if (Number(totalVenta) > Number(efectivoRec)) {
 
-            if (document.getElementById('cobrarVenta').disabled == false) {
-                document.getElementById('cobrarVenta').disabled = true;
+            Swal.fire({
+                icon: 'warning',
+                title: 'Efectivo ingresado insuficiente',
+                text: "¡El efectivo ingresado es menor a la venta!"
+            }).then(function (result) {
+
+                if (document.getElementById('cobrarVenta').disabled == false) {
+                    document.getElementById('cobrarVenta').disabled = true;
+                }
+
+                divCambio.value = '';
+                $("#totalCambio").html('$ -.--');
+                divEfectivoRec.value = '';
+                divEfectivoRec.focus();
+            });
+
+        } else {
+
+            var cambio = efectivoRec - totalVenta;
+
+            divCambio.value = cambio;
+            $("#totalCambio").html(currencyFormat(cambio));
+
+            if (document.getElementById('cobrarVenta').disabled == true) {
+                document.getElementById('cobrarVenta').disabled = false;
             }
 
-            divCambio.value = '';
-            $("#totalCambio").html('$ -.--');
-            divEfectivoRec.value = '';
-            divEfectivoRec.focus();
-        });
+        }
 
     } else {
 
-        var cambio = efectivoRec - totalVenta;
+        if (formaPago == 3) {
 
-        divCambio.value = cambio;
-        $("#totalCambio").html(currencyFormat(cambio));
+            var montoDebitado = document.getElementById('montoDebitado').value;
 
-        if (document.getElementById('cobrarVenta').disabled == true) {
-            document.getElementById('cobrarVenta').disabled = false;
+            var montoTotal = Number(efectivoRec) + Number(montoDebitado);
+
+            if (Number(totalVenta) > Number(montoTotal)) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Monto insuficiente',
+                    text: "¡El monto ingresado es menor a la venta!"
+                }).then(function (result) {
+
+                    if (document.getElementById('cobrarVenta').disabled == false) {
+                        document.getElementById('cobrarVenta').disabled = true;
+                    }
+
+                    divCambio.value = '';
+                    $("#totalCambio").html('$ -.--');
+                    divEfectivoRec.value = '';
+                    divEfectivoRec.focus();
+                });
+
+            } else {
+
+                var cambio = montoTotal - totalVenta;
+
+                divCambio.value = cambio;
+                $("#totalCambio").html(currencyFormat(cambio));
+
+                if (document.getElementById('cobrarVenta').disabled == true) {
+                    document.getElementById('cobrarVenta').disabled = false;
+                }
+
+            }
+
+        }
+
+
+    }
+
+
+});
+
+/*=============================================
+FORMA DE PAGO - CAMBIO EN EFECTIVO
+=============================================*/
+$("#formularioVenta").on("change", "input#montoDebitado", function () {
+
+    var divEfectivoRec = document.getElementById('efectivoRecibido');
+    var divCambio = document.getElementById('nuevoCambio');
+    var divMontoDebitado = document.getElementById('montoDebitado');
+    var totalVenta = document.getElementById('totalVenta').value;
+    var montoDebitado = divMontoDebitado.value;
+    var formaPago = document.getElementById('formaPago').value;
+
+    if (formaPago == 3) {
+
+        if (Number(montoDebitado) >= Number(totalVenta)) {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: "¡El monto debitado no puede ser mayor o igual al total de la venta!"
+            }).then(function (result) {
+
+                if (document.getElementById('cobrarVenta').disabled == false) {
+                    document.getElementById('cobrarVenta').disabled = true;
+                }
+
+                divCambio.value = '';
+                $("#totalCambio").html('$ -.--');
+                divEfectivoRec.value = '';
+                divMontoDebitado.value = '';
+                divMontoDebitado.focus();
+
+            });
+
+        } else {
+
+            var montoTotal = Number(divEfectivoRec.value) + Number(montoDebitado);
+
+            var cambio = montoTotal - totalVenta;
+
+            divCambio.value = cambio;
+            $("#totalCambio").html(currencyFormat(cambio));
+
+            if (document.getElementById('cobrarVenta').disabled == true) {
+                document.getElementById('cobrarVenta').disabled = false;
+            }
+
         }
 
     }
+
 });
 
 if (selectClientes) {
@@ -785,6 +949,7 @@ if (checkImp) {
             $('#impuestosBox').empty();
             var subtotal = document.getElementById('subtotalVenta').value;
             var boxTotal = document.getElementById('totalVenta');
+            var formaPago = document.getElementById('formaPago').value;
 
             boxTotal.value = subtotal;
             $("#big_total").html(currencyFormat(Number(subtotal)));
@@ -792,9 +957,11 @@ if (checkImp) {
             var divEfectivoRec = document.getElementById('efectivoRecibido');
             var divNuevoCambio = document.getElementById('nuevoCambio');
             var divNumTrans = document.getElementById('numTrans');
+            var divMontoDebitado = document.getElementById('montoDebitado');
 
             if (divEfectivoRec) {
                 divEfectivoRec.value = '';
+
             }
 
             if (divNuevoCambio) {
@@ -804,6 +971,24 @@ if (checkImp) {
 
             if (divNumTrans) {
                 divNumTrans.value = '';
+            }
+
+            if (formaPago == 2) {
+
+                if (divMontoDebitado) {
+                    divMontoDebitado.value = subtotal;
+                    divNumTrans.focus();
+                }
+    
+            } else {
+    
+                if (divMontoDebitado) {
+                    divMontoDebitado.value = '';
+                    divMontoDebitado.focus();
+                } else {
+                    divEfectivoRec.focus();
+                }
+    
             }
 
         }
@@ -825,6 +1010,8 @@ function agregarImpuesto() {
 
     if (boxImpuesto) {
 
+        var formaPago = document.getElementById('formaPago').value;
+
         var impuesto = boxImpuesto.value;
         var precioTotal = document.getElementById('subtotalVenta').value;
 
@@ -841,9 +1028,11 @@ function agregarImpuesto() {
         var divEfectivoRec = document.getElementById('efectivoRecibido');
         var divNuevoCambio = document.getElementById('nuevoCambio');
         var divNumTrans = document.getElementById('numTrans');
+        var divMontoDebitado = document.getElementById('montoDebitado');
 
         if (divEfectivoRec) {
             divEfectivoRec.value = '';
+
         }
 
         if (divNuevoCambio) {
@@ -854,6 +1043,25 @@ function agregarImpuesto() {
         if (divNumTrans) {
             divNumTrans.value = '';
         }
+
+        if (formaPago == 2) {
+
+            if (divMontoDebitado) {
+                divMontoDebitado.value = totalConImpuesto;
+                divNumTrans.focus();
+            }
+
+        } else {
+
+            if (divMontoDebitado) {
+                divMontoDebitado.value = '';
+                divMontoDebitado.focus();
+            } else {
+                divEfectivoRec.focus();
+            }
+
+        }
+
 
     }
 
@@ -936,12 +1144,10 @@ if (formularioVenta) {
             confirmButtonText: 'Aceptar'
         }).then((result) => {
             if (result.value) {
-                var payload = {};
 
+                var payload = {};
                 var boxImpuesto = document.getElementById('impuestoVenta');
                 var numTrans = document.getElementById('numTrans');
-                var divEfectivoRec = document.getElementById('efectivoRecibido');
-                var nuevoCambio = document.getElementById('nuevoCambio');
 
                 if (boxImpuesto) {
                     var impuesto = document.getElementById('nuevoPrecioImpuesto').value;
@@ -960,16 +1166,19 @@ if (formularioVenta) {
                 var listaProductos = listarProductos();
                 var subtotalVenta = document.getElementById('subtotalVenta').value;
                 var totalVenta = document.getElementById('totalVenta').value;
+                var tipoPago = listarFormasPago(formaPago);
 
-                if (divEfectivoRec) {
-                    var efecRecibido = divEfectivoRec.value;
-                    var cambio = nuevoCambio.value;
-                } else {
-                    var efecRecibido = totalVenta;
-                    var cambio = 0.00;
+                var cambioTotal = 0;
+                var montoTotal = 0;
+
+                for (var i = 0; i < tipoPago.length; i++) {
+
+                    cambioTotal = Number(cambioTotal) + Number(tipoPago[i].cambio);
+                    montoTotal = Number(montoTotal) + Number(tipoPago[i].monto);
+
                 }
 
-                if (Number(totalVenta) > Number(efecRecibido)) {
+                if (Number(totalVenta) > Number(montoTotal)) {
 
                     Swal.fire({
                         icon: 'warning',
@@ -995,9 +1204,9 @@ if (formularioVenta) {
                     payload.impuesto = impuesto;
                     payload.redondeo = 0;
                     payload.total = totalVenta;
-                    payload.monto = efecRecibido;
-                    payload.cambio = cambio;
-                    payload.forma_pago = formaPago;
+                    payload.monto = montoTotal;
+                    payload.cambio = cambioTotal;
+                    payload.listaTipoPago = tipoPago;
                     payload.num_transaccion = numTransaccion;
                     payload.status = 1;
                     payload.fecha = moment().format('YYYY-MM-DD H:mm:ss');
@@ -1075,6 +1284,80 @@ function listarProductos() {
 
 }
 
+/*=============================================
+LISTAR FORMAS DE PAGO
+=============================================*/
+function listarFormasPago(fpago) {
+
+    var listaFormasPago = [];
+
+    if (fpago == 1) {
+
+        var efectivo = document.getElementById('efectivoRecibido').value;
+        var cambio = document.getElementById('nuevoCambio').value;
+        var consecutivo = 1;
+
+        listaFormasPago.push({
+            "tpa_num": consecutivo,
+            "forma_pago": fpago,
+            "monto": efectivo,
+            "cambio": cambio,
+            "num_transaccion": null
+        })
+
+
+    } else {
+
+        if (fpago == 2) {
+
+            var montoDebitado = document.getElementById('montoDebitado').value;
+            var numTrans = document.getElementById('numTrans').value;
+            var cambio = 0.00;
+            var consecutivo = 1;
+
+            listaFormasPago.push({
+                "tpa_num": consecutivo,
+                "forma_pago": fpago,
+                "monto": montoDebitado,
+                "cambio": cambio,
+                "num_transaccion": numTrans
+            })
+
+
+        } else {
+
+            if (fpago == 3) {
+
+                var montoDebitado = document.getElementById('montoDebitado').value;
+                var efectivo = document.getElementById('efectivoRecibido').value;
+                var numTrans = document.getElementById('numTrans').value;
+                var cambio = document.getElementById('nuevoCambio').value;
+
+                listaFormasPago.push({
+                    "tpa_num": 1,
+                    "forma_pago": 1,
+                    "monto": efectivo,
+                    "cambio": cambio,
+                    "num_transaccion": null
+
+                })
+
+                listaFormasPago.push({
+                    "tpa_num": 2,
+                    "forma_pago": 2,
+                    "monto": montoDebitado,
+                    "cambio": 0.00,
+                    "num_transaccion": numTrans
+                })
+
+            }
+
+        }
+    }
+
+    return listaFormasPago;
+
+}
 /*=============================================
 RANGO DE FECHAS - REPORTE DE VENTAS
 =============================================*/
@@ -1215,9 +1498,6 @@ if (formSearchVtas) {
                             title: "Usuario"
                         },
                         {
-                            title: "Forma de pago"
-                        },
-                        {
                             title: "Subtotal", render: $.fn.dataTable.render.number(',', '.', 2)
                         },
                         {
@@ -1234,6 +1514,9 @@ if (formSearchVtas) {
                         },
                         {
                             title: "Detalle"
+                        },
+                        {
+                            title: "Tipo Pago"
                         },
                         {
                             title: "Acciones"
@@ -1253,7 +1536,7 @@ if (formSearchVtas) {
 
                             // Total todas las paginas
                             var total = api
-                                .column(8)
+                                .column(7)
                                 .data()
                                 .reduce(function (a, b) {
                                     return intVal(a) + intVal(b);
@@ -1261,7 +1544,7 @@ if (formSearchVtas) {
 
                             //Total monto por pagina  
                             var pageTotal = api
-                                .column(8, { page: 'current' })
+                                .column(7, { page: 'current' })
                                 .data()
                                 .reduce(function (a, b) {
                                     return intVal(a) + intVal(b);
@@ -1288,7 +1571,7 @@ if (formSearchVtas) {
                                 $('#tbl-admin-ventas').append('<tfoot id="footerVenta" class="text-center"><tr class="totalPrice"><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></tfoot>');
 
                                 $('#footerVenta').find('th').eq(0).html("Total:");
-                                $('#footerVenta').find('th').eq(8).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
+                                $('#footerVenta').find('th').eq(7).html(totalxPagina + '<br/> (' + totalGlobal + ' total)');
 
                             }
                         }
@@ -1406,6 +1689,113 @@ $(document).on("click", "#btn-detalle-vta", function () {
             })
         })
 });
+
+/*=============================================
+FORMA PAGO VENTA
+=============================================*/
+$(document).on("click", "#btn-tipopago-vta", function () {
+
+    $('#table_tipo_pago').DataTable().destroy();
+    $("#table_tipo_pago").remove();
+    $("#bodyTipopago").append(
+        '<table id="table_tipo_pago" class="display table-bordered table-striped dt-responsive text-center" cellspacing="0" style="width:100%"> </table>'
+    );
+
+    var payload = {};
+
+    var idNota = $(this).attr("idNota");
+    var idCaja = $(this).attr("idCaja");
+
+    payload.idNota = idNota;
+    payload.idCaja = idCaja;
+
+    console.log(payload);
+
+    axios.post('/tipopago_ventas', payload)
+        .then(function (respuesta) {
+
+            const tblTipoPagoVtas = document.querySelector('#table_tipo_pago');
+
+            if (tblTipoPagoVtas) {
+                var dataSet = respuesta.data;
+
+                $(tblTipoPagoVtas).DataTable({
+                    data: dataSet,
+                    deferRender: true,
+                    iDisplayLength: 25,
+                    retrieve: true,
+                    processing: true,
+                    fixedHeader: true,
+                    responsive: true,
+                    searching: false,
+                    bPaginate: false,
+                    info: false,
+                    columnDefs: [
+                        { orderable: false, targets: '_all' }
+                    ],
+                    language: {
+
+                        "sProcessing": "Procesando...",
+                        "sLengthMenu": "Mostrar _MENU_ registros",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0",
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sSearch": "Buscar:",
+                        "sUrl": "",
+                        "sInfoThousands": ",",
+                        "sLoadingRecords": "Cargando...",
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        },
+                        "oAria": {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        }
+
+                    },
+                    columns: [{
+                        title: "#"
+                    },
+                    {
+                        title: "# Caja"
+                    },
+                    {
+                        title: "# Nota"
+                    },
+                    {
+                        title: "Forma de Pago"
+                    },
+                    {
+                        title: "Monto", render: $.fn.dataTable.render.number(',', '.', 2)
+                    },
+                    {
+                        title: "Cambio", render: $.fn.dataTable.render.number(',', '.', 2)
+                    },
+                    {
+                        title: "Total", render: $.fn.dataTable.render.number(',', '.', 2)
+                    },
+                    {
+                        title: "# Transacción"
+                    }
+                    ]
+                });
+            }
+
+        }).catch(errors => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hubo un error',
+                text: 'Error en la Base de Datos'
+            })
+        })
+});
+
 $("#reservation").change(function () {
 
     $('#tbl-admin-ventas').DataTable().destroy();
@@ -2243,18 +2633,18 @@ if (formSearchArt) {
                     document.getElementById('codBarArt').value = '';
 
                     var dataSet = respuesta.data[0];
-                    
-                    if(dataSet.bar_code == ''){
+
+                    if (dataSet.bar_code == '') {
                         var codBar = '------'
-                    }else{
+                    } else {
                         var codBar = dataSet.bar_code;
                     }
 
                     $("#ver-producto").append(
-                        '<div id="bodyDetProducto">'+
+                        '<div id="bodyDetProducto">' +
                         '<div class="row">' +
                         '<div class="col-sm-12">' +
-                        '<h2>' + dataSet.idproducto +' / '+ dataSet.producto +'</h2>' +
+                        '<h2>' + dataSet.idproducto + ' / ' + dataSet.producto + '</h2>' +
                         '</div>' +
                         '</div>' +
                         '<hr>' +
@@ -2262,25 +2652,25 @@ if (formSearchArt) {
                         '<div class="col-sm-7">' +
                         '<dl class="row">' +
                         '<dt class="col-sm-4">Código Barras:</dt>' +
-                        '<dd class="col-sm-8">'+ codBar +'</dd>' +
+                        '<dd class="col-sm-8">' + codBar + '</dd>' +
                         '<dt class="col-sm-4">Marca:</dt>' +
-                        '<dd class="col-sm-8">'+ dataSet.marca +'</dd>' +
+                        '<dd class="col-sm-8">' + dataSet.marca + '</dd>' +
                         '<dt class="col-sm-4">Categoria:</dt>' +
-                        '<dd class="col-sm-8">'+ dataSet.categoria +'</dd >' +
+                        '<dd class="col-sm-8">' + dataSet.categoria + '</dd >' +
                         '<dt class="col-sm-4">Proveedor:</dt>' +
-                        '<dd class="col-sm-8">'+ dataSet.proveedor +'</dd>' +
+                        '<dd class="col-sm-8">' + dataSet.proveedor + '</dd>' +
                         '</dl>' +
                         '</div>' +
                         '<div class="col-sm-5">' +
                         '<dl class="row">' +
                         '<dt class="col-sm-4">Stock:</dt>' +
-                        '<dd class="col-sm-8">'+ dataSet.stock_total +'</dd>' +
+                        '<dd class="col-sm-8">' + dataSet.stock_total + '</dd>' +
                         '<dt class="col-sm-4">Mayoreo:</dt>' +
-                        '<dd class="col-sm-8">'+ currencyFormat(dataSet.pre_mayoreo) +'</dd>' +
+                        '<dd class="col-sm-8">' + currencyFormat(dataSet.pre_mayoreo) + '</dd>' +
                         '<dt class="col-sm-4">Menudeo:</dt>' +
-                        '<dd class="col-sm-8">'+ currencyFormat(dataSet.pre_menudeo) +'</dd >' +
+                        '<dd class="col-sm-8">' + currencyFormat(dataSet.pre_menudeo) + '</dd >' +
                         '<dt class="col-sm-4">Alta:</dt>' +
-                        '<dd class="col-sm-8">'+ moment(dataSet.fecha_creacion).format('DD/MM/YYYY hh:mm a') +'</dd>' +
+                        '<dd class="col-sm-8">' + moment(dataSet.fecha_creacion).format('DD/MM/YYYY hh:mm a') + '</dd>' +
                         '</dl>' +
                         '</div>' +
                         '</div>' +

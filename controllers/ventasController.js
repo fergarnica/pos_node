@@ -112,9 +112,10 @@ exports.adminCajas = async (req, res) => {
 
 exports.crearVenta = async (req, res) => {
 
-    var { idcliente, subtotal, impuesto, redondeo, total, monto, cambio, forma_pago, num_transaccion, status, fecha } = req.body;
+    var { idcliente, subtotal, impuesto, redondeo, total, status, fecha } = req.body;
 
     var objProd = req.body.listaProductos;
+    var objFpago = req.body.listaTipoPago;
     var idusuario = res.locals.usuario.idusuario;
     var tipoMov = 2;
     var idMotivo = 0;
@@ -147,17 +148,12 @@ exports.crearVenta = async (req, res) => {
         impuesto,
         redondeo,
         total,
-        monto,
-        cambio,
-        forma_pago,
-        num_transaccion,
         status,
         fecha
     };
 
     await pool.query('INSERT INTO ventas SET ?', [newVenta]);
 
-    await pool.query('call sp_reg_vta_cortecaja(?,?,?,?,?)', [idcaja, idcorte, forma_pago, total, idusuario]);
 
     for (var x = 0; x < objProd.length; x++) {
 
@@ -184,6 +180,33 @@ exports.crearVenta = async (req, res) => {
 
         await pool.query('call sp_ajuste_inv(?,?,?,?,?)', [newDetVenta.idproducto, idMotivo, cantidad, tipoMov, idusuario]);
 
+
+    }
+
+    for (var x = 0; x < objFpago.length; x++) {
+
+        var det_num = x + 1;
+
+        var tpa_num = objFpago[x].tpa_num;
+        var forma_pago = objFpago[x].forma_pago;
+        var monto = objFpago[x].monto;
+        var cambio = objFpago[x].cambio;
+        var num_transaccion = objFpago[x].num_transaccion;
+
+        const newTipoPago = {
+            idnota,
+            idcaja,
+            tpa_num,
+            forma_pago,
+            monto,
+            cambio,
+            num_transaccion
+        };
+
+        var totalTrans = (monto - cambio);
+
+        await pool.query('call sp_reg_vta_cortecaja(?,?,?,?,?)', [idcaja, idcorte, forma_pago, totalTrans, idusuario]);
+        await pool.query('INSERT INTO tipo_pago SET ?', [newTipoPago]);
 
     }
 
@@ -219,6 +242,8 @@ exports.consultarVentas = async (req, res) => {
 
             botonDet = "<div class='btn-group'><button type='button' id='btn-detalle-vta' class='btn btn-info' data-toggle='modal' data-target='#modalDetVta' idNota=" + "'" + array.idnota + "' idCaja=" + "'" + array.idcaja + "'" + "><i class='fas fa-eye'></i></button></div>";
 
+            botonPago = "<div class='btn-group'><button type='button' id='btn-tipopago-vta' class='btn btn-success' data-toggle='modal' data-target='#modalPagoVta' idNota=" + "'" + array.idnota + "' idCaja=" + "'" + array.idcaja + "'" + "><i class='fas fa-money-bill'></i></button></div>";
+
             if (array.estatus === 'Vigente') {
                 botones = "<div class='btn-group'><button type='button' id='btn-imprimir-vta' class='btn btn-success' idNota=" + "'" + array.idnota + "'" + "><i class='fas fa-print'></i></button><button id='btn-anular-venta' class='btn btn-danger' idNota=" + "'" + array.idnota + "' idCaja=" + "'" + array.idcaja + "'" + "><i class='fa fa-times'></i></button></div>";
             } else {
@@ -231,13 +256,13 @@ exports.consultarVentas = async (req, res) => {
                 array.idcorte,
                 array.cliente,
                 array.usuario,
-                array.f_pago,
                 array.subtotal,
                 array.impuesto,
                 array.total,
                 array.estatus,
                 moment(array.fecha).format('YYYY-MM-DD h:mm:ss a'),
                 botonDet,
+                botonPago,
                 botones
             ];
 
@@ -271,6 +296,39 @@ exports.detVentas = async (req, res) => {
             array.cantidad,
             array.precio,
             array.total
+        ];
+
+        dataset.push(obj);
+
+    }
+
+    res.status(200).send(dataset);
+
+}
+
+exports.tipoPagoVenta = async (req, res) => {
+
+    var { idNota, idCaja } = req.body;
+
+    const results = await pool.query('call get_tipopago_venta(?,?)', [idNota, idCaja]);
+
+    const dataPago = results[0];
+
+    const dataset = [];
+
+    for (var x = 0; x < dataPago.length; x++) {
+
+        const array = dataPago[x];
+
+        const obj = [
+            array.tpa_num,
+            array.idcaja,
+            array.idnota,
+            array.fpago,
+            array.monto,
+            array.cambio,
+            array.total,
+            array.num_transaccion
         ];
 
         dataset.push(obj);
@@ -634,7 +692,6 @@ exports.imprimirVentas = async (req, res) => {
                 idcorte: arrayVentas.idcorte,
                 cliente: arrayVentas.cliente,
                 usuario: arrayVentas.usuario,
-                forma_pago: arrayVentas.f_pago,
                 subtotal: currencyFormat(arrayVentas.subtotal),
                 impuesto: currencyFormat(arrayVentas.impuesto),
                 total: currencyFormat(arrayVentas.total),
@@ -675,7 +732,7 @@ exports.imprimirVentas = async (req, res) => {
                     // External data
                     dataVendedores,
                     // Columns display order
-                    ['idnota', 'idcaja', 'idcorte', 'cliente', 'usuario', 'forma_pago', 'subtotal', 'impuesto', 'total', 'status', 'fecha_venta'],
+                    ['idnota', 'idcaja', 'idcorte', 'cliente', 'usuario', 'subtotal', 'impuesto', 'total', 'status', 'fecha_venta'],
                     // Custom columns widths
                     // ['6%', '12%', '15%','15%','12%', '12%', '12%','12%','12%'],
                     // Show headers?
@@ -686,7 +743,6 @@ exports.imprimirVentas = async (req, res) => {
                     { text: 'Num Corte', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Cliente', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Usuario', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
-                    { text: 'Forma de Pago', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Subtotal', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Comisión', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },
                     { text: 'Total', fillColor: '#CCCCCC', color: 'black', alignment: 'center', alignmentChild: 'center', style: 'tableHeader' },

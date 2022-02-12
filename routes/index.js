@@ -550,6 +550,10 @@ module.exports = function () {
         isLoggedIn,
         ventasController.detVentas
     );
+    router.post('/tipopago_ventas',
+        isLoggedIn,
+        ventasController.tipoPagoVenta
+    );
     router.post('/exportar_ventas',
         isLoggedIn,
         ventasController.exportVentas
