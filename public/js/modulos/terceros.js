@@ -23,10 +23,11 @@ const telEditCliente = document.getElementById("telEditCliente");
 
 const tblProv = document.querySelector('#tbl-proveedores');
 const tblClientes = document.querySelector('#tbl-clientes');
-
 const infoDetProv = document.getElementById('infodet-proveedor');
 
 const contenedorMapa = document.querySelector('.contenedor-mapa');
+
+var provPermCrear = document.getElementById('provPermCrear');
 //const buscador = document.querySelector('#formNewProv');
 let marker;
 
@@ -130,6 +131,7 @@ let marker;
                         }
                         ]
                     });
+
                 }
 
             }).catch(errors => {
@@ -139,6 +141,18 @@ let marker;
                     text: 'Error en la Base de Datos'
                 })
             })
+    }
+
+    if(provPermCrear){
+        
+        var permisoCrear = provPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-proveedor').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-proveedor').disabled = true;
+        }
+
     }
 
     if (tblClientes) {

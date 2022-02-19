@@ -143,16 +143,59 @@ exports.permisosxPerfil = async (req, res) => {
         const array = results[x];
 
         if (array.acceso === 1) {
-            var checkBox = "<input type='checkbox' class='checkAcceso' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "c 'checked" + ">";
+
+            var checkBoxAcceso = "<input type='checkbox' class='checkAcceso' idPadre=" + "'" + array.id_padre + "'" + " idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "c' checked" + ">";
+
+            if (array.id_padre === 0) {
+                var checkBoxCrear = null;
+                var checkBoxEditar = null;
+                var checkBoxEliminar = null;
+            } else {
+                if (array.crear === 1) {
+                    var checkBoxCrear = "<input type='checkbox' class='checkCrear' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "cc' checked" + ">";
+                } else {
+                    var checkBoxCrear = "<input type='checkbox' class='checkCrear' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "cc' " + ">";
+                }
+
+                if (array.editar === 1) {
+                    var checkBoxEditar = "<input type='checkbox' class='checkEditar' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "ce' checked" + ">";
+                } else {
+                    var checkBoxEditar = "<input type='checkbox' class='checkEditar' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "ce' " + ">";
+                }
+
+                if (array.eliminar === 1) {
+                    var checkBoxEliminar = "<input type='checkbox' class='checkEliminar' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "cel' checked" + ">";
+                } else {
+                    var checkBoxEliminar = "<input type='checkbox' class='checkEliminar' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "cel' " + ">";
+                }
+
+            }
+
+
         } else {
-            var checkBox = "<input type='checkbox' class='checkAcceso' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "c' " + ">";
+
+            var checkBoxAcceso = "<input type='checkbox' class='checkAcceso' idPadre=" + "'" + array.id_padre + "'" + " idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "c' " + ">";
+
+            if (array.id_padre === 0) {
+                var checkBoxCrear = null;
+                var checkBoxEditar = null;
+                var checkBoxEliminar = null;
+            } else {
+                var checkBoxCrear = "<input type='checkbox' class='checkCrear' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "cc' " + " disabled>";
+                var checkBoxEditar = "<input type='checkbox' class='checkEditar' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "ce' " + " disabled>";
+                var checkBoxEliminar = "<input type='checkbox' class='checkEliminar' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "cel' " + " disabled>";
+            }
+
         }
 
         const obj = [
             array.new_orden,
             array.idmenu,
             array.menu,
-            checkBox,
+            checkBoxAcceso,
+            checkBoxCrear,
+            checkBoxEditar,
+            checkBoxEliminar,
             array.id_padre
         ];
 
@@ -165,29 +208,98 @@ exports.permisosxPerfil = async (req, res) => {
 
 exports.activarPermxPerfil = async (req, res) => {
 
-    var { idmenu, idperfil, acceso } = req.body;
+    var { idmenu, idperfil, acceso, permiso } = req.body;
 
-    const newPermiso = {
-        idmenu,
-        idperfil,
-        acceso
-    };
+    if (permiso === 'accesar') {
 
-    var countExist = await pool.query('SELECT COUNT(*) AS cuenta FROM permisos_xperfil WHERE idmenu=? and idperfil=?', [idmenu, idperfil]);
+        var crear = 0;
+        var editar = 0;
+        var eliminar = 0;
 
-    var exist = countExist[0].cuenta;
+        const newPermiso = {
+            idmenu,
+            idperfil,
+            acceso,
+            crear,
+            editar,
+            eliminar
+        };
 
-    if (exist === 0) {
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xperfil WHERE idmenu=? and idperfil=?', [idmenu, idperfil]);
 
-        await pool.query('INSERT INTO permisos_xperfil SET ?', [newPermiso]);
+        var exist = countExist[0].cuenta;
 
-        res.send('Insertado');
+        if (exist === 0) {
 
-    } else {
+            await pool.query('INSERT INTO permisos_xperfil SET ?', [newPermiso]);
 
-        await pool.query('UPDATE permisos_xperfil SET acceso = ? WHERE idmenu = ? AND idperfil=?', [newPermiso.acceso, newPermiso.idmenu, newPermiso.idperfil]);
+            res.send('Insertado');
 
-        res.send('Actualizado');
+        } else {
+
+            if (newPermiso.acceso === 0) {
+                await pool.query('UPDATE permisos_xperfil SET acceso = ?, crear = ?, editar = ?, eliminar = ? WHERE idmenu = ? AND idperfil=?', [newPermiso.acceso, newPermiso.crear, newPermiso.editar, newPermiso.eliminar, newPermiso.idmenu, newPermiso.idperfil]);
+            } else {
+                await pool.query('UPDATE permisos_xperfil SET acceso = ? WHERE idmenu = ? AND idperfil=?', [newPermiso.acceso, newPermiso.idmenu, newPermiso.idperfil]);
+            }
+
+            res.send('Actualizado');
+
+        }
+
+    }
+
+    if (permiso === 'crear') {
+
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xperfil WHERE idmenu=? and idperfil=?', [idmenu, idperfil]);
+
+        var exist = countExist[0].cuenta;
+
+        if (exist === 1) {
+
+            await pool.query('UPDATE permisos_xperfil SET crear = ? WHERE idmenu = ? AND idperfil=?', [acceso, idmenu, idperfil]);
+
+            res.send('Actualizado');
+
+        } else {
+            res.send('Error');
+        }
+
+    }
+    
+    if(permiso === 'editar'){
+
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xperfil WHERE idmenu=? and idperfil=?', [idmenu, idperfil]);
+
+        var exist = countExist[0].cuenta;
+
+        if (exist === 1) {
+
+            await pool.query('UPDATE permisos_xperfil SET editar = ? WHERE idmenu = ? AND idperfil=?', [acceso, idmenu, idperfil]);
+
+            res.send('Actualizado');
+
+        } else {
+            res.send('Error');
+        }
+
+    }
+
+    if (permiso === 'eliminar') {
+
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xperfil WHERE idmenu=? and idperfil=?', [idmenu, idperfil]);
+
+        var exist = countExist[0].cuenta;
+
+        if (exist === 1) {
+
+            await pool.query('UPDATE permisos_xperfil SET eliminar = ? WHERE idmenu = ? AND idperfil=?', [acceso, idmenu, idperfil]);
+
+            res.send('Actualizado');
+
+        } else {
+            res.send('Error');
+        }
 
     }
 
@@ -200,13 +312,13 @@ exports.permisosxUsuario = async (req, res) => {
 
     var permiso = await validAccess(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/menu/permisos_xusuario', {
             nombrePagina: 'Permisos'
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
@@ -231,16 +343,59 @@ exports.getpermisosxUsuario = async (req, res) => {
         const array = results[x];
 
         if (array.acceso === 1) {
-            var checkBox = "<input type='checkbox' class='checkAccesoUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "u 'checked" + ">";
+
+            var checkBoxAcceso = "<input type='checkbox' class='checkAccesoUser' idPadre=" + "'" + array.id_padre + "'" + " idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "u' checked" + ">";
+
+            if (array.id_padre === 0) {
+                var checkBoxCrear = null;
+                var checkBoxEditar = null;
+                var checkBoxEliminar = null;
+            } else {
+                if (array.crear === 1) {
+                    var checkBoxCrear = "<input type='checkbox' class='checkCrearxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "uc' checked" + ">";
+                } else {
+                    var checkBoxCrear = "<input type='checkbox' class='checkCrearxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "uc' " + ">";
+                }
+
+                if (array.editar === 1) {
+                    var checkBoxEditar = "<input type='checkbox' class='checkEditarxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "ue' checked" + ">";
+                } else {
+                    var checkBoxEditar = "<input type='checkbox' class='checkEditarxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "ue' " + ">";
+                }
+
+                if (array.eliminar === 1) {
+                    var checkBoxEliminar = "<input type='checkbox' class='checkEliminarxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "uel' checked" + ">";
+                } else {
+                    var checkBoxEliminar = "<input type='checkbox' class='checkEliminarxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "uel' " + ">";
+                }
+
+            }
+
+
         } else {
-            var checkBox = "<input type='checkbox' class='checkAccesoUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "u' " + ">";
+
+            var checkBoxAcceso = "<input type='checkbox' class='checkAccesoUser' idPadre=" + "'" + array.id_padre + "'" + " idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "u' " + ">";
+
+            if (array.id_padre === 0) {
+                var checkBoxCrear = null;
+                var checkBoxEditar = null;
+                var checkBoxEliminar = null;
+            } else {
+                var checkBoxCrear = "<input type='checkbox' class='checkCrearxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "uc' " + " disabled>";
+                var checkBoxEditar = "<input type='checkbox' class='checkEditarxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "ue' " + " disabled>";
+                var checkBoxEliminar = "<input type='checkbox' class='checkEliminarxUser' idMenu=" + "'" + array.idmenu + "'" + " id=" + "'" + array.idmenu + "uel' " + " disabled>";
+            }
+
         }
 
         const obj = [
             array.new_orden,
             array.idmenu,
             array.menu,
-            checkBox,
+            checkBoxAcceso,
+            checkBoxCrear,
+            checkBoxEditar,
+            checkBoxEliminar,
             array.id_padre
         ];
 
@@ -254,29 +409,98 @@ exports.getpermisosxUsuario = async (req, res) => {
 
 exports.activarPermxUser = async (req, res) => {
 
-    var { idmenu, idusuario, acceso } = req.body;
+    var { idmenu, idusuario, acceso, permiso } = req.body;
 
-    const newPermiso = {
-        idmenu,
-        idusuario,
-        acceso
-    };
+    if (permiso === 'accesar') {
 
-    var countExist = await pool.query('SELECT COUNT(*) AS cuenta FROM permisos_xusuario WHERE idmenu=? and idusuario=?', [idmenu, idusuario]);
+        var crear = 0;
+        var editar = 0;
+        var eliminar = 0;
 
-    var exist = countExist[0].cuenta;
+        const newPermiso = {
+            idmenu,
+            idusuario,
+            acceso,
+            crear,
+            editar,
+            eliminar
+        };
 
-    if (exist === 0) {
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xusuario WHERE idmenu=? and idusuario=?', [idmenu, idusuario]);
 
-        await pool.query('INSERT INTO permisos_xusuario SET ?', [newPermiso]);
+        var exist = countExist[0].cuenta;
 
-        res.send('Insertado');
+        if (exist === 0) {
 
-    } else {
+            await pool.query('INSERT INTO permisos_xusuario SET ?', [newPermiso]);
 
-        await pool.query('UPDATE permisos_xusuario SET acceso = ? WHERE idmenu = ? AND idusuario=?', [newPermiso.acceso, newPermiso.idmenu, newPermiso.idusuario]);
+            res.send('Insertado');
 
-        res.send('Actualizado');
+        } else {
+
+            if (newPermiso.acceso === 0) {
+                await pool.query('UPDATE permisos_xusuario SET acceso = ?, crear = ?, editar = ?, eliminar = ? WHERE idmenu = ? AND idusuario=?', [newPermiso.acceso, newPermiso.crear, newPermiso.editar, newPermiso.eliminar, newPermiso.idmenu, newPermiso.idusuario]);
+            } else {
+                await pool.query('UPDATE permisos_xusuario SET acceso = ? WHERE idmenu = ? AND idusuario=?', [newPermiso.acceso, newPermiso.idmenu, newPermiso.idusuario]);
+            }
+
+            res.send('Actualizado');
+
+        }
+
+    }
+
+    if (permiso === 'crear') {
+
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xusuario WHERE idmenu=? and idusuario=?', [idmenu, idusuario]);
+
+        var exist = countExist[0].cuenta;
+
+        if (exist === 1) {
+
+            await pool.query('UPDATE permisos_xusuario SET crear = ? WHERE idmenu = ? AND idusuario=?', [acceso, idmenu, idusuario]);
+
+            res.send('Actualizado');
+
+        } else {
+            res.send('Error');
+        }
+
+    }
+
+    if (permiso === 'editar') {
+
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xusuario WHERE idmenu=? and idusuario=?', [idmenu, idusuario]);
+
+        var exist = countExist[0].cuenta;
+
+        if (exist === 1) {
+
+            await pool.query('UPDATE permisos_xusuario SET editar = ? WHERE idmenu = ? AND idusuario=?', [acceso, idmenu, idusuario]);
+
+            res.send('Actualizado');
+
+        } else {
+            res.send('Error');
+        }
+
+    }
+
+    if (permiso === 'eliminar') {
+
+        var countExist = await pool.query('SELECT COUNT(1) AS cuenta FROM permisos_xusuario WHERE idmenu=? and idusuario=?', [idmenu, idusuario]);
+
+        var exist = countExist[0].cuenta;
+
+        if (exist === 1) {
+
+            await pool.query('UPDATE permisos_xusuario SET eliminar = ? WHERE idmenu = ? AND idusuario=?', [acceso, idmenu, idusuario]);
+
+            res.send('Actualizado');
+
+        } else {
+            res.send('Error');
+        }
 
     }
 

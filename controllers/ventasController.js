@@ -423,7 +423,6 @@ exports.exportVentas = async (req, res) => {
             { header: 'Num Corte', width: 12 },
             { header: 'Cliente', width: 40 },
             { header: 'Usuario', width: 25 },
-            { header: 'Forma de Pago', width: 32 },
             { header: 'Subtotal', width: 25 },
             { header: 'Comisión', width: 25 },
             { header: 'Total', width: 25 },
@@ -442,7 +441,6 @@ exports.exportVentas = async (req, res) => {
         worksheet.getCell('H1').alignment = { vertical: 'middle', horizontal: 'center' };
         worksheet.getCell('I1').alignment = { vertical: 'middle', horizontal: 'center' };
         worksheet.getCell('J1').alignment = { vertical: 'middle', horizontal: 'center' };
-        worksheet.getCell('K1').alignment = { vertical: 'middle', horizontal: 'center' };
 
         // for the wannabe graphic designers out there
         worksheet.getCell('A1').font = { bold: true };
@@ -455,12 +453,11 @@ exports.exportVentas = async (req, res) => {
         worksheet.getCell('H1').font = { bold: true };
         worksheet.getCell('I1').font = { bold: true };
         worksheet.getCell('J1').font = { bold: true };
-        worksheet.getCell('K1').font = { bold: true };
 
         //currency format
+        worksheet.getColumn(6).numFmt = '$#,##0.00;[Red]-$#,##0.00';
         worksheet.getColumn(7).numFmt = '$#,##0.00;[Red]-$#,##0.00';
         worksheet.getColumn(8).numFmt = '$#,##0.00;[Red]-$#,##0.00';
-        worksheet.getColumn(9).numFmt = '$#,##0.00;[Red]-$#,##0.00';
 
         // set single thin border around
         worksheet.getCell('A1').border = {
@@ -533,13 +530,6 @@ exports.exportVentas = async (req, res) => {
             right: { style: 'thin' }
         };
 
-        worksheet.getCell('K1').border = {
-            top: { style: 'thin' },
-            left: { style: 'thin' },
-            bottom: { style: 'thin' },
-            right: { style: 'thin' }
-        };
-
         var i;
 
         for (i = 0; i < dataVendedores.length; i++) {
@@ -587,7 +577,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(6).value = ventas.forma_pago;
+            row.getCell(6).value = ventas.subtotal;
             row.getCell(6).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(6).border = {
                 top: { style: 'thin' },
@@ -595,7 +585,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(7).value = ventas.subtotal;
+            row.getCell(7).value = ventas.impuesto;
             row.getCell(7).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(7).border = {
                 top: { style: 'thin' },
@@ -603,7 +593,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(8).value = ventas.impuesto;
+            row.getCell(8).value = ventas.total;
             row.getCell(8).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(8).border = {
                 top: { style: 'thin' },
@@ -611,7 +601,7 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(9).value = ventas.total;
+            row.getCell(9).value = ventas.status;
             row.getCell(9).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(9).border = {
                 top: { style: 'thin' },
@@ -619,17 +609,9 @@ exports.exportVentas = async (req, res) => {
                 bottom: { style: 'thin' },
                 right: { style: 'thin' }
             };
-            row.getCell(10).value = ventas.status;
+            row.getCell(10).value = ventas.fecha_venta;
             row.getCell(10).alignment = { vertical: 'middle', horizontal: 'center' };
             row.getCell(10).border = {
-                top: { style: 'thin' },
-                left: { style: 'thin' },
-                bottom: { style: 'thin' },
-                right: { style: 'thin' }
-            };
-            row.getCell(11).value = ventas.fecha_venta;
-            row.getCell(11).alignment = { vertical: 'middle', horizontal: 'center' };
-            row.getCell(11).border = {
                 top: { style: 'thin' },
                 left: { style: 'thin' },
                 bottom: { style: 'thin' },

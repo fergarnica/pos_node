@@ -509,6 +509,7 @@ SUMAR TODOS LOS PRECIOS
 function sumarTotalPrecios() {
 
     var precioItem = $(".nuevoTotalProducto");
+    var fPago = document.getElementById('formaPago').value;
     var arraySumaPrecio = [];
 
     for (var i = 0; i < precioItem.length; i++) {
@@ -530,14 +531,19 @@ function sumarTotalPrecios() {
 
     var divMontoDebitado = document.getElementById('montoDebitado');
 
-    if (divMontoDebitado) {
-        divMontoDebitado.value = sumaTotalPrecio;
-
-        if (document.getElementById('cobrarVenta').disabled == true) {
-            document.getElementById('cobrarVenta').disabled = false;
+    if(fPago == 2){
+        if (divMontoDebitado) {
+            divMontoDebitado.value = sumaTotalPrecio;
         }
-
+    }else{
+        if(fPago == 3){
+            if (divMontoDebitado) {
+                divMontoDebitado.value = sumaTotalPrecio;
+                divMontoDebitado.value = '';
+            }
+        }
     }
+    
 
     $("#big_subtotal").html(currencyFormat(sumaTotalPrecio));
     $("#big_total").html(currencyFormat(sumaTotalPrecio));
@@ -847,7 +853,7 @@ $("#formularioVenta").on("change", "input#efectivoRecibido", function () {
 });
 
 /*=============================================
-FORMA DE PAGO - CAMBIO EN EFECTIVO
+FORMA DE PAGO - DEBITO
 =============================================*/
 $("#formularioVenta").on("change", "input#montoDebitado", function () {
 
@@ -888,10 +894,6 @@ $("#formularioVenta").on("change", "input#montoDebitado", function () {
 
             divCambio.value = cambio;
             $("#totalCambio").html(currencyFormat(cambio));
-
-            if (document.getElementById('cobrarVenta').disabled == true) {
-                document.getElementById('cobrarVenta').disabled = false;
-            }
 
         }
 
