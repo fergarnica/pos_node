@@ -14,6 +14,8 @@ const salesChartSem = document.querySelector('#ventas-chart-sem');
 const salesChartMes = document.querySelector('#ventas-chart-mes');
 const salesCharTot = document.querySelector('#revenue-chart-canvas');
 
+const menusPermCrear = document.getElementById('menusPermCrear');
+
 (function () {
 
     if (menuLateral) {
@@ -136,6 +138,18 @@ const salesCharTot = document.querySelector('#revenue-chart-canvas');
                     text: 'Error en la Base de Datos'
                 })
             })
+    }
+
+    if(menusPermCrear){
+        
+        var permisoCrear = menusPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-menu').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-menu').disabled = true;
+        }
+
     }
 
     if (tblProdMes) {

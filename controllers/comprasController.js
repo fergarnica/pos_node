@@ -707,3 +707,60 @@ async function validAccess(idUsuario, url){
     return permiso
 
 }
+
+async function validaPermisoCrear(idUsuario, route) {
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND crear=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND crear=1', [idMenu, idPerfil]);
+
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso;
+
+}
+
+async function validaPermisoEditar(idUsuario, route) {
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND editar=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND editar=1', [idMenu, idPerfil]);
+
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso;
+
+}
+
+async function validaPermisoEliminar(idUsuario, route) {
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND eliminar=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND eliminar=1', [idMenu, idPerfil]);
+
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso;
+
+}

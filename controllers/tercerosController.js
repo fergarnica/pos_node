@@ -18,21 +18,21 @@ exports.proveedores = async (req, res) => {
     var permiso = await validAccess(idUsuario, url);
     var permisoCrear = await validaPermisoCrear(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/proveedores/proveedores', {
             nombrePagina: 'Proveedores',
             permisoCrear
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
         });
 
     }
-    
+
 }
 
 exports.agregarProvForm = async (req, res) => {
@@ -51,15 +51,15 @@ exports.editarProvForm = async (req, res) => {
 
     let idProveedor = req.params.id;
 
-    let existProv = await pool.query('SELECT COUNT(1) AS exist FROM proveedores WHERE idproveedor=?',idProveedor);
+    let existProv = await pool.query('SELECT COUNT(1) AS exist FROM proveedores WHERE idproveedor=?', idProveedor);
 
     let exist = existProv[0].exist;
 
-    if(exist===1){
+    if (exist === 1) {
         res.render('modulos/proveedores/editar_proveedor', {
             nombrePagina: 'Editar Proveedor'
         });
-    }else{
+    } else {
         res.render('modulos/error/404');
     }
 
@@ -69,15 +69,15 @@ exports.detalleProv = async (req, res) => {
 
     let idProveedor = req.params.id;
 
-    let existProv = await pool.query('SELECT COUNT(1) AS exist FROM proveedores WHERE idproveedor=?',idProveedor);
+    let existProv = await pool.query('SELECT COUNT(1) AS exist FROM proveedores WHERE idproveedor=?', idProveedor);
 
     let exist = existProv[0].exist;
 
-    if(exist===1){
+    if (exist === 1) {
         res.render('modulos/proveedores/detalle_proveedor', {
             nombrePagina: 'Detalle Proveedor'
         });
-    }else{
+    } else {
         res.render('modulos/error/404');
     }
 
@@ -89,21 +89,23 @@ exports.clientes = async (req, res) => {
     var url = req.originalUrl;
 
     var permiso = await validAccess(idUsuario, url);
+    var permisoCrear = await validaPermisoCrear(idUsuario, url);
 
-    if(permiso>0){
+    if (permiso > 0) {
 
         res.render('modulos/clientes/clientes', {
-            nombrePagina: 'Clientes'
+            nombrePagina: 'Clientes',
+            permisoCrear
         });
 
-    }else{
+    } else {
 
         res.render('modulos/error/401', {
             nombrePagina: '401 Unauthorized'
         });
-        
+
     }
-    
+
 }
 
 exports.agregarClientesForm = async (req, res) => {
@@ -210,7 +212,7 @@ exports.mostrarProveedores = async (req, res) => {
         const route = '/proveedores';
 
         var permisoEditar = await validaPermisoEditar(idUsuario, route);
-        var permisoEliminar = await validaPermisoEliminar(idUsuario, route); 
+        var permisoEliminar = await validaPermisoEliminar(idUsuario, route);
 
         const dataProveedores = [];
 
@@ -221,7 +223,7 @@ exports.mostrarProveedores = async (req, res) => {
 
             var botonVer = "<a type='button' id='btn-detalle-prov' rel='nofollow' class='btn btn-info' href=" + "'/detalle_proveedor/" + arrayProveedores.idproveedor + "'" + " idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fas fa-eye'></i></a>";
 
-            if( permisoEditar > 0 ){
+            if (permisoEditar > 0) {
 
                 var botonEditar = "<a type='button' id='btn-editar-prov' rel='nofollow' class='btn btn-warning' href=" + "'/editar_proveedor/" + arrayProveedores.idproveedor + "'" + " idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fas fa-pencil-alt'></i></a>";
 
@@ -231,7 +233,7 @@ exports.mostrarProveedores = async (req, res) => {
                     var status = "<button type='button' id='btn-estatus-prov' class='btn btn-success btn-sm' estadoProveedor='0' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + ">Activado</button>";
                 }
 
-            }else{
+            } else {
 
                 var botonEditar = "<button type='button' id='btn-editar-prov' class='btn btn-warning' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + " disabled><i class='fas fa-pencil-alt'></i></button>";
 
@@ -243,9 +245,9 @@ exports.mostrarProveedores = async (req, res) => {
 
             }
 
-            if( permisoEliminar > 0 ){
+            if (permisoEliminar > 0) {
                 var botonEliminar = "<button id='btn-eliminar-prov' class='btn btn-danger' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + "><i class='fa fa-times'></i></button>";
-            }else{
+            } else {
                 var botonEliminar = "<button id='btn-eliminar-prov' class='btn btn-danger' idProveedor=" + "'" + arrayProveedores.idproveedor + "'" + " disabled><i class='fa fa-times'></i></button>";
             }
 
@@ -281,8 +283,6 @@ exports.mostrarProveedores = async (req, res) => {
 }
 
 exports.activarProveedor = async (req, res) => {
-
-    //console.log(req.body);
 
     const { idProveedor, estadoProveedor } = req.body;
 
@@ -464,7 +464,7 @@ exports.editarProveedor = async (req, res) => {
     }
 }
 
-exports.proveedoresActivos =  async (req, res) => {
+exports.proveedoresActivos = async (req, res) => {
 
     const proveedores = await pool.query('SELECT * FROM proveedores  WHERE status = 1');
 
@@ -1016,6 +1016,7 @@ exports.agregarCliente = async (req, res) => {
 
 exports.mostrarClientes = async (req, res) => {
 
+    const idUsuario = res.locals.usuario.idusuario;
     const values = await pool.query('SELECT * FROM clientes');
 
     var valuesTotal = values.length;
@@ -1028,18 +1029,45 @@ exports.mostrarClientes = async (req, res) => {
 
         const dataClientes = [];
 
+        const route = '/clientes';
+
+        var permisoEditar = await validaPermisoEditar(idUsuario, route);
+        var permisoEliminar = await validaPermisoEliminar(idUsuario, route);
+
         for (var x = 0; x < valuesTotal; x++) {
 
             conteo = x + 1;
             const arrayClientes = values[x];
 
-            var botones = "<div class='btn-group'><a type='button' id='btn-editar-cli' rel='nofollow' class='btn btn-warning' href=" + "'/editar_cliente/" + arrayClientes.idcliente + "'" + " idCliente=" + "'" + arrayClientes.idcliente + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-cli' class='btn btn-danger' idCliente=" + "'" + arrayClientes.idcliente + "'" + "><i class='fa fa-times'></i></button></div>";
+            if (permisoEditar > 0) {
 
-            if (arrayClientes.status === 0) {
-                var status = "<button type='button' id='btn-estatus-cli' class='btn btn-danger btn-sm' estadoCliente='1' idCliente=" + "'" + arrayClientes.idcliente + "'" + ">Desactivado</button>";
+                var botonEditar = "<a type='button' id='btn-editar-cli' rel='nofollow' class='btn btn-warning' href=" + "'/editar_cliente/" + arrayClientes.idcliente + "'" + " idCliente=" + "'" + arrayClientes.idcliente + "'" + "><i class='fas fa-pencil-alt'></i></a>"; 
+
+                if (arrayClientes.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-cli' class='btn btn-danger btn-sm' estadoCliente='1' idCliente=" + "'" + arrayClientes.idcliente + "'" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-cli' class='btn btn-success btn-sm' estadoCliente='0' idCliente=" + "'" + arrayClientes.idcliente + "'" + ">Activado</button>";
+                }
+
             } else {
-                var status = "<button type='button' id='btn-estatus-cli' class='btn btn-success btn-sm' estadoCliente='0' idCliente=" + "'" + arrayClientes.idcliente + "'" + ">Activado</button>";
+
+                var botonEditar = "<button type='button' id='btn-editar-cli' class='btn btn-warning' idCliente=" + "'" + arrayClientes.idcliente + "'" + " disabled><i class='fas fa-pencil-alt'></i></button>";
+
+                if (arrayClientes.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-cli' class='btn btn-danger btn-sm' estadoCliente='1' idCliente=" + "'" + arrayClientes.idcliente + "'" + " disabled>Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-cli' class='btn btn-success btn-sm' estadoCliente='0' idCliente=" + "'" + arrayClientes.idcliente + "'" + " disabled>Activado</button>";
+                }
+
             }
+
+            if (permisoEliminar > 0) {
+                var botonEliminar = "<button id='btn-eliminar-cli' class='btn btn-danger' idCliente=" + "'" + arrayClientes.idcliente + "'" + "><i class='fa fa-times'></i></button>";
+            } else {
+                var botonEliminar = "<button id='btn-eliminar-cli' class='btn btn-danger' idCliente=" + "'" + arrayClientes.idcliente + "'" + " disabled><i class='fa fa-times'></i></button>";
+            }
+
+            var botones = "<div class='btn-group'>" + botonEditar + botonEliminar + "</div>"
 
             var fechaCreacion = moment(arrayClientes.fecha_creacion).format('DD/MM/YYYY hh:mm:ss a');
 
@@ -1098,7 +1126,7 @@ exports.mostrarCliente = async (req, res) => {
 
 }
 
-exports.clientesActivos =  async (req, res) => {
+exports.clientesActivos = async (req, res) => {
 
     const clientes = await pool.query('SELECT * FROM clientes WHERE status = 1');
 
@@ -1396,37 +1424,37 @@ exports.getProvActivos = async (req, res) => {
     res.send('ok');
 } */
 
-async function validAccess(idUsuario, url){
+async function validAccess(idUsuario, url) {
 
     var permiso = 0;
 
-    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
-    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',url);
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', url);
 
     var idPerfil = idPerfilQry[0].idperfil;
     var idMenu = idMenuQry[0].idmenu;
 
-    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1',[idMenu, idUsuario]);
-    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1',[idMenu,idPerfil]);
-    
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND acceso=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND acceso=1', [idMenu, idPerfil]);
+
     var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
 
     return permiso
 
 }
 
-async function validaPermisoCrear(idUsuario, route){
+async function validaPermisoCrear(idUsuario, route) {
 
     var permiso = 0;
 
-    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
-    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',route);
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
 
     var idPerfil = idPerfilQry[0].idperfil;
     var idMenu = idMenuQry[0].idmenu;
 
-    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND crear=1',[idMenu, idUsuario]);
-    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND crear=1',[idMenu,idPerfil]);
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND crear=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND crear=1', [idMenu, idPerfil]);
 
     var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
 
@@ -1434,18 +1462,18 @@ async function validaPermisoCrear(idUsuario, route){
 
 }
 
-async function validaPermisoEditar(idUsuario, route){
+async function validaPermisoEditar(idUsuario, route) {
 
     var permiso = 0;
 
-    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
-    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',route);
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
 
     var idPerfil = idPerfilQry[0].idperfil;
     var idMenu = idMenuQry[0].idmenu;
 
-    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND editar=1',[idMenu, idUsuario]);
-    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND editar=1',[idMenu,idPerfil]);
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND editar=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND editar=1', [idMenu, idPerfil]);
 
     var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
 
@@ -1453,18 +1481,18 @@ async function validaPermisoEditar(idUsuario, route){
 
 }
 
-async function validaPermisoEliminar(idUsuario, route){
+async function validaPermisoEliminar(idUsuario, route) {
 
     var permiso = 0;
 
-    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?',idUsuario);
-    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?',route);
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
 
     var idPerfil = idPerfilQry[0].idperfil;
     var idMenu = idMenuQry[0].idmenu;
 
-    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND eliminar=1',[idMenu, idUsuario]);
-    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND eliminar=1',[idMenu,idPerfil]);
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND eliminar=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND eliminar=1', [idMenu, idPerfil]);
 
     var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
 

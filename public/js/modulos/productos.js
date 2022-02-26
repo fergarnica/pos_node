@@ -30,6 +30,11 @@ const idProdMov = document.getElementById("idProdMov");
 const codProducto = document.getElementById("codProducto");
 const tipPrecio = document.getElementById("tipPrecio");
 
+const categoriaPermCrear = document.getElementById('categoriaPermCrear');
+const marcaPermCrear = document.getElementById('marcaPermCrear');
+const presentacionPermCrear = document.getElementById('presentacionPermCrear');
+const productoPermCrear = document.getElementById('productoPermCrear');
+
 (function () {
     /*=============================================
         Data Table Categorias
@@ -106,6 +111,19 @@ const tipPrecio = document.getElementById("tipPrecio");
                 })
             })
     }
+
+    if(categoriaPermCrear){
+        
+        var permisoCrear = categoriaPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-categoria').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-categoria').disabled = true;
+        }
+
+    }
+
     /*=============================================
         Data Table Marcas
     =============================================*/
@@ -182,6 +200,19 @@ const tipPrecio = document.getElementById("tipPrecio");
                 })
             })
     }
+
+    if(marcaPermCrear){
+        
+        var permisoCrear = marcaPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-marca').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-marca').disabled = true;
+        }
+
+    }
+
     /*=============================================
         Data Table Presentaciones
     =============================================*/
@@ -262,6 +293,19 @@ const tipPrecio = document.getElementById("tipPrecio");
                 })
             })
     }
+
+    if(presentacionPermCrear){
+        
+        var permisoCrear = presentacionPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-presentacion').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-presentacion').disabled = true;
+        }
+
+    }
+
     /*=============================================
         Data Table Productos
     =============================================*/
@@ -383,6 +427,18 @@ const tipPrecio = document.getElementById("tipPrecio");
                     text: 'Error en la Base de Datos'
                 })
             })
+    }
+
+    if(productoPermCrear){
+        
+        var permisoCrear = productoPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-producto').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-producto').disabled = true;
+        }
+
     }
 
     /*=============================================

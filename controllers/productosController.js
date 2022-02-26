@@ -92,11 +92,13 @@ exports.categorias = async (req, res) => {
     var url = req.originalUrl;
 
     var permiso = await validAccess(idUsuario, url);
+    var permisoCrear = await validaPermisoCrear(idUsuario, url);
 
     if (permiso > 0) {
 
         res.render('modulos/productos/categorias', {
-            nombrePagina: 'Categorias'
+            nombrePagina: 'Categorias',
+            permisoCrear
         });
 
     } else {
@@ -141,6 +143,7 @@ exports.agregarCategoria = async (req, res) => {
 
 exports.mostrarCategorias = async (req, res) => {
 
+    const idUsuario = res.locals.usuario.idusuario;
     const values = await pool.query('SELECT * FROM categorias');
 
     var valuesTotal = values.length;
@@ -151,19 +154,48 @@ exports.mostrarCategorias = async (req, res) => {
 
     } else {
 
+        const route = '/categorias';
+
+        var permisoEditar = await validaPermisoEditar(idUsuario, route);
+        var permisoEliminar = await validaPermisoEliminar(idUsuario, route);
+
         const dataCategorias = [];
 
         for (var x = 0; x < valuesTotal; x++) {
 
             conteo = x + 1;
             const arrayCategorias = values[x];
-            var botones = "<div class='btn-group'><button type='button' id='btn-editar-categoria' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarCategoria' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + "><i class='fas fa-pencil-alt'></i></button><button id='btn-eliminar-categoria' class='btn btn-danger' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + "><i class='fa fa-times'></i></button></div>";
 
-            if (arrayCategorias.status === 0) {
-                var status = "<button type='button' id='btn-estatus-categoria' class='btn btn-danger btn-sm' estadoCategoria='1' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + ">Desactivado</button>";
+            if (permisoEditar > 0) {
+
+                var botonEditar = "<button type='button' id='btn-editar-categoria' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarCategoria' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + "><i class='fas fa-pencil-alt'></i></button>";
+
+                if (arrayCategorias.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-categoria' class='btn btn-danger btn-sm' estadoCategoria='1' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-categoria' class='btn btn-success btn-sm' estadoCategoria='0' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + ">Activado</button>";
+                }
+
             } else {
-                var status = "<button type='button' id='btn-estatus-categoria' class='btn btn-success btn-sm' estadoCategoria='0' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + ">Activado</button>";
+
+                var botonEditar = "<button type='button' id='btn-editar-categoria' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarCategoria' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + " disabled><i class='fas fa-pencil-alt'></i></button>";
+
+                if (arrayCategorias.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-categoria' class='btn btn-danger btn-sm' estadoCategoria='1' idCategoria=" + "'" + arrayCategorias.idcategoria + "' disabled" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-categoria' class='btn btn-success btn-sm' estadoCategoria='0' idCategoria=" + "'" + arrayCategorias.idcategoria + "' disabled" + ">Activado</button>";
+                }
+
             }
+
+            if(permisoEliminar > 0){
+                var botonEliminar = "<button id='btn-eliminar-categoria' class='btn btn-danger' idCategoria=" + "'" + arrayCategorias.idcategoria + "'" + "><i class='fa fa-times'></i></button>";
+            }else{
+                var botonEliminar = "<button id='btn-eliminar-categoria' class='btn btn-danger' idCategoria=" + "'" + arrayCategorias.idcategoria + "' disabled" + "><i class='fa fa-times'></i></button>";
+            }
+
+            var botones = "<div class='btn-group'>" + botonEditar + botonEliminar + "</div>";
+
 
             var fecha = moment(arrayCategorias.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
 
@@ -283,11 +315,13 @@ exports.marcas = async (req, res) => {
     var url = req.originalUrl;
 
     var permiso = await validAccess(idUsuario, url);
+    var permisoCrear = await validaPermisoCrear(idUsuario, url);
 
     if (permiso > 0) {
 
         res.render('modulos/productos/marcas', {
-            nombrePagina: 'Marcas'
+            nombrePagina: 'Marcas',
+            permisoCrear
         });
 
     } else {
@@ -333,7 +367,7 @@ exports.agregarMarca = async (req, res) => {
 exports.mostrarMarcas = async (req, res) => {
 
     const values = await pool.query('SELECT * FROM marcas');
-
+    const idUsuario = res.locals.usuario.idusuario;
     var valuesTotal = values.length;
 
     if (valuesTotal === 0) {
@@ -343,18 +377,45 @@ exports.mostrarMarcas = async (req, res) => {
     } else {
 
         const dataMarcas = [];
+        const route = '/marcas';
+
+        var permisoEditar = await validaPermisoEditar(idUsuario, route);
+        var permisoEliminar = await validaPermisoEliminar(idUsuario, route);
 
         for (var x = 0; x < valuesTotal; x++) {
 
             conteo = x + 1;
             const arrayMarcas = values[x];
-            var botones = "<div class='btn-group'><button type='button' id='btn-editar-marca' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarMarca' idMarca=" + "'" + arrayMarcas.idmarca + "'" + "><i class='fas fa-pencil-alt'></i></button><button id='btn-eliminar-marca' class='btn btn-danger' idMarca=" + "'" + arrayMarcas.idmarca + "'" + "><i class='fa fa-times'></i></button></div>";
 
-            if (arrayMarcas.status === 0) {
-                var status = "<button type='button' id='btn-estatus-marca' class='btn btn-danger btn-sm' estadoMarca='1' idMarca=" + "'" + arrayMarcas.idmarca + "'" + ">Desactivado</button>";
-            } else {
-                var status = "<button type='button' id='btn-estatus-marca' class='btn btn-success btn-sm' estadoMarca='0' idMarca=" + "'" + arrayMarcas.idmarca + "'" + ">Activado</button>";
+            if(permisoEditar > 0){
+
+                var botonEditar = "<button type='button' id='btn-editar-marca' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarMarca' idMarca=" + "'" + arrayMarcas.idmarca + "'" + "><i class='fas fa-pencil-alt'></i></button>";
+
+                if (arrayMarcas.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-marca' class='btn btn-danger btn-sm' estadoMarca='1' idMarca=" + "'" + arrayMarcas.idmarca + "'" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-marca' class='btn btn-success btn-sm' estadoMarca='0' idMarca=" + "'" + arrayMarcas.idmarca + "'" + ">Activado</button>";
+                }
+
+            }else{
+
+                var botonEditar = "<button type='button' id='btn-editar-marca' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarMarca' idMarca=" + "'" + arrayMarcas.idmarca + "' disabled" + "><i class='fas fa-pencil-alt'></i></button>";
+
+                if (arrayMarcas.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-marca' class='btn btn-danger btn-sm' estadoMarca='1' idMarca=" + "'" + arrayMarcas.idmarca + "' disabled" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-marca' class='btn btn-success btn-sm' estadoMarca='0' idMarca=" + "'" + arrayMarcas.idmarca + "' disabled" + ">Activado</button>";
+                }
+
             }
+
+            if(permisoEliminar > 0){
+                var botonEliminar = "<button id='btn-eliminar-marca' class='btn btn-danger' idMarca=" + "'" + arrayMarcas.idmarca + "'" + "><i class='fa fa-times'></i></button>";
+            }else{
+                var botonEliminar = "<button id='btn-eliminar-marca' class='btn btn-danger' idMarca=" + "'" + arrayMarcas.idmarca + "' disabled" + "><i class='fa fa-times'></i></button>";
+            }
+
+            var botones = "<div class='btn-group'>" + botonEditar + botonEliminar + "</div>";
 
             var fecha = moment(arrayMarcas.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
 
@@ -472,11 +533,13 @@ exports.productos = async (req, res) => {
     var url = req.originalUrl;
 
     var permiso = await validAccess(idUsuario, url);
+    var permisoCrear = await validaPermisoCrear(idUsuario, url);
 
     if (permiso > 0) {
 
         res.render('modulos/productos/productos', {
-            nombrePagina: 'Productos'
+            nombrePagina: 'Productos',
+            permisoCrear
         });
 
     } else {
@@ -590,6 +653,7 @@ exports.agregarProducto = async (req, res) => {
 exports.mostrarProductos = async (req, res) => {
 
     var values = await pool.query('call get_info_all_productos()');
+    const idUsuario = res.locals.usuario.idusuario;
 
     var newValues = values[0];
     var valuesTotal = newValues.length;
@@ -601,17 +665,42 @@ exports.mostrarProductos = async (req, res) => {
     } else {
 
         const dataProductos = [];
+        const route = '/productos';
+
+        var permisoEditar = await validaPermisoEditar(idUsuario, route);
+        var permisoEliminar = await validaPermisoEliminar(idUsuario, route);
 
         for (var x = 0; x < valuesTotal; x++) {
 
             conteo = x + 1;
             const arrayProductos = newValues[x];
-            var botones = "<div class='btn-group'><button type='button' id='btn-imagen-producto' class='btn btn-info' data-toggle='modal' data-target='#modalSubirImagen' idProducto=" + "'" + arrayProductos.idproducto + "'" + "><i class='fas fa-image'></i></button><a type='button' id='btn-editar-producto' class='btn btn-warning' href=" + "'/editar_producto/" + arrayProductos.idproducto + "'" + " idProducto=" + "'" + arrayProductos.idproducto + "'" + "><i class='fas fa-pencil-alt'></i></a><button id='btn-eliminar-producto' class='btn btn-danger' idProducto=" + "'" + arrayProductos.idproducto + "'" + "><i class='fa fa-times'></i></button></div>";
 
-            if (arrayProductos.status === 0) {
-                var status = "<button type='button' id='btn-estatus-producto' class='btn btn-danger btn-sm' estadoProducto='1' idProducto=" + "'" + arrayProductos.idproducto + "'" + ">Desactivado</button>";
-            } else {
-                var status = "<button type='button' id='btn-estatus-producto' class='btn btn-success btn-sm' estadoProducto='0' idProducto=" + "'" + arrayProductos.idproducto + "'" + ">Activado</button>";
+            if(permisoEditar > 0){
+
+                var botonEditar = "<button type='button' id='btn-imagen-producto' class='btn btn-info' data-toggle='modal' data-target='#modalSubirImagen' idProducto=" + "'" + arrayProductos.idproducto + "'" + "><i class='fas fa-image'></i></button><a type='button' id='btn-editar-producto' class='btn btn-warning' href=" + "'/editar_producto/" + arrayProductos.idproducto + "'" + " idProducto=" + "'" + arrayProductos.idproducto + "'" + "><i class='fas fa-pencil-alt'></i></a>";
+                
+                if (arrayProductos.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-producto' class='btn btn-danger btn-sm' estadoProducto='1' idProducto=" + "'" + arrayProductos.idproducto + "'" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-producto' class='btn btn-success btn-sm' estadoProducto='0' idProducto=" + "'" + arrayProductos.idproducto + "'" + ">Activado</button>";
+                }
+
+            }else{
+
+                var botonEditar = "<button type='button' id='btn-imagen-producto' class='btn btn-info' data-toggle='modal' data-target='#modalSubirImagen' idProducto=" + "'" + arrayProductos.idproducto + "' disabled" + "><i class='fas fa-image'></i></button><button type='button' id='btn-editar-producto' class='btn btn-warning' idProducto=" + "'" + arrayProductos.idproducto + "' disabled" + "><i class='fas fa-pencil-alt'></i></button>";
+                
+                if (arrayProductos.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-producto' class='btn btn-danger btn-sm' estadoProducto='1' idProducto=" + "'" + arrayProductos.idproducto + "' disabled" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-producto' class='btn btn-success btn-sm' estadoProducto='0' idProducto=" + "'" + arrayProductos.idproducto + "' disabled" + ">Activado</button>";
+                }
+                
+            }
+
+            if(permisoEliminar > 0){
+                var botonEliminar = "<button id='btn-eliminar-producto' class='btn btn-danger' idProducto=" + "'" + arrayProductos.idproducto + "'" + "><i class='fa fa-times'></i></a>";
+            }else{
+                var botonEliminar = "<button id='btn-eliminar-producto' class='btn btn-danger' idProducto=" + "'" + arrayProductos.idproducto + "' disabled" + "><i class='fa fa-times'></i></a>";
             }
 
             if (arrayProductos.imagen === null) {
@@ -619,6 +708,8 @@ exports.mostrarProductos = async (req, res) => {
             } else {
                 var imagen = "<img src='/uploads/productos/" + arrayProductos.imagen + "' width='40px'>";
             }
+
+            var botones = "<div class='btn-group'>" + botonEditar + botonEliminar + "</div>";
 
             var fecha = moment(arrayProductos.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
 
@@ -681,15 +772,15 @@ exports.editarProdForm = async (req, res) => {
 
     let idProducto = req.params.id;
 
-    let existProducto = await pool.query('SELECT COUNT(1) AS exist FROM productos WHERE idproducto=?',idProducto);
+    let existProducto = await pool.query('SELECT COUNT(1) AS exist FROM productos WHERE idproducto=?', idProducto);
 
     let exist = existProducto[0].exist;
 
-    if(exist===1){
+    if (exist === 1) {
         res.render('modulos/productos/editar_producto', {
             nombrePagina: 'Editar Producto'
         });
-    }else{
+    } else {
         res.render('modulos/error/404');
     }
 
@@ -755,11 +846,13 @@ exports.presentaciones = async (req, res) => {
     var url = req.originalUrl;
 
     var permiso = await validAccess(idUsuario, url);
+    var permisoCrear = await validaPermisoCrear(idUsuario, url);
 
     if (permiso > 0) {
 
         res.render('modulos/productos/presentacion', {
-            nombrePagina: 'Presentaciones'
+            nombrePagina: 'Presentaciones',
+            permisoCrear
         });
 
     } else {
@@ -815,6 +908,7 @@ exports.agregarPresentacion = async (req, res) => {
 exports.mostrarPresentaciones = async (req, res) => {
 
     const values = await pool.query('SELECT * FROM presentaciones');
+    var idUsuario = res.locals.usuario.idusuario;
 
     var valuesTotal = values.length;
 
@@ -825,18 +919,45 @@ exports.mostrarPresentaciones = async (req, res) => {
     } else {
 
         const dataPres = [];
+        const route = '/presentaciones';
+
+        var permisoEditar = await validaPermisoEditar(idUsuario, route);
+        var permisoEliminar = await validaPermisoEliminar(idUsuario, route);
 
         for (var x = 0; x < valuesTotal; x++) {
 
             conteo = x + 1;
             const arrayPres = values[x];
-            var botones = "<div class='btn-group'><button type='button' id='btn-editar-pres' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarPres' idPres=" + "'" + arrayPres.idpresentacion + "'" + "><i class='fas fa-pencil-alt'></i></button><button id='btn-eliminar-pres' class='btn btn-danger' idPres=" + "'" + arrayPres.idpresentacion + "'" + "><i class='fa fa-times'></i></button></div>";
 
-            if (arrayPres.status === 0) {
-                var status = "<button type='button' id='btn-estatus-pres' class='btn btn-danger btn-sm' estadoPres='1' idPres=" + "'" + arrayPres.idpresentacion + "'" + ">Desactivado</button>";
-            } else {
-                var status = "<button type='button' id='btn-estatus-pres' class='btn btn-success btn-sm' estadoPres='0' idPres=" + "'" + arrayPres.idpresentacion + "'" + ">Activado</button>";
+            if(permisoEditar > 0){
+
+                var botonEditar = "<button type='button' id='btn-editar-pres' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarPres' idPres=" + "'" + arrayPres.idpresentacion + "'" + "><i class='fas fa-pencil-alt'></i></button>";
+                
+                if (arrayPres.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-pres' class='btn btn-danger btn-sm' estadoPres='1' idPres=" + "'" + arrayPres.idpresentacion + "'" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-pres' class='btn btn-success btn-sm' estadoPres='0' idPres=" + "'" + arrayPres.idpresentacion + "'" + ">Activado</button>";
+                }
+
+            }else{
+
+                var botonEditar = "<button type='button' id='btn-editar-pres' class='btn btn-warning' data-toggle='modal' data-target='#modalEditarPres' idPres=" + "'" + arrayPres.idpresentacion + "' disabled" + "><i class='fas fa-pencil-alt'></i></button>";
+
+                if (arrayPres.status === 0) {
+                    var status = "<button type='button' id='btn-estatus-pres' class='btn btn-danger btn-sm' estadoPres='1' idPres=" + "'" + arrayPres.idpresentacion + "' disabled" + ">Desactivado</button>";
+                } else {
+                    var status = "<button type='button' id='btn-estatus-pres' class='btn btn-success btn-sm' estadoPres='0' idPres=" + "'" + arrayPres.idpresentacion + "' disabled" + ">Activado</button>";
+                }
+
             }
+
+            if(permisoEliminar > 0){
+                var botonEliminar = "<button id='btn-eliminar-pres' class='btn btn-danger' idPres=" + "'" + arrayPres.idpresentacion + "'" + "><i class='fa fa-times'></i></button>";
+            }else{
+                var botonEliminar = "<button id='btn-eliminar-pres' class='btn btn-danger' idPres=" + "'" + arrayPres.idpresentacion + "' disabled" + "><i class='fa fa-times'></i></button>";
+            }
+
+            var botones = "<div class='btn-group'>" + botonEditar + botonEliminar + "</div>";
 
             var fecha = moment(arrayPres.fecha_creacion).format('YYYY-MM-DD hh:mm:ss a');
 
@@ -1480,5 +1601,62 @@ async function validAccess(idUsuario, url) {
     var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
 
     return permiso
+
+}
+
+async function validaPermisoCrear(idUsuario, route) {
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND crear=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND crear=1', [idMenu, idPerfil]);
+
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso;
+
+}
+
+async function validaPermisoEditar(idUsuario, route) {
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND editar=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND editar=1', [idMenu, idPerfil]);
+
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso;
+
+}
+
+async function validaPermisoEliminar(idUsuario, route) {
+
+    var permiso = 0;
+
+    var idPerfilQry = await pool.query('SELECT idperfil FROM usuarios WHERE idusuario=?', idUsuario);
+    var idMenuQry = await pool.query('SELECT idmenu FROM menu WHERE url=?', route);
+
+    var idPerfil = idPerfilQry[0].idperfil;
+    var idMenu = idMenuQry[0].idmenu;
+
+    var validPermU = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xusuario WHERE idmenu=? AND idusuario=? AND eliminar=1', [idMenu, idUsuario]);
+    var validPermP = await pool.query('SELECT COUNT(1) as cuenta FROM permisos_xperfil WHERE idmenu=? AND idperfil=? AND eliminar=1', [idMenu, idPerfil]);
+
+    var permiso = permiso + validPermU[0].cuenta + validPermP[0].cuenta;
+
+    return permiso;
 
 }

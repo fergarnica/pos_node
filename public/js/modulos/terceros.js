@@ -27,7 +27,8 @@ const infoDetProv = document.getElementById('infodet-proveedor');
 
 const contenedorMapa = document.querySelector('.contenedor-mapa');
 
-var provPermCrear = document.getElementById('provPermCrear');
+const provPermCrear = document.getElementById('provPermCrear');
+const cliPermCrear = document.getElementById('cliPermCrear');
 //const buscador = document.querySelector('#formNewProv');
 let marker;
 
@@ -236,6 +237,18 @@ let marker;
                     text: 'Error en la Base de Datos'
                 })
             })
+
+    }
+
+    if(cliPermCrear){
+        
+        var permisoCrear = cliPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-cliente').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-cliente').disabled = true;
+        }
 
     }
 

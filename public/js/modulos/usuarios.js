@@ -19,6 +19,10 @@ const tblPerfiles = document.querySelector('#tbl-perfiles');
 const tblEmpleados = document.querySelector('#tbl-empleados');
 const tblUsuarios = document.querySelector('#tbl-usuarios');
 
+const perfilPermCrear = document.getElementById('perfilPermCrear');
+const empleadoPermCrear = document.getElementById('empleadoPermCrear');
+const usuarioPermCrear = document.getElementById('usuarioPermCrear');
+
 (function () {
     /*=============================================
         Data Table Perfiles
@@ -95,6 +99,18 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                     text: 'Error en la Base de Datos'
                 })
             })
+    }
+
+    if(perfilPermCrear){
+        
+        var permisoCrear = perfilPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-perfil').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-perfil').disabled = true;
+        }
+
     }
 
     /*=============================================
@@ -182,6 +198,18 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
             })
     }
 
+    if(empleadoPermCrear){
+        
+        var permisoCrear = empleadoPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-empleado').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-empleado').disabled = true;
+        }
+
+    }
+
     /*=============================================
         Data Table Usuarios
     =============================================*/
@@ -264,6 +292,18 @@ const tblUsuarios = document.querySelector('#tbl-usuarios');
                     text: 'Error en la Base de Datos'
                 })
             })
+    }
+
+    if(usuarioPermCrear){
+        
+        var permisoCrear = usuarioPermCrear.value;
+
+        if(permisoCrear > 0){
+            document.getElementById('btn-agregar-usuario').disabled = false;
+        }else{
+            document.getElementById('btn-agregar-usuario').disabled = true;
+        }
+
     }
 
     if (fecCont) {
